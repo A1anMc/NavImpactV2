@@ -182,7 +182,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
               value={formData.organisation_name}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
             />
           </div>
 
@@ -196,7 +196,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
               value={formData.organisation_type}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">Select organisation type</option>
               {organisationTypes.map(type => (
@@ -218,7 +218,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
               value={formData.industry_focus}
               onChange={handleInputChange}
               placeholder="e.g., Healthcare, Education, Environment"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
             />
           </div>
 
@@ -233,7 +233,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
               value={formData.location}
               onChange={handleInputChange}
               placeholder="e.g., Sydney, NSW"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
             />
           </div>
         </div>
@@ -249,7 +249,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
             value={formData.website}
             onChange={handleInputChange}
             placeholder="https://example.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
           />
         </div>
 
@@ -263,8 +263,8 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
             value={formData.description}
             onChange={handleInputChange}
             rows={3}
-                          placeholder="Brief description of your organisation and its mission"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Brief description of your organisation and its mission"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
           />
         </div>
 
@@ -285,7 +285,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
                 onChange={handleInputChange}
                 min="0"
                 placeholder="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
               />
             </div>
 
@@ -301,7 +301,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
                 onChange={handleInputChange}
                 min="0"
                 placeholder="1000000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white placeholder-gray-500"
               />
             </div>
           </div>
@@ -319,7 +319,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
                 onChange={handleInputChange}
                 min="1"
                 max="365"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
 
@@ -335,7 +335,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
                 onChange={handleInputChange}
                 min="1"
                 max="30"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
@@ -354,7 +354,7 @@ export default function ProfileForm({ profile, onSave, onCancel, mode = 'edit' }
               name="email_notifications"
               value={formData.email_notifications}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             >
               {notificationOptions.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
