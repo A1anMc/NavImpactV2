@@ -169,6 +169,23 @@ export const grantsApi = {
       throw error;
     }
   },
+
+  // Get matching grants based on user profile
+  async getMatchingGrants(skip = 0, limit = 20): Promise<Grant[]> {
+    const queryParams = {
+      skip: skip.toString(),
+      limit: limit.toString()
+    };
+    return apiClient.request<Grant[]>('/grants/match', {}, queryParams);
+  },
+
+  // Get grant recommendations for current user
+  async getRecommendations(limit = 5): Promise<Grant[]> {
+    const queryParams = {
+      limit: limit.toString()
+    };
+    return apiClient.request<Grant[]>('/grants/recommendations', {}, queryParams);
+  },
 };
 
 // Export types for use in components

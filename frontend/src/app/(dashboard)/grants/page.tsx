@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import GrantComparison from '@/components/grants/GrantComparison';
 import PersonalizedGrantsDashboard from '@/components/grants/PersonalizedGrantsDashboard';
+import MatchingGrants from '@/components/grants/MatchingGrants';
 
 interface Grant {
   id: string;
@@ -29,7 +31,10 @@ interface Filters {
   status: string;
 }
 
-export default function GrantsPage() {
+function GrantsPageContent() {
+  const searchParams = useSearchParams();
+  const filter = searchParams.get('filter');
+  
   const [activeTab, setActiveTab] = useState<'all' | 'personalized'>('personalized');
   const [grants, setGrants] = useState<Grant[]>([]);
   const [filteredGrants, setFilteredGrants] = useState<Grant[]>([]);
@@ -415,6 +420,21 @@ export default function GrantsPage() {
     );
   }
 
+  // Show matching grants if filter parameter is set
+  if (filter === 'matching') {
+    return (
+      <div className="container mx-auto p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Matching Grants</h1>
+            <p className="text-sm sm:text-base text-gray-600">Grants that match your profile preferences</p>
+          </div>
+        </div>
+        <MatchingGrants showFilters={true} />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4 sm:p-6">
       {/* Header */}
@@ -762,5 +782,18 @@ export default function GrantsPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function GrantsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Grants</h1>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    }>
+      <GrantsPageContent />
+    </Suspense>
   );
 } 

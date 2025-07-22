@@ -1,8 +1,10 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, status
 from sqlalchemy.orm import Session
-from app.core.deps import get_db
+from sqlalchemy import and_, or_
+from app.core.deps import get_db, get_current_user
 from app.models.grant import Grant
+from app.models.user import User
 from app.schemas.grant import GrantResponse, GrantList
 # from app.services.scrapers.scraper_service import ScraperService  # Disabled - requires bs4
 
@@ -437,3 +439,141 @@ def seed_simple_grants():
         raise HTTPException(status_code=500, detail=f"Error seeding grants: {str(e)}")
     finally:
         db.close() 
+
+@router.get("/match", response_model=List[Grant])
+def get_matching_grants(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    skip: int = 0,
+    limit: int = 20,
+) -> List[Grant]:
+    """Get grants that match the current user's profile preferences."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get user profile
+    user_profile = db.query(UserProfile).filter(
+        UserProfile.user_id == current_user.id
+    ).first()
+    
+    if not user_profile:
+        # If no profile, return all grants
+        grants = db.query(Grant).offset(skip).limit(limit).all()
+        return grants
+    
+    # Build query based on user preferences
+    query = db.query(Grant)
+    
+    # Filter by funding range
+    if user_profile.preferred_funding_range_min is not None:
+        query = query.filter(Grant.max_amount >= user_profile.preferred_funding_range_min)
+    
+    if user_profile.preferred_funding_range_max is not None:
+        query = query.filter(Grant.min_amount <= user_profile.preferred_funding_range_max)
+    
+    # Filter by grant amount range
+    if user_profile.min_grant_amount is not None:
+        query = query.filter(Grant.max_amount >= user_profile.min_grant_amount)
+    
+    if user_profile.max_grant_amount is not None:
+        query = query.filter(Grant.min_amount <= user_profile.max_grant_amount)
+    
+    # Filter by deadline (only show grants within user's preferred timeframe)
+    if user_profile.max_deadline_days is not None:
+        cutoff_date = datetime.utcnow() + timedelta(days=user_profile.max_deadline_days)
+        query = query.filter(Grant.deadline <= cutoff_date)
+    
+    # Filter by industry focus (if user has industry focus)
+    if user_profile.industry_focus:
+        query = query.filter(
+            or_(
+                Grant.industry_focus.ilike(f"%{user_profile.industry_focus}%"),
+                Grant.industry_focus.is_(None)  # Include grants without industry focus
+            )
+        )
+    
+    # Filter by preferred industries
+    if user_profile.preferred_industries:
+        industry_filters = []
+        for industry in user_profile.preferred_industries:
+            industry_filters.append(Grant.industry_focus.ilike(f"%{industry}%"))
+        if industry_filters:
+            query = query.filter(or_(*industry_filters))
+    
+    # Filter by preferred locations
+    if user_profile.preferred_locations:
+        location_filters = []
+        for location in user_profile.preferred_locations:
+            location_filters.append(Grant.location_eligibility.ilike(f"%{location}%"))
+        if location_filters:
+            query = query.filter(or_(*location_filters))
+    
+    # Filter by preferred organization types
+    if user_profile.preferred_org_types:
+        org_type_filters = []
+        for org_type in user_profile.preferred_org_types:
+            org_type_filters.append(Grant.org_type_eligible.contains([org_type]))
+        if org_type_filters:
+            query = query.filter(or_(*org_type_filters))
+    
+    # Only show open grants
+    query = query.filter(Grant.status == "open")
+    
+    # Order by deadline (closest first)
+    query = query.order_by(Grant.deadline.asc())
+    
+    # Apply pagination
+    grants = query.offset(skip).limit(limit).all()
+    
+    return grants
+
+@router.get("/recommendations", response_model=List[Grant])
+def get_grant_recommendations(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    limit: int = 5,
+) -> List[Grant]:
+    """Get top grant recommendations for the current user."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get user profile
+    user_profile = db.query(UserProfile).filter(
+        UserProfile.user_id == current_user.id
+    ).first()
+    
+    if not user_profile:
+        # If no profile, return recent grants
+        grants = db.query(Grant).filter(
+            Grant.status == "open"
+        ).order_by(Grant.deadline.asc()).limit(limit).all()
+        return grants
+    
+    # Build scoring query
+    query = db.query(Grant)
+    
+    # Base filters
+    query = query.filter(Grant.status == "open")
+    
+    # Filter by deadline (only show grants within user's preferred timeframe)
+    if user_profile.max_deadline_days is not None:
+        cutoff_date = datetime.utcnow() + timedelta(days=user_profile.max_deadline_days)
+        query = query.filter(Grant.deadline <= cutoff_date)
+    
+    # Apply preference filters
+    if user_profile.preferred_funding_range_min is not None:
+        query = query.filter(Grant.max_amount >= user_profile.preferred_funding_range_min)
+    
+    if user_profile.preferred_funding_range_max is not None:
+        query = query.filter(Grant.min_amount <= user_profile.preferred_funding_range_max)
+    
+    # Order by relevance score (we'll implement this later)
+    # For now, order by deadline and funding amount
+    query = query.order_by(
+        Grant.deadline.asc(),
+        Grant.max_amount.desc()
+    )
+    
+    grants = query.limit(limit).all()
+    
+    return grants 
