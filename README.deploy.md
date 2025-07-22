@@ -11,9 +11,9 @@ bash scripts/verify-deploy.sh
 
 1. Go to [Render Dashboard](https://dashboard.render.com)
 2. Click **"New"** → **"PostgreSQL"**
-3. **Name**: `sge-dashboard-db`
-4. **Database**: `sge_dashboard`
-5. **User**: `sge_dashboard_user`
+3. **Name**: `navimpact-db`
+4. **Database**: `navimpact`
+5. **User**: `navimpact_user`
 6. **Plan**: Starter (free)
 7. Click **"Create Database"**
 8. **📋 SAVE THE DATABASE URL** - you'll need it!

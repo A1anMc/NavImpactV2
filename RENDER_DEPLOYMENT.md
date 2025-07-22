@@ -41,14 +41,14 @@ curl http://localhost:3000/api/health    # Frontend health
 
 1. Create a new PostgreSQL database:
    - Go to Render Dashboard → New → PostgreSQL
-   - Name: sge-dashboard-db
+   - Name: navimpact-db
    - Plan: Starter
    - Copy the internal connection string
 
 2. Create backend service:
    - New → Web Service
    - Connect your repository
-   - Name: sge-dashboard-api
+   - Name: navimpact-api
    - Environment: Python
    - Build Command: `pip install -r requirements.txt`
    - Start Command: `gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT`
@@ -56,7 +56,7 @@ curl http://localhost:3000/api/health    # Frontend health
 
 3. Create frontend service:
    - New → Web Service
-   - Name: sge-dashboard-web
+   - Name: navimpact-frontend
    - Environment: Node
    - Build Command: `cd frontend && npm install && npm run build`
    - Start Command: `cd frontend && npm start`
@@ -89,12 +89,12 @@ Required variables for frontend:
 
 1. Check backend health:
 ```bash
-curl https://sge-dashboard-api.onrender.com/health
+curl https://navimpact-api.onrender.com/health
 ```
 
 2. Check frontend health:
 ```bash
-curl https://sge-dashboard-web.onrender.com/api/health
+curl https://navimpact-frontend.onrender.com/api/health
 ```
 
 3. Run the verification script:

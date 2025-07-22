@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # ====== CONFIG ======
-FRONTEND_SERVICE_ID="sge-dashboard-web"   # Your frontend service name
-BACKEND_SERVICE_ID="sge-dashboard-api"    # Your backend service name
-BACKEND_URL="https://sge-dashboard-api.onrender.com/health"
-FRONTEND_URL="https://sge-dashboard-web.onrender.com"
+FRONTEND_SERVICE_ID="navimpact-web"   # Your frontend service name
+BACKEND_SERVICE_ID="navimpact-api"    # Your backend service name
+BACKEND_URL="https://navimpact-api.onrender.com/health"
+FRONTEND_URL="https://navimpact-web.onrender.com"
 
 echo "🚀 Starting One-Shot Redeploy for SGE Dashboard..."
 
@@ -27,7 +27,7 @@ echo "✅ DATABASE_URL updated with sslmode=require"
 # ====== STEP 3: BACKEND ENV + CORS CONFIG ======
 echo "🔧 Setting Backend Production ENV + Allowed Origins..."
 render env:set $BACKEND_SERVICE_ID ENVIRONMENT "production"
-render env:set $BACKEND_SERVICE_ID CORS_ORIGINS '["https://sge-dashboard-web.onrender.com", "https://sge-dashboard-api.onrender.com", "https://*.onrender.com"]'
+render env:set $BACKEND_SERVICE_ID CORS_ORIGINS '["https://navimpact-web.onrender.com", "https://navimpact-api.onrender.com", "https://*.onrender.com"]'
 
 echo "✅ Backend ENV + CORS updated"
 
