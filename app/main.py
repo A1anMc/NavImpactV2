@@ -294,4 +294,4 @@ def create_app() -> FastAPI:
     return app
 
 # Create the app
-app = create_app() 
+app = create_app() # Database migration trigger - Wed Jul 23 00:47:44 AEST 2025
