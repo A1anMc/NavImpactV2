@@ -18,11 +18,19 @@ export default function ProfilePage() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const userProfile = await profileService.getMyProfile();
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
+      );
+      
+      const userProfile = await Promise.race([
+        profileService.getMyProfile(),
+        timeoutPromise
+      ]) as UserProfile;
       setProfile(userProfile);
     } catch (err) {
-      if (err instanceof Error && err.message.includes('404')) {
-        // Profile doesn't exist yet, show create form
+      if (err instanceof Error && (err.message.includes('404') || err.message.includes('Database service unavailable') || err.message.includes('Request timeout'))) {
+        // Profile doesn't exist yet, database is unavailable, or request timed out - show create form
         setShowForm(true);
       } else {
         setError(err instanceof Error ? err.message : 'Failed to load profile');
