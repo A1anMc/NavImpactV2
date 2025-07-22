@@ -9,7 +9,7 @@ echo "🔍 Checking NavImpact branding consistency..."
 REPO_URL=$(git config --get remote.origin.url)
 if [[ $REPO_URL == *"SGE"* ]] || [[ $REPO_URL == *"sge"* ]]; then
     echo "❌ ERROR: Repository contains old SGE branding: $REPO_URL"
-    echo "   Should be: https://github.com/A1anMc/NavImpact.git"
+    echo "   Should be: https://github.com/A1anMc/NavImpactV2.git"
     exit 1
 fi
 
@@ -36,4 +36,4 @@ else
 fi
 
 echo "✅ Branding check passed!"
-echo "🚀 Ready to push to NavImpact repository" 
+echo "🚀 Ready to push to NavImpactV2 repository" 

@@ -2,15 +2,15 @@
 
 ## 🎯 Project Identity
 
-**Project Name**: NavImpact  
-**Repository**: https://github.com/A1anMc/NavImpact.git  
+**Project Name**: NavImpactV2  
+**Repository**: https://github.com/A1anMc/NavImpactV2.git  
 **Brand Colors**: Impact Teal (#0D9488), Energy Coral (#F97316)
 
 ## ✅ Required Branding
 
 ### Repository Names
-- ✅ `NavImpact` or `navimpact`
-- ❌ `SGE`, `sge`, `SGEDashboard`
+- ✅ `NavImpactV2` or `navimpact-v2`
+- ❌ `SGE`, `sge`, `SGEDashboard`, `NavImpact` (old version)
 
 ### Package Names
 - ✅ `navimpact`
@@ -27,10 +27,10 @@
 ## 🔍 Pre-Push Checklist
 
 Before pushing code, ensure:
-1. Repository URL contains "NavImpact"
+1. Repository URL contains "NavImpactV2"
 2. package.json name is "navimpact"
 3. No SGE references in key files
-4. NavImpact branding is present
+4. NavImpactV2 branding is present
 
 ## 🛠️ Automatic Checks
 
@@ -59,4 +59,4 @@ Automatically runs before every push to prevent branding issues.
 
 ---
 
-**Remember**: NavImpact is the future. SGE is the past. 🎯 
+**Remember**: NavImpactV2 is the future. SGE is the past. 🎯 
