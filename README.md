@@ -1,13 +1,15 @@
 # NavImpact Dashboard
 
-Strategic Grant Evaluation Dashboard - A comprehensive platform for managing grants, tasks, and impact metrics.
+> **NavImpactV2** - Intelligent Grant Matching Platform with Personalized Recommendations
+
+<!-- Deployment trigger: Enhanced logo with gradients and glow effects -->
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
 - Python 3.8+
-- PostgreSQL
+- PostgreSQL 16+
 - npm or yarn
 
 ### Development Setup
