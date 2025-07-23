@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enhanced logo deployment trigger
+  experimental: {
+    // Force new build
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   
@@ -12,7 +16,7 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    domains: ['navimpact-frontend.onrender.com', 'navimpact-api.onrender.com'],
+    domains: ['api.dicebear.com'],
     unoptimized: true, // For better standalone compatibility
   },
   
