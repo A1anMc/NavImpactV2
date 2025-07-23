@@ -213,9 +213,12 @@ export const grantsApi = {
   async trackInteraction(grantId: number, interactionType: 'view' | 'save' | 'compare' | 'apply'): Promise<void> {
     try {
       await apiClient.request('/grants/track-interaction', {
-        grant_id: grantId,
-        interaction_type: interactionType
-      }, {}, 'POST');
+        method: 'POST',
+        body: JSON.stringify({
+          grant_id: grantId,
+          interaction_type: interactionType
+        })
+      });
     } catch (error) {
       console.error('[grantsApi.trackInteraction] Error:', error);
       // Don't throw - tracking should not break the user experience
