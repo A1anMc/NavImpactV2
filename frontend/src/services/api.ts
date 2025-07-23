@@ -168,6 +168,24 @@ class ApiClient {
   async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     return this.request<T>(endpoint, options);
   }
+
+  // Generic HTTP helpers -----------------------------------------
+  // These helpers make it easier to use the ApiClient in a REST-like
+  // fashion from other modules without needing to manually specify the
+  // RequestInit object each time.
+  async get<T = any>(endpoint: string, queryParams?: Record<string, string>): Promise<{ data: T }> {
+    const data = await this.request<T>(endpoint, {}, queryParams);
+    return { data };
+  }
+
+  async post<T = any>(endpoint: string, data?: any, queryParams?: Record<string, string>): Promise<{ data: T }> {
+    const options: RequestInit = {
+      method: 'POST',
+      body: data !== undefined ? JSON.stringify(data) : undefined,
+    };
+    const responseData = await this.request<T>(endpoint, options, queryParams);
+    return { data: responseData };
+  }
 }
 
 // Export singleton instance
