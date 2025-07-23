@@ -1,6 +1,6 @@
-# Deployment Guide
+# NavImpact Deployment Guide
 
-This guide covers deploying the SGE Dashboard to production environments.
+This guide covers deploying the NavImpact platform to production environments.
 
 ## 🚀 Production Deployment
 
@@ -8,23 +8,25 @@ This guide covers deploying the SGE Dashboard to production environments.
 
 The application is deployed on **Render** with the following services:
 
-- **Backend API**: `https://sge-dashboard-api.onrender.com` ✅ **LIVE**
-- **Frontend**: `https://sge-dashboard-web-new.onrender.com` 🚧 **READY FOR DEPLOYMENT**
+- **Backend API**: `https://navimpact-api.onrender.com` ✅ **LIVE**
+- **Frontend**: `https://navimpact-web.onrender.com` ✅ **LIVE**
 
 ### System Status
 
-#### Backend Service (`sge-dashboard-api`) ✅
+#### Backend Service (`navimpact-api`) ✅
 - **Status**: Healthy and running
-- **Health Check**: `https://sge-dashboard-api.onrender.com/health`
-- **API Documentation**: `https://sge-dashboard-api.onrender.com/api/docs`
-- **Database**: PostgreSQL connected and operational
+- **Health Check**: `https://navimpact-api.onrender.com/health`
+- **API Documentation**: `https://navimpact-api.onrender.com/api/docs`
+- **Database**: PostgreSQL 16 connected and operational
 - **Features**: All API endpoints restored and functional
+- **New Features**: Personalized recommendations and user profiles
 
-#### Frontend Service (`sge-dashboard-web-new`) 🚧
-- **Status**: Ready for deployment
-- **Local Testing**: `http://localhost:3000` ✅ Working
+#### Frontend Service (`navimpact-web`) ✅
+- **Status**: Live and running
+- **Production URL**: `https://navimpact-web.onrender.com` ✅ Working
 - **API Integration**: Direct connection to backend ✅
-- **Build**: Next.js 15 with standalone configuration ✅
+- **Build**: Next.js 15 with NavImpact design system ✅
+- **Branding**: Complete NavImpact branding with goose logo
 
 ## 🔧 Render Configuration
 
@@ -61,17 +63,17 @@ ENV=production
 DEBUG=false
 LOG_LEVEL=INFO
 PYTHONUNBUFFERED=1
-DATABASE_URL=postgresql://user:password@host:5432/database
+DATABASE_URL=postgresql://user:password@host:5432/navimpact
 SECRET_KEY=your-secret-key
 JWT_SECRET_KEY=your-jwt-secret
-FRONTEND_URL=https://sge-dashboard-web-new.onrender.com
-CORS_ORIGINS=["https://sge-dashboard-web-new.onrender.com"]
+FRONTEND_URL=https://navimpact-web.onrender.com
+CORS_ORIGINS=["https://navimpact-web.onrender.com"]
 ```
 
 ### Frontend Environment Variables
 ```env
-NEXT_PUBLIC_API_URL=https://sge-dashboard-api.onrender.com
-NEXT_PUBLIC_APP_NAME=SGE Dashboard
+NEXT_PUBLIC_API_URL=https://navimpact-api.onrender.com
+NEXT_PUBLIC_APP_NAME=NavImpact
 NODE_ENV=production
 NEXT_PUBLIC_ENV=production
 PORT=3000
@@ -80,7 +82,7 @@ PORT=3000
 ## 📊 Health Checks
 
 ### Backend Health Check ✅
-- **Endpoint**: `https://sge-dashboard-api.onrender.com/health`
+- **Endpoint**: `https://navimpact-api.onrender.com/health`
 - **Expected Response**: 
 ```json
 {

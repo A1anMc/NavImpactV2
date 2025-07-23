@@ -1,8 +1,8 @@
-# Error Handling Guidelines
+# NavImpact Contributing Guidelines
 
 ## Overview
 
-The SGE Dashboard implements a standardized error handling system. All new code contributions must follow these guidelines to maintain consistency and reliability.
+The NavImpact platform implements a standardized error handling system and contribution guidelines. All new code contributions must follow these guidelines to maintain consistency and reliability.
 
 ## Frontend Guidelines
 

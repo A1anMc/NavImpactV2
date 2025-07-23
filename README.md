@@ -2,12 +2,26 @@
 
 > **NavImpactV2** - Intelligent Grant Matching Platform with Personalized Recommendations
 
-<!-- Deployment trigger: Enhanced logo with gradients and glow effects -->
+<!-- Deployment trigger: Enhanced branding system with goose logo and modern design -->
+
+## 🎨 Brand Overview
+
+NavImpact is a modern, tech-forward platform that combines innovation with trust. Our branding system emphasizes sophistication, warmth, and clarity through a carefully crafted design system.
+
+### Brand Colors
+- **Deep Teal** (`#0f766e`) - Innovation & trust
+- **Soft Coral** (`#fb6f5f`) - Energy & warmth  
+- **Cool Slate** (`#334155`) - Sophistication & clarity
+- **Off-White** (`#f8fafc`) - Clean, modern backdrop
+
+### Typography
+- **Carrotflower Regular** - Headlines, titles, warm brand moments
+- **Neue Haas Grotesk Display Pro 45 Light** - Body text, UI, precise information
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 20+ 
 - Python 3.8+
 - PostgreSQL 16+
 - npm or yarn
@@ -16,8 +30,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/A1anMc/NavImpact.git
-cd NavImpact
+git clone https://github.com/A1anMc/NavImpactV2.git
+cd NavImpactV2
 
 # Backend Setup
 pip install -r requirements.txt
@@ -33,13 +47,13 @@ npm run dev
 
 The application is deployed on Render with the following services:
 
-- **Backend API**: `https://sge-dashboard-api.onrender.com`
-- **Frontend**: `https://sge-dashboard-web-new.onrender.com` (to be deployed)
+- **Backend API**: `https://navimpact-api.onrender.com`
+- **Frontend**: `https://navimpact-web.onrender.com`
 
 ## 📁 Project Structure
 
 ```
-SGEDashboardJuly/
+NavImpactV2/
 ├── app/                    # FastAPI backend
 │   ├── api/               # API endpoints
 │   ├── core/              # Core configuration
@@ -67,7 +81,7 @@ SGEDashboardJuly/
 
 ### Backend
 - **Framework**: FastAPI
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL 16
 - **ORM**: SQLAlchemy
 - **Authentication**: JWT
 - **Deployment**: Render
@@ -76,13 +90,37 @@ SGEDashboardJuly/
 ### Frontend
 - **Framework**: Next.js 15
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS with custom NavImpact design system
 - **State Management**: TanStack Query
 - **UI Components**: Radix UI, Headless UI
 - **Deployment**: Render
 
+## 🎯 Features
+
+### Core Functionality
+- **Grant Management**: Track and manage grant opportunities with full CRUD operations
+- **Task Management**: Organize tasks and workflows with comments and tags
+- **Impact Metrics**: Monitor success rates and outcomes
+- **Media Investments**: Track media campaigns
+- **Real-time Updates**: Live data synchronization
+
+### Phase 2 Features (New)
+- **Personalized Recommendations**: AI-powered grant matching based on user profiles
+- **Eligibility Matching**: Smart filtering based on organization type, industry, and location
+- **User Profiles**: Comprehensive profile system with preferences and settings
+- **Grant Comparison Tool**: Side-by-side comparison of grant opportunities
+- **Advanced Analytics**: Detailed insights and reporting
+- **Team Collaboration**: Multi-user support with role-based access
+
+### Design System
+- **Modern UI**: Card-based layouts with smooth animations
+- **Responsive Design**: Works seamlessly on all devices
+- **Accessibility**: WCAG compliant with focus states and reduced motion support
+- **Brand Consistency**: Unified design language across all components
+
 ## 📚 Documentation
 
+- [Branding Guide](./NAVIMPACT_BRANDING_GUIDE.md)
 - [Architecture Overview](./docs/architecture.md)
 - [API Documentation](./docs/api/README.md)
 - [Development Guide](./docs/development/README.md)
@@ -94,50 +132,62 @@ SGEDashboardJuly/
 
 ### Backend
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/sge_dashboard
+DATABASE_URL=postgresql://user:password@localhost:5432/navimpact
 SECRET_KEY=your-secret-key
 JWT_SECRET_KEY=your-jwt-secret
-FRONTEND_URL=https://sge-dashboard-web-new.onrender.com
+FRONTEND_URL=https://navimpact-web.onrender.com
 ENV=production
 DEBUG=false
 ```
 
 ### Frontend
 ```env
-NEXT_PUBLIC_API_URL=https://sge-dashboard-api.onrender.com
-NEXT_PUBLIC_APP_NAME=SGE Dashboard
+NEXT_PUBLIC_API_URL=https://navimpact-api.onrender.com
+NEXT_PUBLIC_APP_NAME=NavImpact
 NODE_ENV=production
 ```
-
-## 🚀 Features
-
-- **Grant Management**: Track and manage grant opportunities with full CRUD operations
-- **Task Management**: Organize tasks and workflows with comments and tags
-- **Impact Metrics**: Monitor success rates and outcomes
-- **Media Investments**: Track media campaigns
-- **Real-time Updates**: Live data synchronization
-- **Responsive Design**: Works on all devices
-- **Database Integration**: Full PostgreSQL integration with migrations
-- **API-First Design**: RESTful API with comprehensive endpoints
 
 ## 🔄 Current Status
 
 ### ✅ Completed
 - **Backend**: Fully functional FastAPI with all endpoints restored
-- **Database**: PostgreSQL configured with Alembic migrations
+- **Database**: PostgreSQL 16 configured with Alembic migrations
 - **Frontend**: Next.js 15 app with direct backend integration
 - **API Communication**: Frontend connects directly to backend API
-- **Project Structure**: Cleaned up and organized
+- **Branding System**: Complete NavImpact design system implemented
+- **Personalized Recommendations**: AI-powered grant matching
+- **User Profiles**: Comprehensive profile management
+- **Modern UI**: Card-based design with animations
 
 ### 🚧 In Progress
-- **Frontend Deployment**: Ready for Render deployment
 - **Production Testing**: End-to-end testing of complete system
+- **Performance Optimization**: Continuous improvement of load times
 
 ### 📋 Next Steps
-1. Deploy frontend to Render
-2. Test complete system integration
-3. Add authentication system
-4. Implement advanced features
+1. Add authentication system
+2. Implement advanced analytics
+3. Add team collaboration features
+4. Performance optimization
+
+## 🎨 Branding System
+
+Our design system includes:
+
+### Components
+- **Buttons**: Primary, secondary, gradient variants with hover effects
+- **Cards**: Clean white cards with subtle borders and lift animations
+- **Navigation**: Professional header with goose logo
+- **Typography**: Carrotflower for headlines, Neue Haas for body text
+
+### Logo System
+- **Icon Version**: Goose with compass elements for sidebar and favicon
+- **Full Logo**: Icon + "NavImpact" wordmark for headers
+- **Colors**: Deep Teal body with Soft Coral accents
+
+### Responsive Design
+- **Mobile**: Single column layouts with stacked navigation
+- **Tablet**: Two-column grids with horizontal navigation
+- **Desktop**: Multi-column layouts with full navigation
 
 ## 🤝 Contributing
 
@@ -153,10 +203,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-For support, email support@sgedashboard.com or create an issue in this repository.
+For support, email support@navimpact.com or create an issue in this repository.
 
 ## 🔗 Quick Links
 
-- **Live Backend**: https://sge-dashboard-api.onrender.com/health
-- **API Documentation**: https://sge-dashboard-api.onrender.com/api/docs
-- **GitHub Repository**: https://github.com/A1anMc/SGEDashboardJuly
+- **Live Backend**: https://navimpact-api.onrender.com/health
+- **API Documentation**: https://navimpact-api.onrender.com/api/docs
+- **GitHub Repository**: https://github.com/A1anMc/NavImpactV2
+- **Branding Guide**: [NAVIMPACT_BRANDING_GUIDE.md](./NAVIMPACT_BRANDING_GUIDE.md)

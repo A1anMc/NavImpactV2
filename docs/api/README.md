@@ -1,15 +1,15 @@
-# API Documentation
+# NavImpact API Documentation
 
-This document provides comprehensive information about the SGE Dashboard API endpoints, authentication, and usage.
+This document provides comprehensive information about the NavImpact API endpoints, authentication, and usage.
 
 ## 🔗 Base URL
 
-**Production**: `https://sge-dashboard-api.onrender.com`  
+**Production**: `https://navimpact-api.onrender.com`  
 **Development**: `http://localhost:8000`
 
 ## 📋 API Overview
 
-The SGE Dashboard API is built with FastAPI and provides RESTful endpoints for managing grants, tasks, users, and other resources.
+The NavImpact API is built with FastAPI and provides RESTful endpoints for managing grants, tasks, users, and other resources with personalized recommendations and intelligent matching.
 
 ### API Version
 All endpoints are prefixed with `/api/v1/`

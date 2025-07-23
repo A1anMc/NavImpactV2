@@ -3,20 +3,22 @@
 ## System Map
 
 ```
-Frontend (Next.js 15 + Tailwind CSS)
+Frontend (Next.js 15 + NavImpact Design System)
   ↕ Direct API Calls
-    ↕ Backend (FastAPI @ sge-dashboard-api.onrender.com)
-      ↕ Database (PostgreSQL)
+    ↕ Backend (FastAPI @ navimpact-api.onrender.com)
+      ↕ Database (PostgreSQL 16)
       ↕ Scraper Services (aiohttp + BeautifulSoup)
       ↕ Tag System
       ↕ Authentication (JWT)
+      ↕ Personalized Recommendations Engine
 ```
 
 ## Components
 
 ### Frontend (Next.js 15)
-- **UI Components**: React + TypeScript with Radix UI
-- **Styling**: Tailwind CSS for responsive design
+- **UI Components**: React + TypeScript with Radix UI and NavImpact Design System
+- **Styling**: Tailwind CSS with custom NavImpact branding (Deep Teal, Soft Coral, Cool Slate)
+- **Typography**: Carrotflower for headlines, Neue Haas for body text
 - **State Management**: TanStack Query for server state
 - **API Integration**: Direct calls to backend API
 - **Routing**: Next.js App Router with dashboard layout
@@ -30,11 +32,12 @@ Frontend (Next.js 15 + Tailwind CSS)
 - **Validation**: Pydantic models for request/response validation
 - **Security**: CORS, rate limiting, security headers
 
-### Database (PostgreSQL)
+### Database (PostgreSQL 16)
 - **Migrations**: Alembic for schema management
-- **Models**: User, Grant, Task, Project, Tag, Comment
+- **Models**: User, Grant, Task, Project, Tag, Comment, UserProfile
 - **Relationships**: Proper foreign key constraints
 - **Indexing**: Optimized for query performance
+- **Personalized Data**: User preferences and matching algorithms
 
 ### External Services
 - **Render**: Production hosting for both frontend and backend
