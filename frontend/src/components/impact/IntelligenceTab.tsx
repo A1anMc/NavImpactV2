@@ -297,8 +297,8 @@ export default function IntelligenceTab() {
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{prediction.funder}</p>
                     <div className="flex items-center gap-2">
-                      <Badge variant="default">${prediction.amount?.toLocaleString()}</Badge>
-                      <Badge variant="default" className="flex items-center gap-1">
+                      <Badge variant="info">${prediction.amount?.toLocaleString()}</Badge>
+                      <Badge variant="info" className="flex items-center gap-1">
                         <ClockIcon className="h-3 w-3" />
                         Confidence: {(prediction.confidence_score * 100).toFixed(0)}%
                       </Badge>
