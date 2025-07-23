@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
-  ArrowTrendingUpIcon, 
+  ArrowUpIcon, 
   LightBulbIcon, 
   ChartBarIcon,
   SparklesIcon,
@@ -13,7 +13,7 @@ import {
   CheckCircleIcon,
   EyeIcon,
   BookmarkIcon,
-  ArrowDownTrayIcon,
+  ArrowDownIcon,
   InformationCircleIcon,
   ArrowRightIcon,
   MagnifyingGlassIcon
@@ -176,7 +176,7 @@ export default function IntelligenceTab() {
             variant="outline"
             className="flex items-center gap-2"
           >
-            <ArrowDownTrayIcon className="h-4 w-4" />
+            <ArrowDownIcon className="h-4 w-4" />
             Save Report
           </Button>
         </div>
