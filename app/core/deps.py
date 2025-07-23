@@ -35,6 +35,11 @@ def get_db() -> Generator:
         yield db
     except Exception as e:
         logger.error(f"Error creating database session: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {e}")
+        # Log the full traceback for debugging
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=503,
             detail="Database service unavailable"
