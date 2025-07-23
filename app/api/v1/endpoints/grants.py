@@ -2,6 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, status
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
+from datetime import datetime, timedelta
 from app.core.deps import get_db, get_current_user
 from app.models.grant import Grant
 from app.models.user import User
@@ -859,6 +860,10 @@ def get_similar_grants(
             Grant.id != grant_id,
             Grant.status == "open"
         ).all()
+        
+        # If no similar grants found, return empty list with message
+        if not similar_grants:
+            return []
         
         # Score similarity
         scored_grants = []
