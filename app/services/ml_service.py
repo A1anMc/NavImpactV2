@@ -11,7 +11,8 @@ from datetime import datetime
 
 from app.db.session import get_db
 from app.models.grant import Grant
-from app.models.intelligence import GrantSuccessMetrics, PredictiveModel
+# Intelligence models temporarily commented out for migration
+# from app.models.intelligence import GrantSuccessMetrics, PredictiveModel
 
 logger = logging.getLogger(__name__)
 
