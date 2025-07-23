@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import logging
+from sqlalchemy import text
 
 from app.core.deps import get_db
 from app.services.industry_news import IndustryNewsService
@@ -333,4 +334,60 @@ def test_news_table(db: Session = Depends(get_db)):
             "table_exists": False,
             "error": str(e),
             "message": "News table is not accessible"
+        } 
+
+@router.get("/debug")
+def debug_news_issue(db: Session = Depends(get_db)):
+    """
+    Debug endpoint to identify the specific database issue
+    """
+    try:
+        # Test 1: Basic database connection
+        logger.info("Testing basic database connection...")
+        db.execute(text("SELECT 1"))
+        logger.info("✅ Basic database connection successful")
+        
+        # Test 2: Check if table exists
+        logger.info("Testing if industry_news table exists...")
+        result = db.execute(text("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'industry_news'
+            )
+        """))
+        table_exists = result.scalar()
+        logger.info(f"✅ Table exists check: {table_exists}")
+        
+        # Test 3: Try to query the table directly
+        if table_exists:
+            logger.info("Testing direct table query...")
+            result = db.execute(text("SELECT COUNT(*) FROM industry_news"))
+            count = result.scalar()
+            logger.info(f"✅ Direct query successful: {count} records")
+        
+        # Test 4: Try to import and use the model
+        logger.info("Testing IndustryNews model import...")
+        from app.models.industry_news import IndustryNews
+        logger.info("✅ IndustryNews model imported successfully")
+        
+        # Test 5: Try to query using SQLAlchemy ORM
+        logger.info("Testing SQLAlchemy ORM query...")
+        news_count = db.query(IndustryNews).count()
+        logger.info(f"✅ ORM query successful: {news_count} records")
+        
+        return {
+            "status": "success",
+            "table_exists": table_exists,
+            "direct_query_count": count if table_exists else None,
+            "orm_query_count": news_count,
+            "message": "All tests passed successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Debug test failed: {str(e)}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "message": "Debug test failed"
         } 
