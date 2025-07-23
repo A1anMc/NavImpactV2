@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  TrendingUpIcon, 
+  ChartBarIcon, 
   CurrencyDollarIcon, 
   ClockIcon,
   DocumentTextIcon,
-  ChartBarIcon,
   EyeIcon,
   CalendarIcon,
   MapPinIcon
@@ -151,7 +150,7 @@ export default function ImpactPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Impact Score</CardTitle>
-            <TrendingUpIcon className="h-4 w-4 text-[#0f766e]" />
+            <ChartBarIcon className="h-4 w-4 text-[#0f766e]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-[#0f766e]">{dashboard.metrics.impact_score}</div>
@@ -207,7 +206,7 @@ export default function ImpactPage() {
               <span className="text-3xl font-bold text-[#0f766e]">
                 {formatPercentage(dashboard.kpis.application_success_rate)}
               </span>
-              <Badge variant="secondary">Success Rate</Badge>
+              <Badge variant="info">Success Rate</Badge>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -242,28 +241,28 @@ export default function ImpactPage() {
                   <CalendarIcon className="h-4 w-4 text-red-500" />
                   <span>This Week</span>
                 </div>
-                <Badge variant="destructive">{dashboard.charts.timeline.this_week}</Badge>
+                <Badge variant="error">{dashboard.charts.timeline.this_week}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-4 w-4 text-orange-500" />
                   <span>This Month</span>
                 </div>
-                <Badge variant="secondary">{dashboard.charts.timeline.this_month}</Badge>
+                <Badge variant="warning">{dashboard.charts.timeline.this_month}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-4 w-4 text-blue-500" />
                   <span>This Quarter</span>
                 </div>
-                <Badge variant="outline">{dashboard.charts.timeline.this_quarter}</Badge>
+                <Badge variant="info">{dashboard.charts.timeline.this_quarter}</Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <EyeIcon className="h-4 w-4 text-green-500" />
                   <span>Total Open</span>
                 </div>
-                <Badge variant="default">{dashboard.charts.timeline.total_open}</Badge>
+                <Badge variant="success">{dashboard.charts.timeline.total_open}</Badge>
               </div>
             </div>
           </CardContent>
@@ -335,7 +334,7 @@ export default function ImpactPage() {
                     <div className="flex items-center gap-3">
                       <MapPinIcon className="h-4 w-4 text-gray-500" />
                       <span className="font-medium capitalize">{sector.sector}</span>
-                      <Badge variant="outline">{sector.grant_count} grants</Badge>
+                      <Badge variant="info">{sector.grant_count} grants</Badge>
                     </div>
                     <div className="text-right">
                       <div className="font-bold text-[#0f766e]">
@@ -382,15 +381,15 @@ export default function ImpactPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Active Grants</span>
-                      <Badge variant="default">{dashboard.metrics.active_grants}</Badge>
+                      <Badge variant="success">{dashboard.metrics.active_grants}</Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Closed Grants</span>
-                      <Badge variant="secondary">{dashboard.metrics.closed_grants}</Badge>
+                      <Badge variant="warning">{dashboard.metrics.closed_grants}</Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Total Grants</span>
-                      <Badge variant="outline">{dashboard.metrics.total_grants}</Badge>
+                      <Badge variant="default">{dashboard.metrics.total_grants}</Badge>
                     </div>
                   </div>
                 </div>

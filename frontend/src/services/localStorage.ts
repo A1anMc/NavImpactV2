@@ -173,6 +173,4 @@ export const localStorageService = {
       return 0;
     }
   }
-};
-
-export type { UserPreferences }; 
+}; 
