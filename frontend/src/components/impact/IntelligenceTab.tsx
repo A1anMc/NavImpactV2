@@ -225,7 +225,7 @@ export default function IntelligenceTab() {
                 {intelligenceData.intelligence_metrics.high_probability_grants}
               </div>
               <p className="text-xs text-muted-foreground">
-                >70% success probability
+                &gt;70% success probability
               </p>
             </CardContent>
           </Card>
