@@ -32,8 +32,9 @@ from app.models.time_entry import TimeEntry  # noqa: F401
 from app.api.v1.api import api_router
 from app.db.session import get_engine, close_database
 from app.core.config import settings
-from app.core.error_handlers import setup_error_handlers
+from app.core.error_handlers import setup_error_handlers, sqlalchemy_exception_handler, general_exception_handler
 from app.db.init_db import init_db, get_db_info, validate_database_config
+from sqlalchemy.exc import SQLAlchemyError
 
 # Configure logging with production-safe format
 logging.basicConfig(
@@ -170,6 +171,10 @@ def create_app() -> FastAPI:
     
     # Setup error handlers
     setup_error_handlers(app)
+    
+    # Add global exception handlers
+    app.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
+    app.add_exception_handler(Exception, general_exception_handler)
     
     # === SECURITY MIDDLEWARE STACK (Order matters!) ===
     

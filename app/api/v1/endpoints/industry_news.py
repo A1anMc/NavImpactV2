@@ -45,6 +45,7 @@ def get_news_for_user(
         # Use direct query like the debug endpoint (which we know works)
         from sqlalchemy import text
         from app.models.industry_news import IndustryNews
+        from sqlalchemy.exc import SQLAlchemyError
         
         # Build the query
         placeholders = ','.join(['%s'] * len(user_sectors))
@@ -78,6 +79,12 @@ def get_news_for_user(
         
         return news_items
         
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in news endpoint: {str(e)}")
+        raise HTTPException(
+            status_code=503,
+            detail="Database service unavailable"
+        )
     except Exception as e:
         logger.error(f"Error getting news for user: {str(e)}")
         raise HTTPException(

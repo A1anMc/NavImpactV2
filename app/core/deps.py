@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
 def get_db() -> Generator:
-    """Get SQLAlchemy database session with enhanced error handling."""
+    """Get SQLAlchemy database session."""
     db = None
     try:
         logger.debug("Creating database session...")
@@ -33,17 +33,6 @@ def get_db() -> Generator:
                 # Don't fail the request for connection test issues in production
         
         yield db
-    except Exception as e:
-        logger.error(f"Error creating database session: {str(e)}")
-        logger.error(f"Error type: {type(e).__name__}")
-        logger.error(f"Error details: {e}")
-        # Log the full traceback for debugging
-        import traceback
-        logger.error(f"Full traceback: {traceback.format_exc()}")
-        raise HTTPException(
-            status_code=503,
-            detail="Database service unavailable"
-        )
     finally:
         if db:
             try:

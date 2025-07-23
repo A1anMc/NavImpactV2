@@ -1,7 +1,7 @@
 """Centralized error handling for the FastAPI application."""
 
 from typing import Any, Dict, Optional
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -258,6 +258,22 @@ def register_exception_handlers(app: FastAPI) -> None:
         request.state.request_id = str(time.time_ns())
         response = await call_next(request)
         return response 
+
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    """Global handler for SQLAlchemy exceptions"""
+    logger.error(f"SQLAlchemy error in {request.url.path}: {str(exc)}")
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Database service unavailable"}
+    )
+
+async def general_exception_handler(request: Request, exc: Exception):
+    """Global handler for general exceptions"""
+    logger.error(f"General error in {request.url.path}: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
 
 def setup_error_handlers(app: FastAPI) -> None:
     """
