@@ -17,6 +17,6 @@ from app.models.scraper_log import ScraperLog
 from app.models.time_entry import TimeEntry
 from app.models.metric import Metric
 from app.models.program_logic import ProgramLogic
-from app.models.user_profile import UserProfile
+from app.models.intelligence import GrantSuccessMetrics, FunderProfile, SectorAnalytics, PredictiveModel
 
 # All models should be imported here to ensure they are registered with SQLAlchemy 
