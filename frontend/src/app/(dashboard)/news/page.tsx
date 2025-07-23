@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ExternalLink, RefreshCw, TrendingUp, Clock, Source } from 'lucide-react';
+import { ExternalLink, RefreshCw, TrendingUp, Clock, Globe } from 'lucide-react';
 
 export default function NewsPage() {
   const [news, setNews] = useState<IndustryNews[]>([]);
@@ -108,8 +108,8 @@ export default function NewsPage() {
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-4">
             {item.source && (
-              <div className="flex items-center gap-1">
-                <Source className="w-3 h-3" />
+              <div className="flex items-center gap-1 text-sm text-gray-500">
+                <Globe className="w-3 h-3" />
                 <span>{item.source}</span>
               </div>
             )}
