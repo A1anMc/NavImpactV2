@@ -14,6 +14,7 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+# Force deployment - Impact & Analysis Dashboard v2.0
 @router.get("/")
 async def get_impact_metrics(
     db: Session = Depends(get_db),
