@@ -121,7 +121,7 @@ export default function NewsPage() {
                   {NewsService.formatRelevanceScore(item.relevance_score)} relevant
                 </Badge>
                 {item.platform && item.platform !== 'website' && (
-                  <Badge variant="outline" className="flex items-center gap-1">
+                  <Badge variant="secondary" className="flex items-center gap-1">
                     <PlatformIcon className={`w-3 h-3 ${platformColor}`} />
                     {item.platform}
                   </Badge>
