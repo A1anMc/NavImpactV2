@@ -1,17 +1,16 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Enhanced NavImpact Icon with standout effects -->
   <defs>
-    <!-- Gradient definitions for more visual impact -->
-    <linearGradient id="tealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0D9488;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+    <!-- Clean, modern gradients -->
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f766e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="coralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FB923C;stop-opacity:1" />
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fb6f5f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fd8a7a;stop-opacity:1" />
     </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
       <feMerge> 
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -19,27 +18,28 @@
     </filter>
   </defs>
   
-  <!-- Background glow effect -->
-  <circle cx="32" cy="32" r="30" fill="url(#tealGradient)" opacity="0.1" filter="url(#glow)"/>
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#primary)" opacity="0.1"/>
   
-  <g transform="translate(12, 12)">
-    <!-- Enhanced outer circle segments with gradients -->
-    <path d="M 20 0 A 20 20 0 0 1 0 20 L 0 0 Z" fill="url(#tealGradient)"/> <!-- Top-left teal -->
-    <path d="M 0 20 A 20 20 0 0 1 20 40 L 20 20 Z" fill="url(#coralGradient)"/> <!-- Bottom-right coral -->
-    <path d="M 20 40 A 20 20 0 0 1 40 20 L 20 20 Z" fill="url(#tealGradient)"/> <!-- Top-right teal -->
+  <!-- Simplified compass design -->
+  <g transform="translate(32, 32)">
+    <!-- Central point -->
+    <circle cx="0" cy="0" r="3" fill="url(#primary)" filter="url(#glow)"/>
     
-    <!-- Enhanced inner "N" shape with stronger contrast -->
-    <path d="M 8 32 L 8 8 L 16 8 L 16 24 L 32 8 L 32 32 L 24 32 L 24 16 L 8 32 Z" fill="#0D9488" stroke="#0F766E" stroke-width="0.5"/> <!-- Left and diagonal teal -->
-    <path d="M 24 16 L 32 8 L 32 32 L 24 32 L 24 16 Z" fill="#F97316" stroke="#EA580C" stroke-width="0.5"/> <!-- Right stroke coral -->
+    <!-- Cardinal directions -->
+    <path d="M 0 -3 L -6 -18 L 0 -22 L 6 -18 Z" fill="url(#accent)"/>
+    <path d="M 3 0 L 18 -6 L 22 0 L 18 6 Z" fill="url(#primary)"/>
+    <path d="M 0 3 L 6 18 L 0 22 L -6 18 Z" fill="url(#accent)"/>
+    <path d="M -3 0 L -18 6 L -22 0 L -18 -6 Z" fill="url(#primary)"/>
     
-    <!-- Enhanced impact waves with more dynamic curves -->
-    <path d="M 35 5 Q 45 0 50 5 Q 55 10 60 5" stroke="url(#coralGradient)" stroke-width="3" fill="none" filter="url(#glow)"/>
-    <path d="M 35 8 Q 42 3 47 8 Q 52 13 57 8" stroke="url(#coralGradient)" stroke-width="2" fill="none" filter="url(#glow)"/>
-    <path d="M 35 11 Q 40 6 44 11 Q 48 16 52 11" stroke="url(#coralGradient)" stroke-width="1.5" fill="none" filter="url(#glow)"/>
+    <!-- Navigation 'N' -->
+    <g transform="translate(-4, -8)">
+      <path d="M 0 0 L 0 16 L 2 16 L 2 3 L 6 16 L 8 16 L 8 0 L 6 0 L 6 13 L 2 0 Z" 
+            fill="#ffffff" opacity="0.9"/>
+    </g>
     
-    <!-- Additional dynamic elements for more impact -->
-    <circle cx="45" cy="15" r="2" fill="#F97316" opacity="0.8"/>
-    <circle cx="50" cy="12" r="1.5" fill="#FB923C" opacity="0.6"/>
-    <circle cx="55" cy="8" r="1" fill="#FED7AA" opacity="0.4"/>
+    <!-- Impact indicators -->
+    <circle cx="0" cy="0" r="26" stroke="url(#accent)" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="0" cy="0" r="20" stroke="url(#accent)" stroke-width="0.8" fill="none" opacity="0.3"/>
   </g>
 </svg> 

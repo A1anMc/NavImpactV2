@@ -1,0 +1,50 @@
+<svg width="180" height="48" viewBox="0 0 180 48" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="compactPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f766e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="compactAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fb6f5f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fd8a7a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="compactGlow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Compact icon -->
+  <g transform="translate(6, 6)">
+    <circle cx="18" cy="18" r="16" fill="url(#compactPrimary)" opacity="0.1"/>
+    
+    <!-- Simplified compass -->
+    <g transform="translate(18, 18)">
+      <circle cx="0" cy="0" r="2.5" fill="url(#compactPrimary)"/>
+      
+      <!-- Directions -->
+      <path d="M 0 -2.5 L -4 -10 L 0 -12 L 4 -10 Z" fill="url(#compactAccent)"/>
+      <path d="M 2.5 0 L 10 -4 L 12 0 L 10 4 Z" fill="url(#compactPrimary)"/>
+      <path d="M 0 2.5 L 4 10 L 0 12 L -4 10 Z" fill="url(#compactAccent)"/>
+      <path d="M -2.5 0 L -10 4 L -12 0 L -10 -4 Z" fill="url(#compactPrimary)"/>
+      
+      <!-- Impact ring -->
+      <circle cx="0" cy="0" r="14" stroke="url(#compactAccent)" stroke-width="0.8" fill="none" opacity="0.4"/>
+    </g>
+  </g>
+  
+  <!-- Compact text -->
+  <g transform="translate(54, 12)">
+    <text x="0" y="20" font-family="Carrotflower, serif" font-size="24" font-weight="400" 
+          fill="url(#compactPrimary)">Nav</text>
+    <text x="42" y="20" font-family="Carrotflower, serif" font-size="24" font-weight="400" 
+          fill="url(#compactAccent)">Impact</text>
+    
+    <!-- Subtle line -->
+    <path d="M 0 26 Q 50 24 100 26" stroke="url(#compactAccent)" stroke-width="1.5" 
+          fill="none" opacity="0.3" filter="url(#compactGlow)"/>
+  </g>
+</svg>
