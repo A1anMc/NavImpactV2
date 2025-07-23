@@ -301,3 +301,36 @@ def seed_news_database(db: Session = Depends(get_db)):
             status_code=500,
             detail=f"Error seeding news database: {str(e)}"
         ) 
+
+@router.get("/test-table")
+def test_news_table(db: Session = Depends(get_db)):
+    """
+    Test if the news table exists and can be accessed.
+    
+    Args:
+        db: Database session
+    
+    Returns:
+        Table status information
+    """
+    try:
+        from app.models.industry_news import IndustryNews
+        
+        # Try to query the table
+        count = db.query(IndustryNews).count()
+        
+        return {
+            "status": "success",
+            "table_exists": True,
+            "record_count": count,
+            "message": f"News table is accessible with {count} records"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error testing news table: {str(e)}")
+        return {
+            "status": "error",
+            "table_exists": False,
+            "error": str(e),
+            "message": "News table is not accessible"
+        } 
