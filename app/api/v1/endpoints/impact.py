@@ -10,7 +10,8 @@ from app.models.grant import Grant
 from app.models.project import Project
 from app.models.metric import Metric
 from app.models.user import User
-from app.models.intelligence import GrantSuccessMetrics, FunderProfile, SectorAnalytics, PredictiveModel
+# Intelligence models temporarily commented out for migration
+# from app.models.intelligence import GrantSuccessMetrics, FunderProfile, SectorAnalytics, PredictiveModel
 from app.services.ml_service import ml_service
 
 logger = logging.getLogger(__name__)
@@ -299,141 +300,141 @@ def generate_timeline_report(db: Session) -> Dict[str, Any]:
         "timeline_analysis": get_grant_timeline_data(db, now)
     }
 
-# Phase 2 Intelligence Endpoints
+# Phase 2 Intelligence Endpoints (temporarily commented out for migration)
 
-@router.get("/predictions")
-async def get_grant_predictions(
-    db: Session = Depends(get_db),
-    limit: int = 10
-):
-    """Get grant success predictions using ML models."""
-    try:
-        # Get active grants
-        grants = db.query(Grant).filter(Grant.status == "open").limit(limit).all()
-        
-        predictions = []
-        for grant in grants:
-            # Get or create prediction
-            prediction = ml_service.predict_grant_success(grant, db)
-            
-            if prediction["success"]:
-                # Store prediction in database
-                success_metric = GrantSuccessMetrics(
-                    grant_id=grant.id,
-                    success_probability=prediction["success_probability"],
-                    confidence_score=prediction["confidence_score"],
-                    model_version=prediction["model_version"],
-                    prediction_features={
-                        "amount": grant.max_amount,
-                        "sector_tags": grant.sector_tags,
-                        "status": grant.status,
-                        "has_deadline": bool(grant.deadline)
-                    }
-                )
-                
-                # Check if prediction already exists
-                existing = db.query(GrantSuccessMetrics).filter(
-                    GrantSuccessMetrics.grant_id == grant.id
-                ).first()
-                
-                if existing:
-                    existing.success_probability = prediction["success_probability"]
-                    existing.confidence_score = prediction["confidence_score"]
-                    existing.model_version = prediction["model_version"]
-                    existing.prediction_features = success_metric.prediction_features
-                else:
-                    db.add(success_metric)
-                
-                predictions.append({
-                    "grant_id": grant.id,
-                    "grant_title": grant.title,
-                    "funder": grant.source,
-                    "amount": grant.max_amount,
-                    "success_probability": prediction["success_probability"],
-                    "confidence_score": prediction["confidence_score"],
-                    "recommendation": "High" if prediction["success_probability"] > 0.7 else "Medium" if prediction["success_probability"] > 0.4 else "Low"
-                })
-        
-        db.commit()
-        
-        return {
-            "predictions": predictions,
-            "total_predictions": len(predictions),
-            "model_version": predictions[0]["model_version"] if predictions else None
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting grant predictions: {e}")
-        raise HTTPException(status_code=500, detail="Error generating predictions")
+# @router.get("/predictions")
+# async def get_grant_predictions(
+#     db: Session = Depends(get_db),
+#     limit: int = 10
+# ):
+#     """Get grant success predictions using ML models."""
+#     try:
+#         # Get active grants
+#         grants = db.query(Grant).filter(Grant.status == "open").limit(limit).all()
+#         
+#         predictions = []
+#         for grant in grants:
+#             # Get or create prediction
+#             prediction = ml_service.predict_grant_success(grant, db)
+#             
+#             if prediction["success"]:
+#                 # Store prediction in database
+#                 success_metric = GrantSuccessMetrics(
+#                     grant_id=grant.id,
+#                     success_probability=prediction["success_probability"],
+#                     confidence_score=prediction["confidence_score"],
+#                     model_version=prediction["model_version"],
+#                     prediction_features={
+#                         "amount": grant.max_amount,
+#                         "sector_tags": grant.sector_tags,
+#                         "status": grant.status,
+#                         "has_deadline": bool(grant.deadline)
+#                     }
+#                 )
+#                 
+#                 # Check if prediction already exists
+#                 existing = db.query(GrantSuccessMetrics).filter(
+#                     GrantSuccessMetrics.grant_id == grant.id
+#                 ).first()
+#                 
+#                 if existing:
+#                     existing.success_probability = prediction["success_probability"]
+#                     existing.confidence_score = prediction["confidence_score"]
+#                     existing.model_version = prediction["model_version"]
+#                     existing.prediction_features = success_metric.prediction_features
+#                 else:
+#                     db.add(success_metric)
+#                 
+#                 predictions.append({
+#                     "grant_id": grant.id,
+#                     "grant_title": grant.title,
+#                     "funder": grant.source,
+#                     "amount": grant.max_amount,
+#                     "success_probability": prediction["success_probability"],
+#                     "confidence_score": prediction["confidence_score"],
+#                     "recommendation": "High" if prediction["success_probability"] > 0.7 else "Medium" if prediction["success_probability"] > 0.4 else "Low"
+#                 })
+#         
+#         db.commit()
+#         
+#         return {
+#             "predictions": predictions,
+#             "total_predictions": len(predictions),
+#             "model_version": predictions[0]["model_version"] if predictions else None
+#         }
+#         
+#     except Exception as e:
+#         logger.error(f"Error getting grant predictions: {e}")
+#         raise HTTPException(status_code=500, detail="Error generating predictions")
 
-@router.post("/train-model")
-async def train_prediction_model(
-    db: Session = Depends(get_db)
-):
-    """Train the success prediction model."""
-    try:
-        result = ml_service.train_success_prediction_model(db)
-        
-        if result["success"]:
-            return {
-                "message": "Model trained successfully",
-                "accuracy": result["accuracy"],
-                "model_version": result["model_version"],
-                "feature_importance": result["feature_importance"]
-            }
-        else:
-            raise HTTPException(status_code=400, detail=result.get("message", "Training failed"))
-            
-    except Exception as e:
-        logger.error(f"Error training model: {e}")
-        raise HTTPException(status_code=500, detail="Error training model")
+# @router.post("/train-model")
+# async def train_prediction_model(
+#     db: Session = Depends(get_db)
+# ):
+#     """Train the success prediction model."""
+#     try:
+#         result = ml_service.train_success_prediction_model(db)
+#         
+#         if result["success"]:
+#             return {
+#                 "message": "Model trained successfully",
+#                 "accuracy": result["accuracy"],
+#                 "model_version": result["model_version"],
+#                 "feature_importance": result["feature_importance"]
+#             }
+#         else:
+#             raise HTTPException(status_code=400, detail=result.get("message", "Training failed"))
+#             
+#     except Exception as e:
+#         logger.error(f"Error training model: {e}")
+#         raise HTTPException(status_code=500, detail="Error training model")
 
-@router.get("/intelligence")
-async def get_intelligence_dashboard(
-    db: Session = Depends(get_db)
-):
-    """Get intelligence dashboard data with ML insights."""
-    try:
-        # Get basic metrics
-        total_grants = db.query(Grant).count()
-        active_grants = db.query(Grant).filter(Grant.status == "open").count()
-        
-        # Get predictions
-        predictions = db.query(GrantSuccessMetrics).all()
-        avg_success_prob = sum(p.success_probability for p in predictions) / len(predictions) if predictions else 0
-        
-        # Get high-probability grants
-        high_prob_grants = db.query(Grant).join(GrantSuccessMetrics).filter(
-            GrantSuccessMetrics.success_probability > 0.7
-        ).limit(5).all()
-        
-        return {
-            "intelligence_metrics": {
-                "total_grants": total_grants,
-                "active_grants": active_grants,
-                "average_success_probability": round(avg_success_prob, 3),
-                "high_probability_grants": len(high_prob_grants),
-                "model_accuracy": 0.85,  # Placeholder
-                "predictions_generated": len(predictions)
-            },
-            "recommendations": [
-                {
-                    "grant_id": grant.id,
-                    "title": grant.title,
-                    "funder": grant.source,
-                    "amount": grant.max_amount,
-                    "success_probability": next(p.success_probability for p in predictions if p.grant_id == grant.id),
-                    "reason": "High success probability based on historical data"
-                }
-                for grant in high_prob_grants
-            ],
-            "insights": [
-                "High-probability grants identified using ML predictions",
-                f"Average success probability: {avg_success_prob:.1%}",
-                "Recommendation engine active and learning from data"
-            ]
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting intelligence dashboard: {e}")
-        raise HTTPException(status_code=500, detail="Error generating intelligence data") 
+# @router.get("/intelligence")
+# async def get_intelligence_dashboard(
+#     db: Session = Depends(get_db)
+# ):
+#     """Get intelligence dashboard data with ML insights."""
+#     try:
+#         # Get basic metrics
+#         total_grants = db.query(Grant).count()
+#         active_grants = db.query(Grant).filter(Grant.status == "open").count()
+#         
+#         # Get predictions
+#         predictions = db.query(GrantSuccessMetrics).all()
+#         avg_success_prob = sum(p.success_probability for p in predictions) / len(predictions) if predictions else 0
+#         
+#         # Get high-probability grants
+#         high_prob_grants = db.query(Grant).join(GrantSuccessMetrics).filter(
+#             GrantSuccessMetrics.success_probability > 0.7
+#         ).limit(5).all()
+#         
+#         return {
+#             "intelligence_metrics": {
+#                 "total_grants": total_grants,
+#                 "active_grants": active_grants,
+#                 "average_success_probability": round(avg_success_prob, 3),
+#                 "high_probability_grants": len(high_prob_grants),
+#                 "model_accuracy": 0.85,  # Placeholder
+#                 "predictions_generated": len(predictions)
+#             },
+#             "recommendations": [
+#                 {
+#                     "grant_id": grant.id,
+#                     "title": grant.title,
+#                     "funder": grant.source,
+#                     "amount": grant.max_amount,
+#                     "success_probability": next(p.success_probability for p in predictions if p.grant_id == grant.id),
+#                     "reason": "High success probability based on historical data"
+#                 }
+#                 for grant in high_prob_grants
+#             ],
+#             "insights": [
+#                 "High-probability grants identified using ML predictions",
+#                 f"Average success probability: {avg_success_prob:.1%}",
+#                 "Recommendation engine active and learning from data"
+#             ]
+#         }
+#         
+#     except Exception as e:
+#         logger.error(f"Error getting intelligence dashboard: {e}")
+#         raise HTTPException(status_code=500, detail="Error generating intelligence data") 
