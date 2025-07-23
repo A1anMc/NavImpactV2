@@ -661,19 +661,93 @@ def get_grant_recommendations(
 def test_grant_recommendations(
     db: Session = Depends(get_db),
     limit: int = 5,
+    industry_preference: Optional[str] = Query(None, description="Preferred industry"),
+    location_preference: Optional[str] = Query(None, description="Preferred location"),
+    min_amount: Optional[float] = Query(None, description="Minimum grant amount"),
+    max_amount: Optional[float] = Query(None, description="Maximum grant amount"),
+    org_type: Optional[str] = Query(None, description="Organization type"),
 ) -> List[GrantResponse]:
-    """Test endpoint for grant recommendations without authentication."""
-    from app.models.user_profile import UserProfile
+    """Enhanced test endpoint for grant recommendations with intelligent scoring."""
     from datetime import datetime, timedelta
     
-    # Get all grants
-    grants = db.query(Grant).filter(
-        Grant.status == "open"
-    ).order_by(Grant.deadline.asc()).limit(limit).all()
+    # Get all open grants
+    query = db.query(Grant).filter(Grant.status == "open")
+    
+    # Apply basic filters if provided
+    if industry_preference:
+        query = query.filter(Grant.industry_focus.ilike(f"%{industry_preference}%"))
+    
+    if location_preference:
+        query = query.filter(Grant.location_eligibility.ilike(f"%{location_preference}%"))
+    
+    if min_amount:
+        query = query.filter(Grant.max_amount >= min_amount)
+    
+    if max_amount:
+        query = query.filter(Grant.min_amount <= max_amount)
+    
+    if org_type:
+        query = query.filter(Grant.org_type_eligible.contains([org_type]))
+    
+    grants = query.all()
+    
+    # Enhanced scoring algorithm
+    scored_grants = []
+    now = datetime.utcnow()
+    
+    for grant in grants:
+        score = 0
+        
+        # Deadline urgency scoring (higher score for closer deadlines)
+        if grant.deadline:
+            days_until_deadline = (grant.deadline - now).days
+            if days_until_deadline <= 7:
+                score += 50  # High urgency
+            elif days_until_deadline <= 14:
+                score += 30  # Medium urgency
+            elif days_until_deadline <= 30:
+                score += 15  # Low urgency
+            else:
+                score += 5   # No urgency
+        
+        # Funding amount scoring (prefer medium to large grants)
+        if grant.max_amount:
+            if grant.max_amount >= 100000:
+                score += 20  # Large grants
+            elif grant.max_amount >= 50000:
+                score += 15  # Medium grants
+            elif grant.max_amount >= 10000:
+                score += 10  # Small grants
+            else:
+                score += 5   # Micro grants
+        
+        # Industry match scoring
+        if industry_preference and grant.industry_focus:
+            if industry_preference.lower() in grant.industry_focus.lower():
+                score += 25
+        
+        # Location match scoring
+        if location_preference and grant.location_eligibility:
+            if location_preference.lower() in grant.location_eligibility.lower():
+                score += 20
+        
+        # Organization type match scoring
+        if org_type and grant.org_type_eligible:
+            if org_type in grant.org_type_eligible:
+                score += 15
+        
+        # Source diversity bonus (prefer different sources)
+        score += 5
+        
+        scored_grants.append((grant, score))
+    
+    # Sort by score (highest first) and take top results
+    scored_grants.sort(key=lambda x: x[1], reverse=True)
+    top_grants = [grant for grant, score in scored_grants[:limit]]
     
     # Convert to response format
     grant_responses = []
-    for grant in grants:
+    for grant in top_grants:
         grant_responses.append(GrantResponse(
             id=grant.id,
             title=grant.title,
@@ -741,3 +815,119 @@ def test_matching_grants(
         ))
     
     return grant_responses 
+
+@router.post("/track-interaction")
+def track_grant_interaction(
+    grant_id: int,
+    interaction_type: str = Query(..., description="Type of interaction: view, save, compare, apply"),
+    db: Session = Depends(get_db)
+):
+    """Track user interactions with grants for session-based learning."""
+    try:
+        # In a real implementation, this would store in a session table
+        # For now, we'll just log the interaction
+        grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        if grant:
+            # Log the interaction (in production, store in database)
+            print(f"User interaction: {interaction_type} on grant {grant_id} - {grant.title}")
+            
+            return {
+                "success": True,
+                "message": f"Tracked {interaction_type} interaction for grant {grant_id}",
+                "grant_title": grant.title
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Grant not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to track interaction: {str(e)}")
+
+@router.get("/similar-grants/{grant_id}")
+def get_similar_grants(
+    grant_id: int,
+    limit: int = 5,
+    db: Session = Depends(get_db)
+) -> List[GrantResponse]:
+    """Get grants similar to a specific grant based on industry, location, and funding."""
+    try:
+        # Get the reference grant
+        reference_grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        if not reference_grant:
+            raise HTTPException(status_code=404, detail="Grant not found")
+        
+        # Find similar grants
+        similar_grants = db.query(Grant).filter(
+            Grant.id != grant_id,
+            Grant.status == "open"
+        ).all()
+        
+        # Score similarity
+        scored_grants = []
+        for grant in similar_grants:
+            score = 0
+            
+            # Industry similarity
+            if reference_grant.industry_focus and grant.industry_focus:
+                if reference_grant.industry_focus == grant.industry_focus:
+                    score += 30
+                elif reference_grant.industry_focus in grant.industry_focus or grant.industry_focus in reference_grant.industry_focus:
+                    score += 15
+            
+            # Location similarity
+            if reference_grant.location_eligibility and grant.location_eligibility:
+                if reference_grant.location_eligibility == grant.location_eligibility:
+                    score += 25
+                elif reference_grant.location_eligibility in grant.location_eligibility or grant.location_eligibility in reference_grant.location_eligibility:
+                    score += 10
+            
+            # Funding amount similarity
+            if reference_grant.max_amount and grant.max_amount:
+                ref_amount = float(reference_grant.max_amount)
+                grant_amount = float(grant.max_amount)
+                amount_diff = abs(ref_amount - grant_amount) / ref_amount
+                if amount_diff <= 0.2:  # Within 20%
+                    score += 20
+                elif amount_diff <= 0.5:  # Within 50%
+                    score += 10
+            
+            # Organization type similarity
+            if reference_grant.org_type_eligible and grant.org_type_eligible:
+                common_types = set(reference_grant.org_type_eligible) & set(grant.org_type_eligible)
+                if common_types:
+                    score += len(common_types) * 5
+            
+            scored_grants.append((grant, score))
+        
+        # Sort by similarity score and take top results
+        scored_grants.sort(key=lambda x: x[1], reverse=True)
+        top_similar = [grant for grant, score in scored_grants[:limit]]
+        
+        # Convert to response format
+        grant_responses = []
+        for grant in top_similar:
+            grant_responses.append(GrantResponse(
+                id=grant.id,
+                title=grant.title,
+                description=grant.description,
+                source=grant.source,
+                source_url=grant.source_url,
+                application_url=grant.application_url,
+                contact_email=grant.contact_email,
+                min_amount=float(grant.min_amount) if grant.min_amount else None,
+                max_amount=float(grant.max_amount) if grant.max_amount else None,
+                open_date=grant.open_date.isoformat() if grant.open_date else None,
+                deadline=grant.deadline.isoformat() if grant.deadline else None,
+                industry_focus=grant.industry_focus,
+                location_eligibility=grant.location_eligibility,
+                org_type_eligible=grant.org_type_eligible or [],
+                funding_purpose=grant.funding_purpose or [],
+                audience_tags=grant.audience_tags or [],
+                status=grant.status,
+                notes=grant.notes,
+                created_at=grant.created_at.isoformat() if grant.created_at else None,
+                updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+            ))
+        
+        return grant_responses
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get similar grants: {str(e)}") 

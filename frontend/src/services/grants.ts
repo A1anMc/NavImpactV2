@@ -186,6 +186,46 @@ export const grantsApi = {
     };
     return apiClient.request<Grant[]>('/grants/test-recommendations', {}, queryParams);
   },
+
+  // Get enhanced recommendations with preferences
+  async getEnhancedRecommendations(params: {
+    limit?: number;
+    industry_preference?: string;
+    location_preference?: string;
+    min_amount?: number;
+    max_amount?: number;
+    org_type?: string;
+  }): Promise<Grant[]> {
+    const queryParams: Record<string, string> = {
+      limit: (params.limit || 5).toString()
+    };
+    
+    if (params.industry_preference) queryParams.industry_preference = params.industry_preference;
+    if (params.location_preference) queryParams.location_preference = params.location_preference;
+    if (params.min_amount) queryParams.min_amount = params.min_amount.toString();
+    if (params.max_amount) queryParams.max_amount = params.max_amount.toString();
+    if (params.org_type) queryParams.org_type = params.org_type;
+    
+    return apiClient.request<Grant[]>('/grants/test-recommendations', {}, queryParams);
+  },
+
+  // Track user interaction with a grant
+  async trackInteraction(grantId: number, interactionType: 'view' | 'save' | 'compare' | 'apply'): Promise<void> {
+    try {
+      await apiClient.request('/grants/track-interaction', {
+        grant_id: grantId,
+        interaction_type: interactionType
+      }, {}, 'POST');
+    } catch (error) {
+      console.error('[grantsApi.trackInteraction] Error:', error);
+      // Don't throw - tracking should not break the user experience
+    }
+  },
+
+  // Get similar grants
+  async getSimilarGrants(grantId: number, limit = 5): Promise<Grant[]> {
+    return apiClient.request<Grant[]>(`/grants/similar-grants/${grantId}`, {}, { limit: limit.toString() });
+  },
 };
 
 // Export types for use in components
