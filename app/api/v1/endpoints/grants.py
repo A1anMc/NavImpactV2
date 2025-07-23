@@ -440,13 +440,13 @@ def seed_simple_grants():
     finally:
         db.close() 
 
-@router.get("/match", response_model=List[Grant])
+@router.get("/match", response_model=List[GrantResponse])
 def get_matching_grants(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     skip: int = 0,
     limit: int = 20,
-) -> List[Grant]:
+) -> List[GrantResponse]:
     """Get grants that match the current user's profile preferences."""
     from app.models.user_profile import UserProfile
     from datetime import datetime, timedelta
@@ -525,14 +525,40 @@ def get_matching_grants(
     # Apply pagination
     grants = query.offset(skip).limit(limit).all()
     
-    return grants
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses
 
-@router.get("/recommendations", response_model=List[Grant])
+@router.get("/recommendations", response_model=List[GrantResponse])
 def get_grant_recommendations(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     limit: int = 5,
-) -> List[Grant]:
+) -> List[GrantResponse]:
     """Get top grant recommendations for the current user."""
     from app.models.user_profile import UserProfile
     from datetime import datetime, timedelta
@@ -547,7 +573,34 @@ def get_grant_recommendations(
         grants = db.query(Grant).filter(
             Grant.status == "open"
         ).order_by(Grant.deadline.asc()).limit(limit).all()
-        return grants
+        
+        # Convert to response format
+        grant_responses = []
+        for grant in grants:
+            grant_responses.append(GrantResponse(
+                id=grant.id,
+                title=grant.title,
+                description=grant.description,
+                source=grant.source,
+                source_url=grant.source_url,
+                application_url=grant.application_url,
+                contact_email=grant.contact_email,
+                min_amount=float(grant.min_amount) if grant.min_amount else None,
+                max_amount=float(grant.max_amount) if grant.max_amount else None,
+                open_date=grant.open_date.isoformat() if grant.open_date else None,
+                deadline=grant.deadline.isoformat() if grant.deadline else None,
+                industry_focus=grant.industry_focus,
+                location_eligibility=grant.location_eligibility,
+                org_type_eligible=grant.org_type_eligible or [],
+                funding_purpose=grant.funding_purpose or [],
+                audience_tags=grant.audience_tags or [],
+                status=grant.status,
+                notes=grant.notes,
+                created_at=grant.created_at.isoformat() if grant.created_at else None,
+                updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+            ))
+        
+        return grant_responses
     
     # Build scoring query
     query = db.query(Grant)
@@ -576,13 +629,39 @@ def get_grant_recommendations(
     
     grants = query.limit(limit).all()
     
-    return grants 
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses 
 
-@router.get("/test-recommendations", response_model=List[Grant])
+@router.get("/test-recommendations", response_model=List[GrantResponse])
 def test_grant_recommendations(
     db: Session = Depends(get_db),
     limit: int = 5,
-) -> List[Grant]:
+) -> List[GrantResponse]:
     """Test endpoint for grant recommendations without authentication."""
     from app.models.user_profile import UserProfile
     from datetime import datetime, timedelta
@@ -592,14 +671,40 @@ def test_grant_recommendations(
         Grant.status == "open"
     ).order_by(Grant.deadline.asc()).limit(limit).all()
     
-    return grants
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses
 
-@router.get("/test-match", response_model=List[Grant])
+@router.get("/test-match", response_model=List[GrantResponse])
 def test_matching_grants(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 20,
-) -> List[Grant]:
+) -> List[GrantResponse]:
     """Test endpoint for matching grants without authentication."""
     from app.models.user_profile import UserProfile
     from datetime import datetime, timedelta
@@ -609,4 +714,30 @@ def test_matching_grants(
         Grant.status == "open"
     ).order_by(Grant.deadline.asc()).offset(skip).limit(limit).all()
     
-    return grants 
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses 
