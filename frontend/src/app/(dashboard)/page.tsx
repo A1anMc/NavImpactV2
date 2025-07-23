@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import GrantRecommendations from '@/components/grants/GrantRecommendations';
+import DashboardLevels from '@/components/dashboard/DashboardLevels';
 import { 
   DocumentMagnifyingGlassIcon, 
   FolderIcon, 
@@ -22,8 +23,8 @@ export default function DashboardPage() {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">NavImpact Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your grants today.</p>
+        <h1 className="text-3xl font-heading text-gray-900 mb-2">NavImpact Dashboard</h1>
+        <p className="text-gray-600 font-body">Welcome back! Here&apos;s what&apos;s happening with your grants today.</p>
       </div>
 
       {/* Status Banner */}
@@ -102,8 +103,10 @@ export default function DashboardPage() {
           <GrantRecommendations limit={3} showTitle={true} />
         </div>
 
-        {/* Right Column - Quick Actions */}
+        {/* Right Column - Quick Actions & Levels */}
         <div className="space-y-6">
+          {/* Dashboard Levels */}
+          <DashboardLevels />
           {/* Quick Actions */}
           <Card>
             <CardHeader>

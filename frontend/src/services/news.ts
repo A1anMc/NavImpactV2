@@ -12,6 +12,7 @@ export interface IndustryNews {
   relevance_score: number;
   published_at?: string;
   created_at: string;
+  url_hash: string;
 }
 
 export interface NewsRefreshResponse {
