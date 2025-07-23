@@ -15,37 +15,22 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login
 
 def get_db() -> Generator:
     """Get SQLAlchemy database session with enhanced error handling."""
+    db = None
     try:
-        logger.info("Creating database session...")
+        logger.debug("Creating database session...")
         SessionLocal = get_session_local()
-        logger.info("Session factory created successfully")
-        
         db = SessionLocal()
-        logger.info("Database session created successfully")
+        logger.debug("Database session created successfully")
         
-        # Test the connection using text() for proper SQL execution
-        try:
-            logger.info("Testing database connection...")
-            from sqlalchemy import text
-            db.execute(text("SELECT 1"))
-            logger.info("Database connection test successful")
-        except SQLAlchemyError as e:
-            logger.error(f"Database connection test failed: {str(e)}")
-            conn_error = get_last_connection_error()
-            if conn_error:
-                raise HTTPException(
-                    status_code=503,
-                    detail={
-                        "message": "Database connection error",
-                        "error": str(conn_error.get("error")),
-                        "last_attempt": datetime.fromtimestamp(conn_error.get("last_attempt", 0)).isoformat() if conn_error.get("last_attempt") else None,
-                        "attempts": conn_error.get("attempts", 1)
-                    }
-                )
-            raise HTTPException(
-                status_code=503,
-                detail=f"Database connection error: {str(e)}"
-            )
+        # Only test connection in development or when explicitly requested
+        if settings.DEBUG:
+            try:
+                from sqlalchemy import text
+                db.execute(text("SELECT 1"))
+                logger.debug("Database connection test successful")
+            except SQLAlchemyError as e:
+                logger.warning(f"Database connection test failed: {str(e)}")
+                # Don't fail the request for connection test issues in production
         
         yield db
     except Exception as e:
@@ -55,11 +40,12 @@ def get_db() -> Generator:
             detail="Database service unavailable"
         )
     finally:
-        try:
-            db.close()
-            logger.info("Database session closed successfully")
-        except Exception as e:
-            logger.warning(f"Error closing database session: {str(e)}")
+        if db:
+            try:
+                db.close()
+                logger.debug("Database session closed successfully")
+            except Exception as e:
+                logger.warning(f"Error closing database session: {str(e)}")
 
 async def get_current_user(
     db: Session = Depends(get_db),
