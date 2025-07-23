@@ -31,7 +31,7 @@ export const Logo: React.FC<LogoProps> = ({
     <div className={cn('flex items-center space-x-3 transition-all duration-300 hover:scale-105', className)}>
       <div className="relative group">
         <img 
-          src="/icon.svg" 
+          src="/icon-enhanced.svg" 
           alt="NavImpact" 
           className={cn(
             sizeClasses[size],

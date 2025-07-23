@@ -8,7 +8,7 @@ describe('NavImpact Logo Component', () => {
     
     const logo = screen.getByAltText('NavImpact');
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute('src', '/icon.svg');
+    expect(logo).toHaveAttribute('src', '/icon-enhanced.svg');
     
     // Check for text content
     expect(screen.getByText('Nav')).toBeInTheDocument();
