@@ -44,16 +44,16 @@ class Grant(Base):
     # Many-to-many relationship with tags
     # tags = relationship("Tag", secondary="grant_tags", back_populates="grants")  # Temporarily disabled
     
-    # Intelligence fields for Phase 2
-    success_metrics = relationship("GrantSuccessMetrics", back_populates="grant")
-    predicted_success_rate = Column(Float, nullable=True)
-    recommendation_score = Column(Float, nullable=True)
-    risk_assessment = Column(JSON, nullable=True)
+    # Intelligence fields for Phase 2 (temporarily commented out for migration)
+    # success_metrics = relationship("GrantSuccessMetrics", back_populates="grant")
+    # predicted_success_rate = Column(Float, nullable=True)
+    # recommendation_score = Column(Float, nullable=True)
+    # risk_assessment = Column(JSON, nullable=True)
     
-    # Enhanced categorization for intelligence
-    sector_tags = Column(JSON, nullable=True)  # Multiple sectors
-    sdg_alignment = Column(JSON, nullable=True)  # UN SDG goals
-    strategic_priorities = Column(JSON, nullable=True)
+    # Enhanced categorization for intelligence (temporarily commented out for migration)
+    # sector_tags = Column(JSON, nullable=True)  # Multiple sectors
+    # sdg_alignment = Column(JSON, nullable=True)  # UN SDG goals
+    # strategic_priorities = Column(JSON, nullable=True)
     
     def __repr__(self):
         return f"<Grant {self.title}>"
