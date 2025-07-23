@@ -370,6 +370,7 @@ class IndustryNewsService:
                 title=item.title,
                 summary=item.summary,
                 url=item.url,
+                url_hash=item.url_hash,
                 source=item.source,
                 sector=item.sector,
                 relevance_score=relevance_score,
