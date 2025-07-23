@@ -6,6 +6,8 @@ export interface IndustryNews {
   summary?: string;
   url: string;
   source?: string;
+  platform?: string;  // twitter, linkedin, facebook, website
+  platform_icon?: string;  // icon name for display
   sector: string;
   relevance_score: number;
   published_at?: string;
@@ -24,6 +26,7 @@ export interface NewsStats {
   recent_news_items: number;
   sector_breakdown: Record<string, number>;
   available_sectors: string[];
+  platform_breakdown?: Record<string, number>;  // Social media platform breakdown
 }
 
 export class NewsService {

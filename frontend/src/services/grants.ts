@@ -176,7 +176,7 @@ export const grantsApi = {
       skip: skip.toString(),
       limit: limit.toString()
     };
-    return apiClient.request<Grant[]>('/grants/test-match', {}, queryParams);
+    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-match`, {}, queryParams);
   },
 
   // Get grant recommendations for current user
@@ -184,7 +184,7 @@ export const grantsApi = {
     const queryParams = {
       limit: limit.toString()
     };
-    return apiClient.request<Grant[]>('/grants/test-recommendations', {}, queryParams);
+    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-recommendations`, {}, queryParams);
   },
 
   // Get enhanced recommendations with preferences
@@ -206,13 +206,13 @@ export const grantsApi = {
     if (params.max_amount) queryParams.max_amount = params.max_amount.toString();
     if (params.org_type) queryParams.org_type = params.org_type;
     
-    return apiClient.request<Grant[]>('/grants/test-recommendations', {}, queryParams);
+    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-recommendations`, {}, queryParams);
   },
 
   // Track user interaction with a grant
   async trackInteraction(grantId: number, interactionType: 'view' | 'save' | 'compare' | 'apply'): Promise<void> {
     try {
-      await apiClient.request('/grants/track-interaction', {
+      await apiClient.request(`${ENDPOINTS.BASE}track-interaction`, {
         method: 'POST',
         body: JSON.stringify({
           grant_id: grantId,
@@ -227,7 +227,7 @@ export const grantsApi = {
 
   // Get similar grants
   async getSimilarGrants(grantId: number, limit = 5): Promise<Grant[]> {
-    return apiClient.request<Grant[]>(`/grants/similar-grants/${grantId}`, {}, { limit: limit.toString() });
+    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}similar-grants/${grantId}`, {}, { limit: limit.toString() });
   },
 };
 

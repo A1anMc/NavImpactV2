@@ -7,6 +7,8 @@ class IndustryNewsBase(BaseModel):
     summary: Optional[str] = None
     url: str
     source: Optional[str] = None
+    platform: Optional[str] = None  # twitter, linkedin, facebook, website
+    platform_icon: Optional[str] = None  # icon name for display
     sector: str
     published_at: Optional[datetime] = None
 
@@ -18,6 +20,8 @@ class IndustryNewsUpdate(BaseModel):
     summary: Optional[str] = None
     url: Optional[str] = None
     source: Optional[str] = None
+    platform: Optional[str] = None
+    platform_icon: Optional[str] = None
     sector: Optional[str] = None
     relevance_score: Optional[float] = None
     published_at: Optional[datetime] = None

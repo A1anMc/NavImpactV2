@@ -6,7 +6,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ExternalLink, RefreshCw, TrendingUp, Clock, Globe } from 'lucide-react';
+import { ExternalLink, RefreshCw, TrendingUp, Clock, Globe, Twitter, Linkedin, Facebook, Instagram } from 'lucide-react';
+
+// Social media icon mapping
+const getPlatformIcon = (platform: string) => {
+  switch (platform?.toLowerCase()) {
+    case 'twitter':
+      return Twitter;
+    case 'linkedin':
+      return Linkedin;
+    case 'facebook':
+      return Facebook;
+    case 'instagram':
+      return Instagram;
+    default:
+      return Globe;
+  }
+};
+
+// Social media color mapping
+const getPlatformColor = (platform: string) => {
+  switch (platform?.toLowerCase()) {
+    case 'twitter':
+      return 'text-blue-400';
+    case 'linkedin':
+      return 'text-blue-600';
+    case 'facebook':
+      return 'text-blue-800';
+    case 'instagram':
+      return 'text-pink-500';
+    default:
+      return 'text-gray-500';
+  }
+};
 
 export default function NewsPage() {
   const [news, setNews] = useState<IndustryNews[]>([]);
@@ -72,62 +104,69 @@ export default function NewsPage() {
     ? news 
     : news.filter(item => item.sector === selectedSector);
 
-  const NewsCard = ({ item }: { item: IndustryNews }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant={NewsService.getSectorBadgeColor(item.sector) as any}>
-                {item.sector}
-              </Badge>
-              <Badge variant={NewsService.getRelevanceBadgeColor(item.relevance_score) as any}>
-                {NewsService.formatRelevanceScore(item.relevance_score)} relevant
-              </Badge>
+  const NewsCard = ({ item }: { item: IndustryNews }) => {
+    const PlatformIcon = getPlatformIcon(item.platform || 'website');
+    const platformColor = getPlatformColor(item.platform || 'website');
+    
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant={NewsService.getSectorBadgeColor(item.sector) as any}>
+                  {item.sector}
+                </Badge>
+                <Badge variant={NewsService.getRelevanceBadgeColor(item.relevance_score) as any}>
+                  {NewsService.formatRelevanceScore(item.relevance_score)} relevant
+                </Badge>
+                {item.platform && item.platform !== 'website' && (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <PlatformIcon className={`w-3 h-3 ${platformColor}`} />
+                    {item.platform}
+                  </Badge>
+                )}
+              </div>
+              <CardTitle className="text-lg leading-tight">
+                <a 
+                  href={item.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  {item.title}
+                </a>
+              </CardTitle>
             </div>
-            <CardTitle className="text-lg leading-tight">
-              <a 
-                href={item.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-blue-600 transition-colors"
-              >
-                {item.title}
-              </a>
-            </CardTitle>
+            <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
           </div>
-          <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        {item.summary && (
-          <p className="text-gray-600 mb-3 text-sm">
-            {NewsService.truncateText(item.summary, 200)}
-          </p>
-        )}
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-4">
-            {item.source && (
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Globe className="w-3 h-3" />
-                <span>{item.source}</span>
-              </div>
-            )}
-            {item.published_at && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{NewsService.formatDate(item.published_at)}</span>
-              </div>
-            )}
+        </CardHeader>
+        <CardContent className="pt-0">
+          {item.summary && (
+            <p className="text-gray-600 mb-3 line-clamp-2">
+              {item.summary}
+            </p>
+          )}
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center gap-4">
+              {item.source && (
+                <div className="flex items-center gap-1">
+                  <PlatformIcon className={`w-3 h-3 ${platformColor}`} />
+                  <span>{item.source}</span>
+                </div>
+              )}
+              {item.published_at && (
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span>{NewsService.formatDate(item.published_at)}</span>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />
-            <span>Relevance: {NewsService.formatRelevanceScore(item.relevance_score)}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   const StatsCard = () => (
     <Card>
