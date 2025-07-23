@@ -251,9 +251,8 @@ def clear_all_grants():
         db.close()
 
 @router.post("/seed-simple")
-def seed_simple_grants():
+def seed_simple_grants(db: Session = Depends(get_db)):
     """Seed the database with a simple set of diverse grants for testing."""
-    db = next(get_db())
     
     # Check if grants already exist
     existing_count = db.query(Grant).count()
@@ -424,22 +423,30 @@ def seed_simple_grants():
     ]
     
     try:
+        # Add grants one by one with better error handling
+        added_count = 0
         for grant_data in sample_grants:
-            grant = Grant(**grant_data)
-            db.add(grant)
+            try:
+                grant = Grant(**grant_data)
+                db.add(grant)
+                db.flush()  # Flush to catch any immediate errors
+                added_count += 1
+            except Exception as e:
+                print(f"Error adding grant {grant_data.get('title', 'Unknown')}: {str(e)}")
+                continue
         
         db.commit()
         return {
-            "message": f"Successfully seeded {len(sample_grants)} diverse grants across Media, Community Impact, and Sustainability sectors",
-            "grants_added": len(sample_grants),
+            "message": f"Successfully seeded {added_count} diverse grants across Media, Community Impact, and Sustainability sectors",
+            "grants_added": added_count,
+            "total_attempted": len(sample_grants),
             "sectors": ["Media & Creative", "Community & Social Impact", "Sustainability & Environment"],
-            "note": "Simple test dataset with 8 grants for comprehensive testing"
+            "note": f"Added {added_count} out of {len(sample_grants)} grants successfully"
         }
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error seeding grants: {str(e)}")
-    finally:
-        db.close() 
+        print(f"Database error during seeding: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error seeding grants: {str(e)}") 
 
 @router.get("/match", response_model=List[GrantResponse])
 def get_matching_grants(
