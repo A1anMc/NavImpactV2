@@ -28,7 +28,7 @@ const Sidebar: FC = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col bg-impact-teal">
+    <div className="flex h-full w-64 flex-col bg-[#2d5016]">
       <div className="flex h-16 items-center px-4">
         <Logo variant="full" size="md" href="/" className="text-white" />
       </div>
