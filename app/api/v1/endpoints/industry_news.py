@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import logging
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.deps import get_db
 from app.services.industry_news import IndustryNewsService
@@ -42,41 +43,13 @@ def get_news_for_user(
                 detail="At least one sector must be specified"
             )
         
-        # Use direct query like the debug endpoint (which we know works)
-        from sqlalchemy import text
-        from app.models.industry_news import IndustryNews
-        from sqlalchemy.exc import SQLAlchemyError
-        
-        # Build the query
-        placeholders = ','.join(['%s'] * len(user_sectors))
-        query = text(f"""
-            SELECT id, sector, title, summary, url, source, 
-                   relevance_score, published_at, created_at
-            FROM industry_news 
-            WHERE sector IN ({placeholders})
-            ORDER BY published_at DESC
-            LIMIT :limit
-        """)
-        
-        # Execute query
-        result = db.execute(query, user_sectors + [limit])
-        rows = result.fetchall()
-        
-        # Convert to response format
-        news_items = []
-        for row in rows:
-            news_items.append(IndustryNewsResponse(
-                id=row[0],
-                title=row[2],
-                summary=row[3],
-                url=row[4],
-                source=row[5],
-                sector=row[1],
-                relevance_score=float(row[6]) if row[6] else 0.5,
-                published_at=row[7],
-                created_at=row[8]
-            ))
-        
+        # Fetch news using the service layer to ensure correct parameter handling
+        news_items = IndustryNewsService.get_news_for_user(
+            db=db,
+            user_sectors=user_sectors,
+            limit=limit,
+        )
+
         return news_items
         
     except SQLAlchemyError as e:
