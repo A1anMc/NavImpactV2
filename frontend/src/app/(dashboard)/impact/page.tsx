@@ -12,8 +12,12 @@ import {
   DocumentTextIcon,
   EyeIcon,
   CalendarIcon,
-  MapPinIcon
+  MapPinIcon,
+  SparklesIcon,
+  TrendingUpIcon,
+  LightBulbIcon
 } from '@heroicons/react/24/outline';
+import IntelligenceTab from '@/components/impact/IntelligenceTab';
 
 interface ImpactMetrics {
   total_grants: number;
@@ -194,8 +198,30 @@ export default function ImpactPage() {
         </Card>
       </div>
 
-      {/* Success Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Main Dashboard Tabs */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <ChartBarIcon className="h-4 w-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="metrics" className="flex items-center gap-2">
+            <TrendingUpIcon className="h-4 w-4" />
+            Metrics
+          </TabsTrigger>
+          <TabsTrigger value="intelligence" className="flex items-center gap-2">
+            <SparklesIcon className="h-4 w-4" />
+            AI Intelligence
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            <DocumentTextIcon className="h-4 w-4" />
+            Reports
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Success Metrics */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Application Success Rate</CardTitle>
@@ -288,9 +314,11 @@ export default function ImpactPage() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
 
-      {/* Detailed Analytics */}
-      <Tabs defaultValue="trends" className="space-y-6">
+        <TabsContent value="metrics" className="space-y-6">
+          {/* Detailed Analytics */}
+          <Tabs defaultValue="trends" className="space-y-6">
         <TabsList>
           <TabsTrigger value="trends">Funding Trends</TabsTrigger>
           <TabsTrigger value="sectors">Sector Performance</TabsTrigger>
@@ -393,6 +421,42 @@ export default function ImpactPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+          </Tabs>
+        </TabsContent>
+
+        <TabsContent value="intelligence" className="space-y-6">
+          <IntelligenceTab />
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Impact Reports</CardTitle>
+              <CardDescription>Generate and download comprehensive impact reports</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button className="flex items-center gap-2">
+                    <DocumentTextIcon className="h-4 w-4" />
+                    Executive Summary
+                  </Button>
+                  <Button className="flex items-center gap-2">
+                    <ChartBarIcon className="h-4 w-4" />
+                    Detailed Analysis
+                  </Button>
+                  <Button className="flex items-center gap-2">
+                    <TrendingUpIcon className="h-4 w-4" />
+                    Sector Report
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Customize reports for different audiences and export in multiple formats.
+                </p>
               </div>
             </CardContent>
           </Card>
