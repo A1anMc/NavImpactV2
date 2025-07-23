@@ -170,13 +170,13 @@ export const grantsApi = {
     }
   },
 
-  // Get matching grants based on user profile
+  // Get matching grants for current user
   async getMatchingGrants(skip = 0, limit = 20): Promise<Grant[]> {
     const queryParams = {
       skip: skip.toString(),
       limit: limit.toString()
     };
-    return apiClient.request<Grant[]>('/grants/match', {}, queryParams);
+    return apiClient.request<Grant[]>('/grants/test-match', {}, queryParams);
   },
 
   // Get grant recommendations for current user
@@ -184,7 +184,7 @@ export const grantsApi = {
     const queryParams = {
       limit: limit.toString()
     };
-    return apiClient.request<Grant[]>('/grants/recommendations', {}, queryParams);
+    return apiClient.request<Grant[]>('/grants/test-recommendations', {}, queryParams);
   },
 };
 

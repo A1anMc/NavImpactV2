@@ -577,3 +577,36 @@ def get_grant_recommendations(
     grants = query.limit(limit).all()
     
     return grants 
+
+@router.get("/test-recommendations", response_model=List[Grant])
+def test_grant_recommendations(
+    db: Session = Depends(get_db),
+    limit: int = 5,
+) -> List[Grant]:
+    """Test endpoint for grant recommendations without authentication."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get all grants
+    grants = db.query(Grant).filter(
+        Grant.status == "open"
+    ).order_by(Grant.deadline.asc()).limit(limit).all()
+    
+    return grants
+
+@router.get("/test-match", response_model=List[Grant])
+def test_matching_grants(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 20,
+) -> List[Grant]:
+    """Test endpoint for matching grants without authentication."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get all open grants
+    grants = db.query(Grant).filter(
+        Grant.status == "open"
+    ).order_by(Grant.deadline.asc()).offset(skip).limit(limit).all()
+    
+    return grants 
