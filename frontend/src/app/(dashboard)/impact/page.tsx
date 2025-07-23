@@ -14,7 +14,7 @@ import {
   CalendarIcon,
   MapPinIcon,
   SparklesIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   LightBulbIcon
 } from '@heroicons/react/24/outline';
 import IntelligenceTab from '@/components/impact/IntelligenceTab';
@@ -206,7 +206,7 @@ export default function ImpactPage() {
             Overview
           </TabsTrigger>
           <TabsTrigger value="metrics" className="flex items-center gap-2">
-            <TrendingUpIcon className="h-4 w-4" />
+            <ArrowTrendingUpIcon className="h-4 w-4" />
             Metrics
           </TabsTrigger>
           <TabsTrigger value="intelligence" className="flex items-center gap-2">
@@ -450,7 +450,7 @@ export default function ImpactPage() {
                     Detailed Analysis
                   </Button>
                   <Button className="flex items-center gap-2">
-                    <TrendingUpIcon className="h-4 w-4" />
+                    <ArrowTrendingUpIcon className="h-4 w-4" />
                     Sector Report
                   </Button>
                 </div>
