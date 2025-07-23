@@ -16,8 +16,8 @@ class GrantSuccessMetrics(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    grant = relationship("Grant", back_populates="success_metrics")
+    # Relationships (temporarily commented out for migration)
+    # grant = relationship("Grant", back_populates="success_metrics")
 
 
 class FunderProfile(Base):
