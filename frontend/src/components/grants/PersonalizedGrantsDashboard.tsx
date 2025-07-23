@@ -239,7 +239,7 @@ const GrantMatchCard: React.FC<GrantMatchCardProps> = ({ match }) => {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300" hover>
+    <Card className="hover-lift">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
