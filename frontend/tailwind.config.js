@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'heading': ['Righteous', 'cursive'],
-        'body': ['Poppins', 'Inter', 'sans-serif'],
+        'heading': ['Inter', 'sans-serif'],
+        'body': ['Inter', 'sans-serif'],
       },
       colors: {
         background: 'var(--background)',

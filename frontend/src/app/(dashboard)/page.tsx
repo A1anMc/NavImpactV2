@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import GrantRecommendations from '@/components/grants/GrantRecommendations';
-import DashboardLevels from '@/components/dashboard/DashboardLevels';
 import { 
   DocumentMagnifyingGlassIcon, 
   FolderIcon, 
@@ -23,8 +22,8 @@ export default function DashboardPage() {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-heading text-gray-900 mb-2">NavImpact Dashboard</h1>
-        <p className="text-gray-600 font-body">Welcome back! Here&apos;s what&apos;s happening with your grants today.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">NavImpact Dashboard</h1>
+        <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your grants today.</p>
       </div>
 
       {/* Status Banner */}
@@ -103,10 +102,8 @@ export default function DashboardPage() {
           <GrantRecommendations limit={3} showTitle={true} />
         </div>
 
-        {/* Right Column - Quick Actions & Levels */}
+        {/* Right Column - Quick Actions */}
         <div className="space-y-6">
-          {/* Dashboard Levels */}
-          <DashboardLevels />
           {/* Quick Actions */}
           <Card>
             <CardHeader>
@@ -182,34 +179,31 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ClockIcon className="h-5 w-5 text-purple-600" />
+                <ChartBarIcon className="h-5 w-5 text-purple-600" />
                 Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm font-medium">New grant added</p>
-                    <p className="text-xs text-gray-500">Digital Media Innovation Fund</p>
-                    <p className="text-xs text-gray-400">2 hours ago</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">Grant application submitted</p>
+                    <p className="text-xs text-gray-500">2 hours ago</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm font-medium">Task completed</p>
-                    <p className="text-xs text-gray-500">Review grant applications</p>
-                    <p className="text-xs text-gray-400">1 day ago</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">New grant discovered</p>
+                    <p className="text-xs text-gray-500">1 day ago</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm font-medium">Deadline reminder</p>
-                    <p className="text-xs text-gray-500">Youth Mental Health Initiative</p>
-                    <p className="text-xs text-gray-400">3 days ago</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">Task completed</p>
+                    <p className="text-xs text-gray-500">2 days ago</p>
                   </div>
                 </div>
               </div>
