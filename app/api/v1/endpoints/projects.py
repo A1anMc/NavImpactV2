@@ -57,27 +57,14 @@ class ProjectResponse(BaseModel):
 async def debug_projects_schema(db: Session = Depends(get_db)):
     """Debug endpoint to check database schema."""
     try:
-        # Check table structure
-        result = db.execute(text("""
-            SELECT column_name, data_type, is_nullable 
-            FROM information_schema.columns 
-            WHERE table_name = 'projects' 
-            ORDER BY ordinal_position
-        """))
-        columns = [dict(row) for row in result]
-        
         # Check if table exists
-        result = db.execute(text("""
-            SELECT COUNT(*) as count 
-            FROM projects
-        """))
+        result = db.execute(text("SELECT COUNT(*) as count FROM projects"))
         count = result.scalar()
         
         return {
             "table_exists": True,
-            "column_count": len(columns),
-            "columns": columns,
-            "project_count": count
+            "project_count": count,
+            "message": "Projects table exists and is accessible"
         }
     except Exception as e:
         return {
@@ -95,75 +82,33 @@ async def list_projects(
 ):
     """List projects endpoint with proper error handling."""
     try:
-        # Use raw SQL to avoid SQLAlchemy model issues
-        query = """
-            SELECT id, name, description, status, start_date, end_date, 
-                   created_at, updated_at, owner_id
-            FROM projects
-        """
-        params = {}
-        conditions = []
+        # Use a simple query first to test
+        query = "SELECT id, name, description, status, start_date, end_date, created_at, updated_at, owner_id FROM projects ORDER BY created_at DESC LIMIT :limit OFFSET :skip"
         
-        if status:
-            conditions.append("status = :status")
-            params['status'] = status
-        
-        if owner_id:
-            conditions.append("owner_id = :owner_id")
-            params['owner_id'] = owner_id
-        
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
-        
-        # Get total count
-        count_query = f"SELECT COUNT(*) FROM ({query}) as subquery"
-        count_result = db.execute(text(count_query), params)
-        total = count_result.scalar()
-        
-        # Get paginated results
-        query += " ORDER BY created_at DESC LIMIT :limit OFFSET :skip"
-        params['limit'] = limit
-        params['skip'] = skip
-        
-        result = db.execute(text(query), params)
-        projects = [dict(row) for row in result]
-        
-        # Calculate additional metrics for each project
-        project_list = []
-        for project in projects:
-            # Calculate team size
-            team_result = db.execute(
-                text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
-                {"project_id": project['id']}
-            )
-            team_size = team_result.scalar()
-            
-            # Calculate progress (placeholder - will be enhanced with task completion)
-            progress_percentage = 0.0  # TODO: Calculate based on completed tasks
-            
-            # Calculate budget utilisation (placeholder)
-            budget_utilised = 0.0  # TODO: Calculate based on expenses
-            
-            project_list.append({
-                "id": project['id'],
-                "name": project['name'],
-                "description": project['description'],
-                "status": project['status'],
-                "start_date": project['start_date'].isoformat() if project['start_date'] else None,
-                "end_date": project['end_date'].isoformat() if project['end_date'] else None,
-                # Temporarily remove budget fields until migration is applied
-                # "budget": getattr(project, 'budget', None),
-                # "budget_currency": getattr(project, 'budget_currency', 'AUD'),
-                "created_at": project['created_at'].isoformat() if project['created_at'] else None,
-                "updated_at": project['updated_at'].isoformat() if project['updated_at'] else None,
-                "owner_id": project['owner_id'],
-                "team_size": team_size,
-                "progress_percentage": progress_percentage,
-                "budget_utilised": budget_utilised
+        result = db.execute(text(query), {"limit": limit, "skip": skip})
+        projects = []
+        for row in result:
+            projects.append({
+                "id": row.id,
+                "name": row.name,
+                "description": row.description,
+                "status": row.status,
+                "start_date": row.start_date.isoformat() if row.start_date else None,
+                "end_date": row.end_date.isoformat() if row.end_date else None,
+                "created_at": row.created_at.isoformat() if row.created_at else None,
+                "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+                "owner_id": row.owner_id,
+                "team_size": 0,  # Placeholder
+                "progress_percentage": 0.0,  # Placeholder
+                "budget_utilised": 0.0  # Placeholder
             })
         
+        # Get total count
+        count_result = db.execute(text("SELECT COUNT(*) FROM projects"))
+        total = count_result.scalar()
+        
         return {
-            "items": project_list,
+            "items": projects,
             "total": total,
             "page": skip // limit + 1,
             "size": limit,
