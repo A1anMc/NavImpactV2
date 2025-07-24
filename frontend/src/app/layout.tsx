@@ -10,8 +10,8 @@ export const fetchCache = 'default-no-store';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SGE Dashboard",
-  description: "Strategic Grant Evaluation Dashboard",
+  title: "NavImpact Dashboard",
+  description: "NavImpact Grant Management Platform",
 };
 
 export default function RootLayout({
