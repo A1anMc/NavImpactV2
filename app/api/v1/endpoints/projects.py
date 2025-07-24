@@ -80,6 +80,14 @@ async def list_projects(
             # Calculate budget utilisation (placeholder)
             budget_utilised = 0.0  # TODO: Calculate based on expenses
             
+            # Handle budget fields gracefully (in case columns don't exist yet)
+            try:
+                budget = project.budget
+                budget_currency = project.budget_currency
+            except AttributeError:
+                budget = None
+                budget_currency = "AUD"
+            
             project_list.append({
                 "id": project.id,
                 "name": project.name,
@@ -87,8 +95,8 @@ async def list_projects(
                 "status": project.status,
                 "start_date": project.start_date.isoformat() if project.start_date else None,
                 "end_date": project.end_date.isoformat() if project.end_date else None,
-                "budget": project.budget,
-                "budget_currency": project.budget_currency,
+                "budget": budget,
+                "budget_currency": budget_currency,
                 "created_at": project.created_at.isoformat() if project.created_at else None,
                 "updated_at": project.updated_at.isoformat() if project.updated_at else None,
                 "owner_id": project.owner_id,
@@ -194,6 +202,14 @@ async def get_project(
         # Calculate budget utilisation (placeholder)
         budget_utilised = 0.0
         
+        # Handle budget fields gracefully (in case columns don't exist yet)
+        try:
+            budget = project.budget
+            budget_currency = project.budget_currency
+        except AttributeError:
+            budget = None
+            budget_currency = "AUD"
+        
         return {
             "id": project.id,
             "name": project.name,
@@ -201,8 +217,8 @@ async def get_project(
             "status": project.status,
             "start_date": project.start_date.isoformat() if project.start_date else None,
             "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": project.budget,
-            "budget_currency": project.budget_currency,
+            "budget": budget,
+            "budget_currency": budget_currency,
             "created_at": project.created_at.isoformat() if project.created_at else None,
             "updated_at": project.updated_at.isoformat() if project.updated_at else None,
             "owner_id": project.owner_id,
