@@ -26,6 +26,11 @@ else:
 print("Final environment:", os.getenv("ENVIRONMENT", "not set"))
 print("Final DATABASE_URL:", os.getenv("DATABASE_URL", "not set"))
 
+# NavImpact API Configuration
+# Version: 1.0.1 - Updated for passwordless authentication
+
+from pydantic_settings import BaseSettings
+
 class Settings:
     # Core
     PROJECT_NAME: str = "NavImpact"
