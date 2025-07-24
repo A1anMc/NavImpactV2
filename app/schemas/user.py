@@ -8,13 +8,12 @@ class UserBase(BaseModel):
     is_active: bool = True
 
 class UserCreate(UserBase):
-    password: str
+    pass
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     is_active: Optional[bool] = None
-    password: Optional[str] = None
 
 class UserInDB(UserBase):
     id: int
@@ -29,7 +28,6 @@ class User(UserInDB):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
 
 class Token(BaseModel):
     access_token: str

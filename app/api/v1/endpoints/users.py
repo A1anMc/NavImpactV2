@@ -6,7 +6,6 @@ from datetime import datetime
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, User as UserSchema
-from app.core.security import get_password_hash, verify_password
 from app.core.auth import get_current_user
 
 router = APIRouter()
@@ -34,12 +33,11 @@ async def create_user(
             detail="User with this email already exists"
         )
     
-    # Create new user
-    hashed_password = get_password_hash(user_in.password)
+    # Create new user (no password required)
     db_user = User(
         email=user_in.email,
         full_name=user_in.full_name,
-        hashed_password=hashed_password,
+        hashed_password="",  # Empty password for development
         is_active=user_in.is_active,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
@@ -99,10 +97,6 @@ async def update_user(
     
     # Update fields
     update_data = user_in.model_dump(exclude_unset=True)
-    
-    # Hash password if provided
-    if "password" in update_data:
-        update_data["hashed_password"] = get_password_hash(update_data.pop("password"))
     
     # Update timestamp
     update_data["updated_at"] = datetime.utcnow()

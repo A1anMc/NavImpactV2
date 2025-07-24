@@ -1,10 +1,9 @@
 const API_BASE_URL = 'https://navimpact-api.onrender.com';
 
-// User data for seeding
+// User data for seeding (no password required)
 const userData = {
   email: "demo@navimpact.com",
-  full_name: "Demo User",
-  password: "demo123456"
+  full_name: "Demo User"
 };
 
 const sampleProjects = [
@@ -83,12 +82,14 @@ async function registerUser(userData) {
 async function loginUser(userData) {
   try {
     console.log('🔐 Logging in user...');
+    // For login, we still need to send username and password in form data
+    // but password can be anything since we're not verifying it
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: `username=${encodeURIComponent(userData.email)}&password=${encodeURIComponent(userData.password)}`,
+      body: `username=${encodeURIComponent(userData.email)}&password=any`,
     });
 
     if (!response.ok) {
@@ -131,7 +132,7 @@ async function createProject(projectData, authToken) {
 }
 
 async function seedWithAuth() {
-  console.log('🌱 Starting authenticated seeding...');
+  console.log('🌱 Starting authenticated seeding (no passwords)...');
   console.log(`📡 API URL: ${API_BASE_URL}`);
   console.log('');
 
@@ -175,7 +176,7 @@ async function seedWithAuth() {
       console.log('');
       console.log('🎉 Database has been populated with sample data!');
       console.log(`👤 User: ${userData.email}`);
-      console.log(`🔑 Password: ${userData.password}`);
+      console.log('🔑 No password required for login');
       console.log('You can now view the projects in the NavImpact dashboard.');
     }
   } catch (error) {

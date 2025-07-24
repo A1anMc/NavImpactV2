@@ -6,7 +6,7 @@ from datetime import timedelta
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, Token
-from app.core.security import verify_password, create_access_token
+from app.core.security import create_access_token
 from app.core.config import settings
 
 router = APIRouter()
@@ -16,15 +16,15 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    """Login endpoint."""
+    """Login endpoint - no password verification required."""
     # Find user by email
     user = db.query(User).filter(User.email == form_data.username).first()
     
-    # Verify user exists and password is correct
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    # Check if user exists
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -35,7 +35,7 @@ async def login(
             detail="Inactive user"
         )
     
-    # Create access token
+    # Create access token (no password verification)
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
@@ -61,14 +61,12 @@ async def register(
         )
     
     # Create new user
-    from app.core.security import get_password_hash
     from datetime import datetime
     
-    hashed_password = get_password_hash(user_in.password)
     db_user = User(
         email=user_in.email,
         full_name=user_in.full_name,
-        hashed_password=hashed_password,
+        hashed_password="",  # Empty password for development
         is_active=user_in.is_active,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
