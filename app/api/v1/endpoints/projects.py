@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+import logging
 
 from app.core.deps import get_db
 from app.core.auth import get_current_user
@@ -12,6 +13,7 @@ from app.models.team_member import TeamMember
 from app.models.task import Task, TaskStatus
 from app.db.session import get_last_connection_error
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Pydantic models for request/response
@@ -147,16 +149,25 @@ async def create_project(
 ):
     """Create a new project"""
     try:
+        # Create project without budget fields temporarily
         db_project = Project(
             name=project.name,
             description=project.description,
             status=project.status,
             start_date=project.start_date,
             end_date=project.end_date,
-            budget=project.budget,
-            budget_currency=project.budget_currency,
             owner_id=current_user.id
         )
+        
+        # Try to set budget fields if they exist in the model
+        try:
+            if hasattr(project, 'budget') and project.budget is not None:
+                db_project.budget = project.budget
+            if hasattr(project, 'budget_currency') and project.budget_currency:
+                db_project.budget_currency = project.budget_currency
+        except Exception as budget_error:
+            logger.warning(f"Could not set budget fields: {budget_error}")
+        
         db.add(db_project)
         db.commit()
         db.refresh(db_project)
@@ -168,8 +179,8 @@ async def create_project(
             status=db_project.status,
             start_date=db_project.start_date,
             end_date=db_project.end_date,
-            budget=db_project.budget,
-            budget_currency=db_project.budget_currency,
+            budget=getattr(db_project, 'budget', None),
+            budget_currency=getattr(db_project, 'budget_currency', 'AUD'),
             created_at=db_project.created_at,
             updated_at=db_project.updated_at,
             owner_id=db_project.owner_id,
