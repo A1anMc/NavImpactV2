@@ -1,0 +1,100 @@
+name: 🚀 NavImpact Simple Deployment
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Job 1: Deploy Backend First
+  deploy-backend:
+    runs-on: ubuntu-latest
+    name: 🔧 Deploy Backend API
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Trigger Backend Deployment
+      run: |
+        echo "🔧 Backend deployment triggered via git push"
+        echo "📊 Monitor at: https://dashboard.render.com"
+        echo "⏳ Waiting for backend to be ready..."
+    
+    - name: ⏳ Wait for backend health
+      run: |
+        echo "Waiting for backend to be healthy..."
+        for i in {1..30}; do
+          if curl -f https://navimpact-api.onrender.com/health > /dev/null 2>&1; then
+            echo "✅ Backend is healthy!"
+            break
+          fi
+          echo "⏳ Attempt $i/30 - Backend not ready yet..."
+          sleep 10
+        done
+    
+    - name: 🔧 Migration Status
+      run: |
+        echo "🔧 Migration endpoint available at:"
+        echo "POST https://navimpact-api.onrender.com/api/v1/migrations/budget-migration"
+        echo "⚠️  Requires admin token - run manually if needed"
+
+  # Job 2: Deploy Frontend After Backend
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    name: 🌐 Deploy Frontend
+    needs: deploy-backend
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Trigger Frontend Deployment
+      run: |
+        echo "🌐 Frontend deployment needs to be triggered manually"
+        echo "📊 Go to: https://dashboard.render.com"
+        echo "🎯 Find 'navimpact-web' service and click 'Manual Deploy'"
+        echo "⏳ Or wait for auto-deployment if enabled"
+    
+    - name: ⏳ Wait for frontend health
+      run: |
+        echo "Waiting for frontend to be healthy..."
+        for i in {1..30}; do
+          if curl -f https://navimpact-web.onrender.com > /dev/null 2>&1; then
+            echo "✅ Frontend is healthy!"
+            break
+          fi
+          echo "⏳ Attempt $i/30 - Frontend not ready yet..."
+          sleep 10
+        done
+
+  # Job 3: Verify Deployment
+  verify-deployment:
+    runs-on: ubuntu-latest
+    name: ✅ Verify Deployment
+    needs: [deploy-backend, deploy-frontend]
+    
+    steps:
+    - name: 🔍 Test Backend API
+      run: |
+        echo "Testing backend API..."
+        curl -f https://navimpact-api.onrender.com/health
+        echo "✅ Backend API is working"
+    
+    - name: 🔍 Test Frontend
+      run: |
+        echo "Testing frontend..."
+        curl -f https://navimpact-web.onrender.com
+        echo "✅ Frontend is working"
+    
+    - name: 🎉 Deployment Complete
+      run: |
+        echo "🎉 NavImpact deployment completed successfully!"
+        echo "📊 Services:"
+        echo "  Backend: https://navimpact-api.onrender.com"
+        echo "  Frontend: https://navimpact-web.onrender.com"
+        echo ""
+        echo "🚀 Next steps:"
+        echo "  1. Test the application"
+        echo "  2. Run migration if needed"
+        echo "  3. Monitor for any issues" 

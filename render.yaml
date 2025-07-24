@@ -35,7 +35,7 @@ services:
       - key: NODE_ENV
         value: production
     healthCheckPath: /
-    autoDeploy: false  # Manual deployment after backend is ready
+    autoDeploy: true  # Enable auto-deployment for simple workflow
 
 databases:
   - name: navimpact-db
