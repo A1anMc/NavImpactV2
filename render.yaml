@@ -1,5 +1,5 @@
 services:
-  # Backend API - Deploy First
+  # Backend API
   - type: web
     name: navimpact-api
     env: python
@@ -20,12 +20,12 @@ services:
     healthCheckPath: /health
     autoDeploy: true
 
-  # Frontend Web - Deploy After Backend
+  # Frontend Web
   - type: web
     name: navimpact-web
     env: node
     plan: starter
-    buildCommand: cd frontend && npm install && npm run build:force-dynamic
+    buildCommand: cd frontend && npm install && npm run build
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_VERSION
@@ -34,10 +34,6 @@ services:
         value: production
       - key: NEXT_PUBLIC_API_URL
         value: https://navimpact-api.onrender.com
-      - key: NEXT_DISABLE_STATIC_GENERATION
-        value: "true"
-      - key: NEXT_FORCE_DYNAMIC
-        value: "true"
     healthCheckPath: /
     autoDeploy: true
 

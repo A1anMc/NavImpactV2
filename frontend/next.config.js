@@ -3,17 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Force dynamic rendering
-  experimental: {
-    // Removed invalid isrMemoryCacheSize option
-  },
-  
-  // Disable static generation completely
-  trailingSlash: false,
-  
-  // Force all pages to be dynamic
-  generateStaticParams: false,
-  
   // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
@@ -34,7 +23,6 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
         ],
       },
     ];
