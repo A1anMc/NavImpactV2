@@ -10,6 +10,8 @@ module.exports = {
       fontFamily: {
         'heading': ['Inter', 'sans-serif'],
         'body': ['Inter', 'sans-serif'],
+        'carrotflower': ['Georgia', 'Times New Roman', 'serif'], // Fallback for missing Carrotflower
+        'neue-haas': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'], // Fallback for missing Neue Haas
       },
       colors: {
         background: 'var(--background)',

@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 import logging
 import time
+from typing import Dict, Any
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -89,4 +90,79 @@ def health_check():
         return True
     except Exception as e:
         logger.error(f"Database health check failed: {str(e)}")
-        return False 
+        return False
+
+def check_pool_status() -> Dict[str, Any]:
+    """Check connection pool status for monitoring."""
+    try:
+        engine = get_engine()
+        pool = engine.pool
+        
+        # Get pool statistics
+        pool_stats = {
+            "pool_size": pool.size(),
+            "checked_out": pool.checkedout(),
+            "overflow": pool.overflow(),
+            "checked_in": pool.checkedin(),
+            "available": pool.size() - pool.checkedout(),
+            "utilization_percent": round((pool.checkedout() / pool.size()) * 100, 2) if pool.size() > 0 else 0,
+            "status": "healthy"
+        }
+        
+        # Log warning if pool utilization is high
+        if pool_stats["utilization_percent"] > 80:
+            logger.warning(f"High database pool utilization: {pool_stats['utilization_percent']}%")
+            pool_stats["status"] = "warning"
+        
+        # Log critical if pool is nearly exhausted
+        if pool_stats["utilization_percent"] > 95:
+            logger.error(f"Critical database pool utilization: {pool_stats['utilization_percent']}%")
+            pool_stats["status"] = "critical"
+        
+        # Log pool stats periodically
+        logger.info(f"DB Pool: {pool_stats['checked_out']}/{pool_stats['pool_size']} connections in use ({pool_stats['utilization_percent']}%)")
+        
+        return pool_stats
+        
+    except Exception as e:
+        logger.error(f"Failed to check pool status: {str(e)}")
+        return {
+            "error": str(e),
+            "status": "error",
+            "pool_size": 0,
+            "checked_out": 0,
+            "available": 0,
+            "utilization_percent": 0
+        }
+
+def get_connection_metrics() -> Dict[str, Any]:
+    """Get comprehensive database connection metrics."""
+    try:
+        engine = get_engine()
+        pool_stats = check_pool_status()
+        
+        # Test connection speed
+        start_time = time.time()
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        connection_time_ms = round((time.time() - start_time) * 1000, 2)
+        
+        metrics = {
+            "connection_time_ms": connection_time_ms,
+            "pool_stats": pool_stats,
+            "database_reachable": True,
+            "last_error": get_last_connection_error(),
+            "timestamp": time.time()
+        }
+        
+        return metrics
+        
+    except Exception as e:
+        logger.error(f"Failed to get connection metrics: {str(e)}")
+        return {
+            "connection_time_ms": None,
+            "database_reachable": False,
+            "error": str(e),
+            "last_error": get_last_connection_error(),
+            "timestamp": time.time()
+        } 

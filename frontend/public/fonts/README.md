@@ -1,33 +1,42 @@
-# NavImpact Fonts
+# NavImpact Fonts Directory
 
-This directory contains the custom fonts for the NavImpact branding system.
+## Current Font Setup
 
-## Required Fonts
+This directory previously contained custom font files for NavImpact branding, but we now use web-safe fallback fonts for better performance and licensing compliance.
 
-### Carrotflower Regular
-- **File**: `Carrotflower-Regular.woff2` and `Carrotflower-Regular.woff`
-- **Usage**: Headlines, H1 + H2 titles, taglines, and warm brand moments
-- **Style**: Friendly, human, approachable
-- **Fallback**: serif
+## Font Fallbacks Used
 
-### Neue Haas Grotesk Display Pro 45 Light
-- **File**: `NeueHaasDisplayPro-45Light.woff2` and `NeueHaasDisplayPro-45Light.woff`
-- **Usage**: Body text, UI, and precise information
-- **Style**: Clean, minimal, professional
-- **Fallback**: Inter, sans-serif
+### Carrotflower → Georgia (serif)
+- **Purpose**: Heading fonts and branded elements
+- **Fallback Stack**: `'Georgia', 'Times New Roman', 'serif'`
+- **Usage**: `font-carrotflower` class in Tailwind
+- **Reason**: Georgia provides similar character and readability
 
-## Font Loading
+### Neue Haas Display Pro → Inter (sans-serif)  
+- **Purpose**: Body text and UI elements
+- **Fallback Stack**: `'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'`
+- **Usage**: `font-neue-haas` class in Tailwind
+- **Reason**: Inter is modern, clean, and highly readable
 
-The fonts are loaded via CSS `@font-face` declarations in `globals.css` with `font-display: swap` for optimal performance.
+## Implementation
 
-## Fallback Strategy
+These fonts are defined in:
+- `frontend/tailwind.config.js` - Tailwind font family configuration
+- `frontend/src/app/globals.css` - CSS custom properties
 
-If the custom fonts are not available, the system falls back to:
-- Carrotflower → serif
-- Neue Haas → Inter → system sans-serif
+## Benefits of Current Setup
 
-## Performance Notes
+- ✅ **No 404 errors** - All fonts are system/web fonts
+- ✅ **Fast loading** - No additional HTTP requests
+- ✅ **Universal compatibility** - Works on all devices
+- ✅ **Good typography** - Serif for headings, sans-serif for body
+- ✅ **Licensing compliance** - No commercial font licensing issues
 
-- Fonts are loaded with `font-display: swap` to prevent layout shifts
-- WOFF2 format is preferred for better compression
-- WOFF format is provided as fallback for older browsers 
+## Adding Custom Fonts (Future)
+
+If custom fonts are needed in the future:
+1. Ensure proper licensing for web use
+2. Add `.woff2` and `.woff` files to this directory
+3. Update `@font-face` declarations in CSS
+4. Update Tailwind config font families
+5. Test loading performance and fallbacks 

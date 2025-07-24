@@ -9,6 +9,7 @@ from app.core.auth import get_current_user
 from app.models.project import Project
 from app.models.user import User
 from app.models.team_member import TeamMember
+from app.models.task import Task, TaskStatus
 from app.db.session import get_last_connection_error
 
 router = APIRouter()
@@ -78,8 +79,16 @@ async def list_projects(
             # Calculate team size
             team_size = db.query(TeamMember).filter(TeamMember.project_id == project.id).count()
             
-            # Calculate progress (placeholder - will be enhanced with task completion)
-            progress_percentage = 0.0  # TODO: Calculate based on completed tasks
+            # Calculate progress based on completed tasks
+            total_tasks = db.query(Task).filter(Task.project_id == project.id).count()
+            if total_tasks > 0:
+                completed_tasks = db.query(Task).filter(
+                    Task.project_id == project.id,
+                    Task.status == TaskStatus.DONE
+                ).count()
+                progress_percentage = round((completed_tasks / total_tasks) * 100, 1)
+            else:
+                progress_percentage = 0.0
             
             # Calculate budget utilisation (placeholder)
             budget_utilised = 0.0  # TODO: Calculate based on expenses
@@ -198,8 +207,16 @@ async def get_project(
         # Calculate team size
         team_size = db.query(TeamMember).filter(TeamMember.project_id == project.id).count()
         
-        # Calculate progress (placeholder)
-        progress_percentage = 0.0
+        # Calculate progress based on completed tasks
+        total_tasks = db.query(Task).filter(Task.project_id == project.id).count()
+        if total_tasks > 0:
+            completed_tasks = db.query(Task).filter(
+                Task.project_id == project.id,
+                Task.status == TaskStatus.DONE
+            ).count()
+            progress_percentage = round((completed_tasks / total_tasks) * 100, 1)
+        else:
+            progress_percentage = 0.0
         
         # Calculate budget utilisation (placeholder)
         budget_utilised = 0.0
@@ -354,7 +371,7 @@ async def get_project_team(
             team_data.append({
                 "id": member.id,
                 "user_id": member.user_id,
-                "user_name": user.email if user else "Unknown User",  # TODO: Add proper user name field
+                "user_name": user.full_name if user and user.full_name else (user.email if user else "Unknown User"),
                 "role": member.role,
                 "joined_at": member.joined_at.isoformat() if member.joined_at else None
             })
