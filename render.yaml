@@ -25,7 +25,7 @@ services:
     name: navimpact-web
     env: node
     plan: starter
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && npm install && npm run build:dynamic
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_VERSION
@@ -34,6 +34,8 @@ services:
         value: https://navimpact-api.onrender.com
       - key: NODE_ENV
         value: production
+      - key: NEXT_DISABLE_STATIC_GENERATION
+        value: true
     healthCheckPath: /
     autoDeploy: true  # Enable auto-deployment for simple workflow
 
