@@ -149,7 +149,7 @@ async def create_project(
 ):
     """Create a new project"""
     try:
-        # Create project without budget fields temporarily
+        # Create project with only existing database fields
         db_project = Project(
             name=project.name,
             description=project.description,
@@ -158,15 +158,6 @@ async def create_project(
             end_date=project.end_date,
             owner_id=current_user.id
         )
-        
-        # Try to set budget fields if they exist in the model
-        try:
-            if hasattr(project, 'budget') and project.budget is not None:
-                db_project.budget = project.budget
-            if hasattr(project, 'budget_currency') and project.budget_currency:
-                db_project.budget_currency = project.budget_currency
-        except Exception as budget_error:
-            logger.warning(f"Could not set budget fields: {budget_error}")
         
         db.add(db_project)
         db.commit()
@@ -179,8 +170,8 @@ async def create_project(
             status=db_project.status,
             start_date=db_project.start_date,
             end_date=db_project.end_date,
-            budget=getattr(db_project, 'budget', None),
-            budget_currency=getattr(db_project, 'budget_currency', 'AUD'),
+            budget=None,  # Not in database yet
+            budget_currency='AUD',  # Default value
             created_at=db_project.created_at,
             updated_at=db_project.updated_at,
             owner_id=db_project.owner_id,
