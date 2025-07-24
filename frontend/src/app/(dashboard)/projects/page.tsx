@@ -14,8 +14,8 @@ interface Project {
   status: string
   start_date: string | null
   end_date: string | null
-  budget: number | null
-  budget_currency: string
+  budget?: number | null  // Optional until migration is applied
+  budget_currency?: string  // Optional until migration is applied
   created_at: string | null
   updated_at: string | null
   owner_id: number
@@ -66,8 +66,8 @@ export default function ProjectsPage() {
     }
   }
 
-  const formatCurrency = (amount: number | null, currency: string) => {
-    if (amount === null) return 'Not set'
+  const formatCurrency = (amount: number | null | undefined, currency: string = 'AUD') => {
+    if (amount === null || amount === undefined) return 'Not set'
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
       currency: currency || 'AUD'
@@ -79,8 +79,8 @@ export default function ProjectsPage() {
     return new Date(dateString).toLocaleDateString('en-AU')
   }
 
-  const calculateBudgetUtilisation = (budget: number | null, utilised: number) => {
-    if (budget === null || budget === 0) return 0
+  const calculateBudgetUtilisation = (budget: number | null | undefined, utilised: number) => {
+    if (budget === null || budget === undefined || budget === 0) return 0
     return (utilised / budget) * 100
   }
 
@@ -235,8 +235,8 @@ export default function ProjectsPage() {
                   <Progress value={project.progress_percentage} className="h-2" />
                 </div>
 
-                {/* Budget */}
-                {project.budget && (
+                {/* Budget - Only show if budget fields are available */}
+                {project.budget !== undefined && project.budget !== null && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">Budget</span>

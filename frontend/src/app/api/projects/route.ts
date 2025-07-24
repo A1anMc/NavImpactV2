@@ -7,22 +7,37 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const queryString = searchParams.toString()
     
-    const response = await fetch(`${API_BASE_URL}/api/v1/projects?${queryString}`, {
+    console.log(`Fetching projects from: ${API_BASE_URL}/api/v1/projects/?${queryString}`)
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/projects/?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Add timeout
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     })
 
+    console.log(`Backend response status: ${response.status}`)
+
     if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`)
+      const errorText = await response.text()
+      console.error(`Backend error response: ${errorText}`)
+      throw new Error(`Backend responded with status: ${response.status}: ${errorText}`)
     }
 
     const data = await response.json()
+    console.log(`Backend response data:`, data)
     return NextResponse.json(data)
   } catch (error) {
     console.error('Error fetching projects:', error)
+    
+    // Return a more detailed error for debugging
     return NextResponse.json(
-      { error: 'Failed to fetch projects' },
+      { 
+        error: 'Failed to fetch projects',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     )
   }
@@ -32,24 +47,37 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    const response = await fetch(`${API_BASE_URL}/api/v1/projects`, {
+    console.log(`Creating project with data:`, body)
+    
+    const response = await fetch(`${API_BASE_URL}/api/v1/projects/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     })
 
+    console.log(`Backend response status: ${response.status}`)
+
     if (!response.ok) {
-      throw new Error(`Backend responded with status: ${response.status}`)
+      const errorText = await response.text()
+      console.error(`Backend error response: ${errorText}`)
+      throw new Error(`Backend responded with status: ${response.status}: ${errorText}`)
     }
 
     const data = await response.json()
+    console.log(`Backend response data:`, data)
     return NextResponse.json(data)
   } catch (error) {
     console.error('Error creating project:', error)
+    
     return NextResponse.json(
-      { error: 'Failed to create project' },
+      { 
+        error: 'Failed to create project',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     )
   }
