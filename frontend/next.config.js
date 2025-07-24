@@ -4,6 +4,13 @@ const nextConfig = {
   experimental: {
     // Force new build
   },
+  
+  // Disable static generation to prevent clientModules errors
+  output: 'standalone',
+  
+  // Disable static optimization for problematic pages
+  trailingSlash: false,
+  
   reactStrictMode: true,
   poweredByHeader: false,
   
