@@ -21,9 +21,8 @@ class ProjectCreate(BaseModel):
     status: str = "planning"
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    # Temporarily comment out budget fields until migration is applied
-    # budget: Optional[float] = None
-    # budget_currency: str = "AUD"
+    budget: Optional[float] = None
+    budget_currency: str = "AUD"
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
@@ -140,55 +139,47 @@ async def list_projects(
             detail=f"Error fetching projects: {str(e)}"
         )
 
-@router.post("/")
+@router.post("/", response_model=ProjectResponse)
 async def create_project(
-    project_data: ProjectCreate,
+    project: ProjectCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new project."""
+    """Create a new project"""
     try:
-        # Use the authenticated user as the owner
-        owner_id = current_user.id
-        
-        project = Project(
-            name=project_data.name,
-            description=project_data.description,
-            status=project_data.status,
-            start_date=project_data.start_date,
-            end_date=project_data.end_date,
-            # Temporarily remove budget fields until migration is applied
-            # budget=project_data.budget,
-            # budget_currency=project_data.budget_currency,
-            owner_id=owner_id
+        db_project = Project(
+            name=project.name,
+            description=project.description,
+            status=project.status,
+            start_date=project.start_date,
+            end_date=project.end_date,
+            budget=project.budget,
+            budget_currency=project.budget_currency,
+            owner_id=current_user.id
         )
-        
-        db.add(project)
+        db.add(db_project)
         db.commit()
-        db.refresh(project)
+        db.refresh(db_project)
         
-        return {
-            "id": project.id,
-            "name": project.name,
-            "description": project.description,
-            "status": project.status,
-            "start_date": project.start_date.isoformat() if project.start_date else None,
-            "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": None,  # Will be available after migration
-            "budget_currency": "AUD",  # Will be available after migration
-            "created_at": project.created_at.isoformat() if project.created_at else None,
-            "updated_at": project.updated_at.isoformat() if project.updated_at else None,
-            "owner_id": project.owner_id,
-            "team_size": 0,
-            "progress_percentage": 0.0,
-            "budget_utilised": 0.0
-        }
+        return ProjectResponse(
+            id=db_project.id,
+            name=db_project.name,
+            description=db_project.description,
+            status=db_project.status,
+            start_date=db_project.start_date,
+            end_date=db_project.end_date,
+            budget=db_project.budget,
+            budget_currency=db_project.budget_currency,
+            created_at=db_project.created_at,
+            updated_at=db_project.updated_at,
+            owner_id=db_project.owner_id,
+            team_size=0,
+            progress_percentage=0.0,
+            budget_utilised=0.0
+        )
     except Exception as e:
         db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error creating project: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create project: {str(e)}")
 
 @router.get("/{project_id}")
 async def get_project(
@@ -221,22 +212,22 @@ async def get_project(
         # Calculate budget utilisation (placeholder)
         budget_utilised = 0.0
         
-        return {
-            "id": project.id,
-            "name": project.name,
-            "description": project.description,
-            "status": project.status,
-            "start_date": project.start_date.isoformat() if project.start_date else None,
-            "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": None,  # Will be available after migration
-            "budget_currency": "AUD",  # Will be available after migration
-            "created_at": project.created_at.isoformat() if project.created_at else None,
-            "updated_at": project.updated_at.isoformat() if project.updated_at else None,
-            "owner_id": project.owner_id,
-            "team_size": team_size,
-            "progress_percentage": progress_percentage,
-            "budget_utilised": budget_utilised
-        }
+        return ProjectResponse(
+            id=project.id,
+            name=project.name,
+            description=project.description,
+            status=project.status,
+            start_date=project.start_date,
+            end_date=project.end_date,
+            budget=project.budget,
+            budget_currency=project.budget_currency,
+            created_at=project.created_at,
+            updated_at=project.updated_at,
+            owner_id=project.owner_id,
+            team_size=team_size,
+            progress_percentage=progress_percentage,
+            budget_utilised=budget_utilised
+        )
     except HTTPException:
         raise
     except Exception as e:

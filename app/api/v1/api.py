@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, user_profiles, industry_news, seed
+from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, user_profiles, industry_news, seed, migrations
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -18,4 +18,5 @@ api_router.include_router(time_logs.router, prefix="/time-logs", tags=["time-log
 api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
 api_router.include_router(user_profiles.router, prefix="/user-profiles", tags=["user-profiles"])
 api_router.include_router(industry_news.router, prefix="/news", tags=["news"])
-api_router.include_router(seed.router, prefix="/seed", tags=["seed"]) 
+api_router.include_router(seed.router, prefix="/seed", tags=["seed"])
+api_router.include_router(migrations.router, prefix="/migrations", tags=["migrations"]) 
