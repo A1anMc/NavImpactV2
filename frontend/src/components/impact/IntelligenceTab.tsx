@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import {
   LightBulbIcon, 
   ChartBarIcon,
   SparklesIcon,
+  ArrowPathIcon,
   ClockIcon,
   CheckCircleIcon,
   EyeIcon,
@@ -33,33 +35,39 @@ interface PredictionDetail {
 }
 
 export default function IntelligenceTab() {
-  const [predictions, setPredictions] = useState<GrantPrediction[]>([]);
-  const [intelligenceData, setIntelligenceData] = useState<IntelligenceDashboard | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  const {
+    data: predictions = [],
+    isLoading: predictionsLoading,
+    isRefetching: predictionsRefetching,
+    refetch: refetchPredictions,
+  } = useQuery({
+    queryKey: ['grantPredictions', 10],
+    queryFn: () => impactIntelligenceService.getGrantPredictions(10),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const {
+    data: intelligenceData,
+    isLoading: dashboardLoading,
+    isRefetching: dashboardRefetching,
+    refetch: refetchDashboard,
+  } = useQuery({
+    queryKey: ['intelligenceDashboard'],
+    queryFn: () => impactIntelligenceService.getIntelligenceDashboard(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const loading = predictionsLoading || dashboardLoading;
   const [training, setTraining] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState<PredictionDetail | null>(null);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [savedInsights, setSavedInsights] = useState<string[]>([]);
 
-  useEffect(() => {
-    loadIntelligenceData();
-  }, []);
-
-  const loadIntelligenceData = async () => {
-    try {
-      setLoading(true);
-      const [predictionsData, dashboardData] = await Promise.all([
-        impactIntelligenceService.getGrantPredictions(10),
-        impactIntelligenceService.getIntelligenceDashboard()
-      ]);
-      
-      setPredictions(predictionsData);
-      setIntelligenceData(dashboardData);
-    } catch (error) {
-      console.error('Error loading intelligence data:', error);
-    } finally {
-      setLoading(false);
-    }
+  const refreshData = () => {
+    refetchPredictions();
+    refetchDashboard();
   };
 
   const handleTrainModel = async () => {
@@ -67,7 +75,9 @@ export default function IntelligenceTab() {
       setTraining(true);
       const result = await impactIntelligenceService.trainModel();
       alert(`Model trained successfully! Accuracy: ${(result.accuracy * 100).toFixed(1)}%`);
-      loadIntelligenceData(); // Reload data
+      // Invalidate cached queries to fetch fresh data
+      queryClient.invalidateQueries({ queryKey: ['grantPredictions'] });
+      queryClient.invalidateQueries({ queryKey: ['intelligenceDashboard'] });
     } catch (error) {
       alert('Error training model. Please try again.');
     } finally {
@@ -164,6 +174,15 @@ export default function IntelligenceTab() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={refreshData}
+            variant="outline"
+            disabled={predictionsRefetching || dashboardRefetching}
+            className="flex items-center gap-2"
+          >
+            <ArrowPathIcon className="h-4 w-4" />
+            {predictionsRefetching || dashboardRefetching ? 'Refreshing…' : 'Refresh'}
+          </Button>
           <Button 
             onClick={handleTrainModel} 
             disabled={training}
