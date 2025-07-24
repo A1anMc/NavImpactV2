@@ -2,7 +2,10 @@
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
-export const fetchCache = 'default-no-store';
+export const dynamicParams = true;
+export const revalidate = false;
+export const fetchCache = 'force-no-store';
+export const runtime = 'nodejs';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
