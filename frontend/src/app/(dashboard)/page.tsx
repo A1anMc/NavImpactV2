@@ -22,23 +22,23 @@ import GradientText from '@/components/ui/GradientText';
 export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      {/* Simplified Background Elements */}
+      <div className="absolute inset-0 overflow-hidden motion-reduce:hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
       </div>
 
       <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
         {/* Modern Header */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                <CpuChipIcon className="w-8 h-8 text-white" />
+                          <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <CpuChipIcon className="w-8 h-8 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900 motion-reduce:animate-none animate-pulse"></div>
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900 animate-pulse"></div>
-            </div>
             <div>
               <GradientText className="text-4xl font-bold mb-2">
                 NavImpact Command Center
@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full motion-reduce:animate-none animate-pulse"></div>
                   <span className="text-white font-medium">All Systems Operational</span>
                 </div>
                 <div className="hidden md:flex items-center gap-4 text-slate-300 text-sm">
@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full motion-reduce:animate-none animate-ping"></div>
                 <span className="text-green-400 text-sm font-mono">LIVE</span>
               </div>
             </div>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
             icon={<DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />}
             color="text-white"
             suffix=""
-            delay={0.1}
+            delay={0.05}
           />
           
           <AnimatedMetric
@@ -108,7 +108,7 @@ export default function DashboardPage() {
             icon={<FolderIcon className="h-6 w-6 text-white" />}
             color="text-white"
             suffix=""
-            delay={0.2}
+            delay={0.1}
           />
           
           <AnimatedMetric
@@ -117,7 +117,7 @@ export default function DashboardPage() {
             icon={<ClipboardDocumentListIcon className="h-6 w-6 text-white" />}
             color="text-white"
             suffix=""
-            delay={0.3}
+            delay={0.15}
           />
           
           <AnimatedMetric
@@ -126,12 +126,12 @@ export default function DashboardPage() {
             icon={<ClockIcon className="h-6 w-6 text-white" />}
             color="text-white"
             suffix=""
-            delay={0.4}
+            delay={0.2}
           />
         </div>
 
         {/* Quick Actions */}
-        <AnimatedCard className="p-6" delay={0.5}>
+        <AnimatedCard className="p-6" delay={0.25}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
               <Zap className="h-5 w-5 text-white" />

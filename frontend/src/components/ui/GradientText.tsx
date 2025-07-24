@@ -28,23 +28,23 @@ export default function GradientText({
 
   return (
     <motion.div
-      initial={animate ? { opacity: 0, y: 20 } : {}}
+      initial={animate ? { opacity: 0, y: 10 } : {}}
       animate={animate ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
       className={`relative ${className}`}
     >
       <span
         className={`${selectedGradient} bg-clip-text text-transparent ${
-          animate ? 'animate-gradient-x' : ''
+          animate ? 'motion-reduce:animate-none animate-gradient-x' : ''
         }`}
       >
         {children}
       </span>
       
-      {/* Glow effect */}
+      {/* Reduced glow effect */}
       {animate && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 motion-reduce:duration-150"
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
         />
