@@ -22,7 +22,7 @@ bash scripts/verify-deploy.sh
 
 1. Click **"New"** → **"Web Service"**
 2. **Connect Repository**: Choose your GitHub repo
-3. **Service Name**: `sge-dashboard-api`
+3. **Service Name**: `navimpact-api`
 4. **Root Directory**: `/` (leave empty)
 5. **Environment**: `Python`
 6. **Build Command**: 
@@ -39,8 +39,8 @@ bash scripts/verify-deploy.sh
 ```
 DATABASE_URL = <paste-your-database-url-here>
 SECRET_KEY = <generate-32-character-secure-key>
-FRONTEND_URL = https://sge-dashboard-web.onrender.com
-CORS_ORIGINS = https://sge-dashboard-web.onrender.com,https://*.onrender.com
+FRONTEND_URL = https://navimpact-frontend.onrender.com
+CORS_ORIGINS = https://navimpact-frontend.onrender.com,https://*.onrender.com
 ENVIRONMENT = production
 DEBUG = false
 DATABASE_POOL_SIZE = 5
@@ -57,7 +57,7 @@ Once deployed, run:
 ./scripts/check-backend-health.sh
 ```
 
-If it fails, check logs at: `https://dashboard.render.com/web/sge-dashboard-api`
+If it fails, check logs at: `https://dashboard.render.com/web/navimpact-api`
 
 ## 🎨 Step 4: Deploy Frontend Service
 
@@ -65,7 +65,7 @@ If it fails, check logs at: `https://dashboard.render.com/web/sge-dashboard-api`
 
 1. Click **"New"** → **"Web Service"**
 2. **Connect Repository**: Same GitHub repo
-3. **Service Name**: `sge-dashboard-web`
+3. **Service Name**: `navimpact-frontend`
 4. **Root Directory**: `frontend`
 5. **Environment**: `Node`
 6. **Build Command**: 
@@ -80,7 +80,7 @@ If it fails, check logs at: `https://dashboard.render.com/web/sge-dashboard-api`
 ### Environment Variables for Frontend:
 ```
 NODE_ENV = production
-NEXT_PUBLIC_API_URL = https://sge-dashboard-api.onrender.com
+NEXT_PUBLIC_API_URL = https://navimpact-api.onrender.com
 ```
 
 8. Click **"Create Web Service"**
@@ -88,8 +88,8 @@ NEXT_PUBLIC_API_URL = https://sge-dashboard-api.onrender.com
 
 ## ✅ Step 5: Final Verification
 
-1. **Backend Health**: https://sge-dashboard-api.onrender.com/health
-2. **Frontend**: https://sge-dashboard-web.onrender.com
+1. **Backend Health**: https://navimpact-api.onrender.com/health
+2. **Frontend**: https://navimpact-frontend.onrender.com
 3. **Full Integration**: Test login/signup on frontend
 
 ## 🚨 Troubleshooting
