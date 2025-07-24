@@ -1,6 +1,7 @@
 {
   "name": "navimpact",
   "version": "0.1.0",
+  "description": "NavImpact Grant Management Platform - Force deployment update",
   "private": true,
   "engines": {
     "node": "20.x",
