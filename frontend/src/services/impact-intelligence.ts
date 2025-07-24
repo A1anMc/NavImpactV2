@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import api from './api';
 
 export interface GrantPrediction {
   grant_id: number;
@@ -61,7 +61,7 @@ export const impactIntelligenceService = {
         queryParams.timeframe = params.timeframe;
       }
       
-      const response = await apiClient.get(`/api/v1/impact/predictions`, queryParams);
+      const response = await api.get(`/api/v1/impact/predictions`, queryParams);
       return response.data.predictions;
     } catch (error) {
       console.error('Error fetching grant predictions:', error);
@@ -72,7 +72,7 @@ export const impactIntelligenceService = {
   // Train prediction model
   async trainModel(): Promise<ModelTrainingResult> {
     try {
-      const response = await apiClient.post('/api/v1/impact/train-model');
+      const response = await api.post('/api/v1/impact/train-model');
       return response.data;
     } catch (error) {
       console.error('Error training model:', error);
@@ -88,7 +88,7 @@ export const impactIntelligenceService = {
         queryParams.timeframe = params.timeframe;
       }
       
-      const response = await apiClient.get('/api/v1/impact/intelligence', queryParams);
+      const response = await api.get('/api/v1/impact/intelligence', queryParams);
       return response.data;
     } catch (error) {
       console.error('Error fetching intelligence dashboard:', error);

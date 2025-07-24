@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import api from './api';
 
 export interface IndustryNews {
   id: number;
@@ -36,7 +36,7 @@ export class NewsService {
    */
   static async getNewsForUser(sectors: string[], limit: number = 20): Promise<IndustryNews[]> {
     const sectorsParam = sectors.join(',');
-    const response = await apiClient.get(`/api/v1/news/?sectors=${sectorsParam}&limit=${limit}`);
+    const response = await api.get(`/api/v1/news/?sectors=${sectorsParam}&limit=${limit}`);
     return response.data;
   }
 
@@ -44,7 +44,7 @@ export class NewsService {
    * Get news for a specific sector
    */
   static async getNewsBySector(sector: string, limit: number = 20): Promise<IndustryNews[]> {
-    const response = await apiClient.get(`/api/v1/news/sectors/${sector}?limit=${limit}`);
+    const response = await api.get(`/api/v1/news/sectors/${sector}?limit=${limit}`);
     return response.data;
   }
 
@@ -52,7 +52,7 @@ export class NewsService {
    * Refresh the news feed
    */
   static async refreshNewsFeed(): Promise<NewsRefreshResponse> {
-    const response = await apiClient.post('/api/v1/news/refresh');
+    const response = await api.post('/api/v1/news/refresh');
     return response.data;
   }
 
@@ -60,7 +60,7 @@ export class NewsService {
    * Get available sectors
    */
   static async getAvailableSectors(): Promise<string[]> {
-    const response = await apiClient.get('/api/v1/news/sectors');
+    const response = await api.get('/api/v1/news/sectors');
     return response.data;
   }
 
@@ -68,7 +68,7 @@ export class NewsService {
    * Get news statistics
    */
   static async getNewsStats(): Promise<NewsStats> {
-    const response = await apiClient.get('/api/v1/news/stats');
+    const response = await api.get('/api/v1/news/stats');
     return response.data;
   }
 

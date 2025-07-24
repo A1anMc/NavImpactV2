@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import api from './api';
 
 export interface UserProfile {
   id: number;
@@ -64,7 +64,7 @@ export interface UserProfileUpdate {
 export const profileService = {
   // Get current user's profile
   async getMyProfile(): Promise<UserProfile> {
-    return apiClient.request<UserProfile>('/user-profiles/me');
+    return api.request<UserProfile>('/user-profiles/me');
   },
 
   // Get all user profiles (admin only)
@@ -73,17 +73,17 @@ export const profileService = {
       skip: skip.toString(),
       limit: limit.toString()
     };
-    return apiClient.request<UserProfile[]>('/user-profiles/', {}, queryParams);
+    return api.request<UserProfile[]>('/user-profiles/', {}, queryParams);
   },
 
   // Get specific user profile by ID
   async getProfile(id: number): Promise<UserProfile> {
-    return apiClient.request<UserProfile>(`/user-profiles/${id}`);
+    return api.request<UserProfile>(`/user-profiles/${id}`);
   },
 
   // Create new user profile
   async createProfile(profile: UserProfileCreate): Promise<UserProfile> {
-    return apiClient.request<UserProfile>('/user-profiles/', {
+    return api.request<UserProfile>('/user-profiles/', {
       method: 'POST',
       body: JSON.stringify(profile),
     });
@@ -91,7 +91,7 @@ export const profileService = {
 
   // Update current user's profile
   async updateMyProfile(profile: UserProfileUpdate): Promise<UserProfile> {
-    return apiClient.request<UserProfile>('/user-profiles/me', {
+    return api.request<UserProfile>('/user-profiles/me', {
       method: 'PUT',
       body: JSON.stringify(profile),
     });
@@ -99,7 +99,7 @@ export const profileService = {
 
   // Update specific user profile by ID
   async updateProfile(id: number, profile: UserProfileUpdate): Promise<UserProfile> {
-    return apiClient.request<UserProfile>(`/user-profiles/${id}`, {
+    return api.request<UserProfile>(`/user-profiles/${id}`, {
       method: 'PUT',
       body: JSON.stringify(profile),
     });
@@ -107,7 +107,7 @@ export const profileService = {
 
   // Delete user profile
   async deleteProfile(id: number): Promise<{ message: string }> {
-    return apiClient.request<{ message: string }>(`/user-profiles/${id}`, {
+    return api.request<{ message: string }>(`/user-profiles/${id}`, {
       method: 'DELETE',
     });
   }

@@ -86,9 +86,9 @@ export const BrandingShowcase: React.FC = () => {
                 <Button variant="default" size="lg">Large</Button>
               </div>
               <div className="flex flex-wrap gap-4">
-                <Button variant="gradient">Gradient</Button>
-                <Button variant="gradient" size="sm">Small</Button>
-                <Button variant="gradient" size="lg">Large</Button>
+                <Button variant="default">Gradient</Button>
+                <Button variant="default" size="sm">Small</Button>
+                <Button variant="default" size="lg">Large</Button>
               </div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export const BrandingShowcase: React.FC = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <Button variant="gradient" size="sm">Gradient Button</Button>
+              <Button variant="default" size="sm">Gradient Button</Button>
             </CardFooter>
           </Card>
 

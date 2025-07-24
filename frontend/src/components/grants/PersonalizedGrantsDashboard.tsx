@@ -143,7 +143,7 @@ export const PersonalizedGrantsDashboard: React.FC<PersonalizedGrantsDashboardPr
           )}
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="info" className="flex items-center gap-1">
+          <Badge variant="outline" className="flex items-center gap-1">
             <ChartBarIcon className="h-4 w-4" />
             {filteredMatches.length} matches
           </Badge>
@@ -219,9 +219,9 @@ const GrantMatchCard: React.FC<GrantMatchCardProps> = ({ match }) => {
   // Map priority to valid Badge variants
   const getPriorityVariant = (priority: 'high' | 'medium' | 'low') => {
     switch (priority) {
-      case 'high': return 'success';
-      case 'medium': return 'warning';
-      case 'low': return 'default';
+      case 'high': return 'default';
+      case 'medium': return 'outline';
+      case 'low': return 'secondary';
       default: return 'default';
     }
   };
@@ -250,7 +250,7 @@ const GrantMatchCard: React.FC<GrantMatchCardProps> = ({ match }) => {
               <Badge variant={getPriorityVariant(priority)} className={priorityColors[priority]}>
                 {priority} priority
               </Badge>
-              <Badge variant="info" className="bg-energy-coral/10 text-energy-coral border-energy-coral/20">
+              <Badge variant="outline" className="bg-energy-coral/10 text-energy-coral border-energy-coral/20">
                 {score}% match
               </Badge>
             </div>

@@ -139,7 +139,7 @@ export default function MatchingGrants({ showFilters = true }: MatchingGrantsPro
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5 text-blue-600" />
             Matching Grants
-            <Badge variant="info" className="ml-2">
+            <Badge variant="outline" className="ml-2">
               {totalCount} matches
             </Badge>
           </CardTitle>

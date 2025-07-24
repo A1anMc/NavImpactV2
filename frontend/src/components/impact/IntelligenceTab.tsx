@@ -430,7 +430,7 @@ export default function IntelligenceTab() {
           <CardTitle className="flex items-center gap-2">
             <LightBulbIcon className="h-5 w-5 text-yellow-600" />
             AI Grant Recommendations
-            <Badge variant="info" className="ml-2">
+            <Badge variant="secondary" className="ml-2">
               {filteredPredictions.length} grants
             </Badge>
           </CardTitle>
@@ -457,8 +457,8 @@ export default function IntelligenceTab() {
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{prediction.funder}</p>
                     <div className="flex items-center gap-2">
-                      <Badge variant="info">${prediction.amount?.toLocaleString()}</Badge>
-                      <Badge variant="info" className="flex items-center gap-1">
+                      <Badge variant="outline">${prediction.amount?.toLocaleString()}</Badge>
+                      <Badge variant="outline" className="flex items-center gap-1">
                         <ClockIcon className="h-3 w-3" />
                         Confidence: {(prediction.confidence_score * 100).toFixed(0)}%
                       </Badge>
