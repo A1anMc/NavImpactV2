@@ -1,9 +1,5 @@
 'use client';
 
-// Force dynamic rendering to prevent static generation issues
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'default-no-store';
-
 import MatchingGrants from '@/components/grants/MatchingGrants';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Info } from 'lucide-react';
