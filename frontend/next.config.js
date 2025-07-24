@@ -3,13 +3,16 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Disable static generation completely
+  // Force dynamic rendering
   experimental: {
     isrMemoryCacheSize: 0,
   },
   
-  // Force all pages to be dynamic
+  // Disable static generation completely
   trailingSlash: false,
+  
+  // Force all pages to be dynamic
+  generateStaticParams: false,
   
   // Environment variables
   env: {
@@ -31,6 +34,7 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
         ],
       },
     ];
