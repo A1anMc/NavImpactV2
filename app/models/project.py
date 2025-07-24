@@ -15,9 +15,8 @@ class Project(Base):
     status = Column(String, nullable=False, default="planning")
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
-    # Temporarily remove budget fields until migration is applied
-    # budget = Column(Float, nullable=True)  # Project budget amount
-    # budget_currency = Column(String(3), nullable=False, default="AUD")  # Currency code
+    budget = Column(Float, nullable=True)  # Project budget amount
+    budget_currency = Column(String(3), nullable=False, default="AUD")  # Currency code
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
