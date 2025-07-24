@@ -6,6 +6,7 @@ export const fetchCache = 'default-no-store';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardLevels from '@/components/dashboard/DashboardLevels';
+import TeamCollaboration from '@/components/dashboard/TeamCollaboration';
 
 export default function DemoPage() {
   return (
@@ -159,6 +160,20 @@ export default function DemoPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Team Collaboration Showcase */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Team Collaboration Component</h2>
+        <TeamCollaboration
+          members={[
+            { name: 'Alexandra Deff', task: 'Github Project Repository', status: 'Completed' },
+            { name: 'Edwin Adenike', task: 'Integrate User Authentication System', status: 'In Progress' },
+            { name: 'Isaac Oluwatemilorun', task: 'Develop Search and Filter Functionality', status: 'Pending' },
+            { name: 'David Oshodi', task: 'Responsive Layout for Homepage', status: 'In Progress' },
+          ]}
+          onAddMember={() => alert('Add member clicked')}
+        />
       </div>
     </div>
   );
