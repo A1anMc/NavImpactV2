@@ -18,7 +18,7 @@ def check_backend_health():
     # Detect environment - check for local development first
     backend_urls = [
         "http://localhost:8000/api/v1/health",  # Local development
-        "https://sge-dashboard-api.onrender.com/health"  # Production
+        "https://navimpact-api.onrender.com/health"  # Production
     ]
     
     for url in backend_urls:
@@ -48,7 +48,7 @@ def check_frontend_health():
     print("-" * 30)
     
     try:
-        response = requests.get("https://sge-dashboard-web.onrender.com", timeout=10)
+        response = requests.get("https://navimpact-frontend.onrender.com", timeout=10)
         if response.status_code == 200:
             print("✅ Frontend: Healthy")
             return True
@@ -74,7 +74,7 @@ def check_api_endpoints():
     # Detect environment - check for local development first
     base_urls = [
         "http://localhost:8000",  # Local development
-        "https://sge-dashboard-api.onrender.com"  # Production
+        "https://navimpact-api.onrender.com"  # Production
     ]
     
     base_url = None
@@ -113,12 +113,12 @@ def check_cors():
     # Detect environment - check for local development first
     base_urls = [
         "http://localhost:8000",  # Local development
-        "https://sge-dashboard-api.onrender.com"  # Production
+        "https://navimpact-api.onrender.com"  # Production
     ]
     
     origins = [
         "http://localhost:3000",  # Local development
-        "https://sge-dashboard-web.onrender.com"  # Production
+        "https://navimpact-frontend.onrender.com"  # Production
     ]
     
     for base_url, origin in zip(base_urls, origins):
@@ -158,7 +158,7 @@ def check_cors():
 
 def main():
     """Run full system check."""
-    print("🔍 SGE Dashboard Full System Check")
+    print("🔍 NavImpact Dashboard Full System Check")
     print("=" * 50)
     print(f"Timestamp: {datetime.now().isoformat()}")
     

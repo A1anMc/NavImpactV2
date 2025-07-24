@@ -97,7 +97,7 @@ def test_database_connection(database_url: str) -> bool:
 
 def main():
     """Main validation function."""
-    logger.info("🔍 SGE Dashboard Database Validation")
+    logger.info("🔍 NavImpact Dashboard Database Validation")
     logger.info("=" * 50)
     
     # Load environment variables

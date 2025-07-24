@@ -2,7 +2,7 @@
 """
 Environment Configuration Validator
 
-This script validates the environment configuration for the SGE Dashboard application.
+This script validates the environment configuration for the NavImpact Dashboard application.
 It ensures all required variables are set and properly formatted.
 """
 

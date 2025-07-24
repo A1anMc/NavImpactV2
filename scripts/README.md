@@ -1,6 +1,6 @@
-# SGE Dashboard Testing & Monitoring Scripts
+# NavImpact Dashboard Testing & Monitoring Scripts
 
-This directory contains various scripts for testing, monitoring, and maintaining the SGE Dashboard application.
+This directory contains various scripts for testing, monitoring, and maintaining the NavImpact Dashboard application.
 
 ## 🧪 Testing Scripts
 
