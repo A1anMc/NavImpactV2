@@ -1,8 +1,8 @@
-# Error Handling
+# NavImpact Error Handling Guide
 
 ## Overview
 
-The SGE Dashboard implements a comprehensive error handling system. This guide provides examples of how to use the error handling components and utilities in your code.
+The NavImpact Dashboard implements a comprehensive error handling system. This guide provides examples of how to use the error handling components and utilities in your code.
 
 ## Error Boundary
 

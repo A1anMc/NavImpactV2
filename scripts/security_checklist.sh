@@ -1,9 +1,5 @@
 #!/bin/bash
-
-# Security Checklist Script for SGE Dashboard
-# This script verifies security configurations after deployment
-
-set -e
+# Security Checklist Script for NavImpact Dashboard
 
 # Colors for output
 RED='\033[0;31m'
@@ -12,11 +8,16 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-BACKEND_URL=${1:-"https://navimpact-api.onrender.com"}
-FRONTEND_URL=${2:-"https://navimpact-web.onrender.com"}
+# Function to print status
+print_status() {
+    if [ $1 -eq 0 ]; then
+        echo -e "${GREEN}✅ $2${NC}"
+    else
+        echo -e "${RED}❌ $2${NC}"
+    fi
+}
 
-echo -e "${BLUE}🔒 SGE Dashboard Security Checklist${NC}"
+echo -e "${BLUE}🔒 NavImpact Dashboard Security Checklist${NC}"
 echo -e "${BLUE}======================================${NC}"
 echo ""
 echo "Backend URL: $BACKEND_URL"

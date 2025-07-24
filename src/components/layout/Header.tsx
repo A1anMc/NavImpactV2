@@ -1,11 +1,11 @@
-import { FC } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React from 'react';
+import { Bars3Icon, BellIcon } from '@heroicons/react/24/outline';
 
-// Custom SGE dashboard header, built by Alan – not boilerplate
+interface HeaderProps {
+  setSidebarOpen: (open: boolean) => void;
+}
+
+// Custom NavImpact dashboard header, built by Alan – not boilerplate
 const userNavigation = [
   { name: 'Your Profile', href: '/profile' },
   { name: 'Time Logs', href: '/time-logs' },

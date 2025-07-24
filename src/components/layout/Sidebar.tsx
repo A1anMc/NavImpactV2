@@ -1,25 +1,25 @@
-import { FC } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
-  DocumentMagnifyingGlassIcon,
-  ClipboardDocumentListIcon,
-  ChartBarIcon,
-  PhotoIcon,
-  ClockIcon,
+  DocumentTextIcon,
   FolderIcon,
-  CogIcon,
+  ClipboardDocumentListIcon,
+  ClockIcon,
+  Cog6ToothIcon,
+  ChartBarIcon,
+  NewspaperIcon
 } from '@heroicons/react/24/outline';
 
-// Custom SGE dashboard navigation, built by Alan – not boilerplate
+// Custom NavImpact dashboard navigation, built by Alan – not boilerplate
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
   { name: 'Projects', href: '/projects', icon: FolderIcon },
-  { name: 'Grants', href: '/grants', icon: DocumentMagnifyingGlassIcon },
+  { name: 'Grants', href: '/grants', icon: DocumentTextIcon },
   { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentListIcon },
   { name: 'Impact', href: '/impact', icon: ChartBarIcon },
-  { name: 'Media', href: '/media', icon: PhotoIcon },
+  { name: 'Media', href: '/media', icon: NewspaperIcon },
   { name: 'Time Logs', href: '/time-logs', icon: ClockIcon },
 ];
 
@@ -66,7 +66,7 @@ const Sidebar: FC = () => {
             pathname === '/settings' ? 'bg-gray-800 text-white' : ''
           }`}
         >
-          <CogIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white" />
+          <Cog6ToothIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white" />
           Settings
         </Link>
       </div>

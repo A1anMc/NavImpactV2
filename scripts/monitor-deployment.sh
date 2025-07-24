@@ -1,12 +1,10 @@
 #!/bin/bash
-
-# Deployment Monitor Script for SGE Dashboard
-# Monitors deployment progress and provides real-time feedback
-
-echo "📡 SGE Dashboard Deployment Monitor"
-echo "===================================="
+# Deployment Monitor Script for NavImpact Dashboard
 
 # Configuration
+echo "📡 NavImpact Dashboard Deployment Monitor"
+echo "===================================="
+
 BACKEND_URL="https://navimpact-api.onrender.com"
 FRONTEND_URL="https://navimpact-web.onrender.com"
 CHECK_INTERVAL=15  # seconds between checks

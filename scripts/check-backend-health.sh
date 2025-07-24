@@ -1,19 +1,18 @@
 #!/bin/bash
 
-# ---- Config ----
-BACKEND_URL=${1:-https://navimpact-api.onrender.com}
-HEALTH_PATH="/health"
+# Health check script for NavImpact API
+echo "🏥 NavImpact Backend Health Check"
+echo "================================="
 
-echo "🔍 Checking health endpoint at: $BACKEND_URL$HEALTH_PATH"
+# Test health endpoint
+echo "Testing health endpoint..."
+curl -s https://navimpact-api.onrender.com/health | jq .
 
-# ---- Execute ----
-response=$(curl -s -o /dev/null -w "%{http_code}" "$BACKEND_URL$HEALTH_PATH")
+# Test detailed health
+echo -e "\nTesting detailed health..."
+curl -s https://navimpact-api.onrender.com/health/detailed | jq .
 
-if [ "$response" == "200" ]; then
-    echo "✅ Backend is healthy! ($response)"
-    exit 0
-else
-    echo "❌ Backend health check failed. Status code: $response"
-    echo "📎 Check logs at: https://dashboard.render.com/web/sge-dashboard-api"
-    exit 1
-fi 
+echo -e "\n📊 Database metrics:"
+curl -s https://navimpact-api.onrender.com/health/db-metrics | jq .
+
+echo -e "\n📎 Check logs at: https://dashboard.render.com/web/navimpact-api" 

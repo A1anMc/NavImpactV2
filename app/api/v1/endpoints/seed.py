@@ -1,223 +1,23 @@
 """Seeding endpoints for populating database with sample data."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.core import deps
-from app.models.industry_news import IndustryNews
-import hashlib
-from datetime import datetime, timedelta, timezone
-from typing import List, Dict
+from sqlalchemy import text
+from datetime import datetime, timedelta
+from app.db.session import get_db
+from app.core.security import get_password_hash
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-def generate_url_hash(url: str) -> str:
-    """Generate a unique hash for the URL"""
-    return hashlib.md5(url.encode()).hexdigest()
-
-def get_sample_news_data() -> List[Dict]:
-    """Generate sample news data across different sectors"""
-    
-    # Base date for generating realistic timestamps
-    base_date = datetime.now(timezone.utc)
-    
-    news_data = [
-        # TECHNOLOGY SECTOR
-        {
-            "sector": "technology",
-            "title": "Australian Government Announces $50M AI Innovation Fund",
-            "summary": "New funding initiative to support AI startups and research institutions across Australia, focusing on ethical AI development and commercialisation.",
-            "url": "https://www.innovation.gov.au/news/ai-innovation-fund-2025",
-            "source": "Department of Industry, Science and Resources",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.95,
-            "published_at": base_date - timedelta(days=2)
-        },
-        {
-            "sector": "technology",
-            "title": "Sydney Tech Hub Receives Major Funding Boost",
-            "summary": "NSW Government invests $25M in expanding Sydney's tech ecosystem, with new co-working spaces and mentorship programs for startups.",
-            "url": "https://twitter.com/nswgov/status/1234567890",
-            "source": "NSW Government",
-            "platform": "twitter",
-            "platform_icon": "twitter",
-            "relevance_score": 0.82,
-            "published_at": base_date - timedelta(days=5)
-        },
-        {
-            "sector": "technology",
-            "title": "Quantum Computing Research Grant Opens Applications",
-            "summary": "Australian Research Council announces $15M funding round for quantum computing research projects, deadline March 2025.",
-            "url": "https://www.arc.gov.au/funding/quantum-computing-grants",
-            "source": "Australian Research Council",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.88,
-            "published_at": base_date - timedelta(days=1)
-        },
-        
-        # CREATIVE ARTS SECTOR
-        {
-            "sector": "creative-arts",
-            "title": "Screen Australia Opens Documentary Development Fund",
-            "summary": "New $12M fund supporting Australian documentary filmmakers, with focus on diverse voices and innovative storytelling approaches.",
-            "url": "https://www.screenaustralia.gov.au/funding/documentary-development",
-            "source": "Screen Australia",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.93,
-            "published_at": base_date - timedelta(days=3)
-        },
-        {
-            "sector": "creative-arts",
-            "title": "Creative Australia Announces Regional Arts Funding",
-            "summary": "Multi-year $30M investment in regional creative communities, supporting local artists and cultural infrastructure development.",
-            "url": "https://www.linkedin.com/posts/creative-australia-funding-update",
-            "source": "Creative Australia",
-            "platform": "linkedin",
-            "platform_icon": "linkedin",
-            "relevance_score": 0.87,
-            "published_at": base_date - timedelta(days=7)
-        },
-        {
-            "sector": "creative-arts",
-            "title": "Indigenous Storytelling Grant Program Expanded",
-            "summary": "Additional $8M allocated to support Indigenous creators in film, digital media, and interactive storytelling projects.",
-            "url": "https://www.facebook.com/ScreenAustralia/posts/indigenous-storytelling-grants",
-            "source": "Screen Australia",
-            "platform": "facebook",
-            "platform_icon": "facebook",
-            "relevance_score": 0.91,
-            "published_at": base_date - timedelta(days=4)
-        },
-        
-        # HEALTH SECTOR
-        {
-            "sector": "health",
-            "title": "Medical Research Future Fund Opens New Applications",
-            "summary": "MRFF announces $100M funding round for health innovation projects, including digital health and AI-assisted diagnostics.",
-            "url": "https://www.health.gov.au/mrff/funding-opportunities",
-            "source": "Department of Health and Aged Care",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.94,
-            "published_at": base_date - timedelta(days=1)
-        },
-        {
-            "sector": "health",
-            "title": "Mental Health Innovation Challenge Launched",
-            "summary": "Cross-sector initiative offering $20M for innovative mental health solutions, targeting youth and rural communities.",
-            "url": "https://twitter.com/healthgov/status/mental-health-innovation",
-            "source": "Mental Health Commission",
-            "platform": "twitter",
-            "platform_icon": "twitter",
-            "relevance_score": 0.89,
-            "published_at": base_date - timedelta(days=6)
-        },
-        
-        # ENVIRONMENT SECTOR
-        {
-            "sector": "environment",
-            "title": "Clean Energy Innovation Fund Second Round Opens",
-            "summary": "CEIF announces $75M for clean energy startups and renewable technology projects, with fast-track assessment process.",
-            "url": "https://www.cleanenergyregulator.gov.au/ceif-round-2",
-            "source": "Clean Energy Regulator",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.92,
-            "published_at": base_date - timedelta(days=3)
-        },
-        {
-            "sector": "environment",
-            "title": "Biodiversity Conservation Grants Now Available",
-            "summary": "Environment Department launches $40M program supporting ecosystem restoration and endangered species protection projects.",
-            "url": "https://www.linkedin.com/posts/environment-gov-au-biodiversity-grants",
-            "source": "Department of Climate Change, Energy, Environment and Water",
-            "platform": "linkedin",
-            "platform_icon": "linkedin",
-            "relevance_score": 0.86,
-            "published_at": base_date - timedelta(days=8)
-        },
-        
-        # EDUCATION SECTOR
-        {
-            "sector": "education",
-            "title": "EdTech Innovation Grants Open for Applications",
-            "summary": "Education Department offers $35M for educational technology solutions, focusing on accessibility and remote learning.",
-            "url": "https://www.education.gov.au/edtech-innovation-grants",
-            "source": "Department of Education",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.83,
-            "published_at": base_date - timedelta(days=5)
-        },
-        {
-            "sector": "education",
-            "title": "University Research Commercialisation Fund Expanded",
-            "summary": "Additional $60M allocated to help universities commercialise research discoveries and create industry partnerships.",
-            "url": "https://twitter.com/education_gov/status/university-research-funding",
-            "source": "Department of Education",
-            "platform": "twitter",
-            "platform_icon": "twitter",
-            "relevance_score": 0.88,
-            "published_at": base_date - timedelta(days=4)
-        },
-        
-        # AGRICULTURE SECTOR
-        {
-            "sector": "agriculture",
-            "title": "AgTech Development Program Launches Third Round",
-            "summary": "DAFF announces $28M for agricultural technology innovations, including precision farming and sustainable practices.",
-            "url": "https://www.agriculture.gov.au/agtech-development-program",
-            "source": "Department of Agriculture, Fisheries and Forestry",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.85,
-            "published_at": base_date - timedelta(days=2)
-        },
-        
-        # MANUFACTURING SECTOR
-        {
-            "sector": "manufacturing",
-            "title": "Modern Manufacturing Initiative Opens New Stream",
-            "summary": "Industry Department launches $90M funding for advanced manufacturing projects, focusing on Industry 4.0 technologies.",
-            "url": "https://www.industry.gov.au/modern-manufacturing-initiative",
-            "source": "Department of Industry, Science and Resources",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.90,
-            "published_at": base_date - timedelta(days=1)
-        },
-        
-        # SOCIAL SERVICES SECTOR
-        {
-            "sector": "social-services",
-            "title": "Community Development Grants Program Expanded",
-            "summary": "DSS increases funding to $45M for community-led initiatives addressing social inclusion and disadvantage.",
-            "url": "https://www.dss.gov.au/community-development-grants",
-            "source": "Department of Social Services",
-            "platform": "website",
-            "platform_icon": "globe",
-            "relevance_score": 0.81,
-            "published_at": base_date - timedelta(days=6)
-        }
-    ]
-    
-    # Generate URL hashes for all entries
-    for item in news_data:
-        item["url_hash"] = generate_url_hash(item["url"])
-    
-    return news_data
-
 @router.post("/news")
-async def seed_news_database(
-    clear_existing: bool = False,
-    db: Session = Depends(deps.get_db)
-):
-    """Seed the news database with sample data."""
+async def seed_news(clear_existing: bool = False, db: Session = Depends(get_db)):
+    """Seed industry news data"""
     try:
-        # Check existing data
-        existing_count = db.query(IndustryNews).count()
+        # Check if news already exists
+        result = db.execute(text("SELECT COUNT(*) FROM industry_news"))
+        existing_count = result.scalar()
         
         if existing_count > 0 and not clear_existing:
             return {
@@ -226,86 +26,372 @@ async def seed_news_database(
                 "existing_count": existing_count
             }
         
-        # Clear existing data if requested
-        if clear_existing and existing_count > 0:
-            deleted = db.query(IndustryNews).delete()
-            db.commit()
+        if clear_existing:
+            db.execute(text("DELETE FROM industry_news"))
+            logger.info("Cleared existing news data")
         
-        # Get sample data
-        news_data = get_sample_news_data()
+        # Sample news data
+        news_items = [
+            {
+                "title": "Major Healthcare Grant Program Launches",
+                "content": "The government announces a $50M healthcare innovation grant program targeting rural communities.",
+                "source": "Healthcare Innovation Weekly",
+                "url": "https://example.com/healthcare-grant-2024",
+                "sector": "healthcare",
+                "relevance_score": 0.95,
+                "summary": "New healthcare grants available for rural innovation projects",
+                "published_at": datetime.now() - timedelta(days=1)
+            },
+            {
+                "title": "Education Technology Funding Opportunity",
+                "content": "EdTech startups can now apply for up to $100K in development grants for educational software.",
+                "source": "EdTech Today",
+                "url": "https://example.com/edtech-funding-2024",
+                "sector": "education",
+                "relevance_score": 0.88,
+                "summary": "EdTech grants up to $100K for educational software development",
+                "published_at": datetime.now() - timedelta(days=2)
+            },
+            {
+                "title": "Environmental Conservation Grants Open",
+                "content": "The Environmental Protection Agency opens applications for conservation grants focusing on biodiversity.",
+                "source": "Green Future Magazine",
+                "url": "https://example.com/environmental-grants-2024",
+                "sector": "environment",
+                "relevance_score": 0.92,
+                "summary": "EPA conservation grants now accepting applications",
+                "published_at": datetime.now() - timedelta(days=3)
+            },
+            {
+                "title": "Tech Innovation Fund Announced",
+                "content": "A new $200M fund for technology innovation has been established to support AI and machine learning research.",
+                "source": "Tech Innovation Report",
+                "url": "https://example.com/tech-innovation-fund-2024",
+                "sector": "technology",
+                "relevance_score": 0.90,
+                "summary": "$200M fund for AI and machine learning research projects",
+                "published_at": datetime.now() - timedelta(days=4)
+            },
+            {
+                "title": "Community Development Grants Available",
+                "content": "Local communities can apply for grants up to $75K for infrastructure and social development projects.",
+                "source": "Community Development Weekly",
+                "url": "https://example.com/community-grants-2024",
+                "sector": "social-services",
+                "relevance_score": 0.85,
+                "summary": "Community grants up to $75K for infrastructure projects",
+                "published_at": datetime.now() - timedelta(days=5)
+            }
+        ]
         
-        # Insert news items
-        created_count = 0
-        for item in news_data:
-            try:
-                news_item = IndustryNews(**item)
-                db.add(news_item)
-                created_count += 1
-            except Exception as e:
-                print(f"Failed to add item: {str(e)}")
-                continue
+        for item in news_items:
+            db.execute(text("""
+                INSERT INTO industry_news 
+                (title, content, source, url, sector, relevance_score, summary, published_at, created_at, updated_at)
+                VALUES (:title, :content, :source, :url, :sector, :relevance_score, :summary, :published_at, NOW(), NOW())
+            """), item)
         
-        # Commit changes
         db.commit()
-        
-        # Get final stats
-        final_count = db.query(IndustryNews).count()
-        sectors = db.query(IndustryNews.sector).distinct().all()
-        sector_counts = {}
-        for (sector,) in sectors:
-            count = db.query(IndustryNews).filter(IndustryNews.sector == sector).count()
-            sector_counts[sector] = count
         
         return {
             "status": "success",
-            "message": f"Successfully seeded {created_count} news items",
-            "created_count": created_count,
-            "total_count": final_count,
-            "sectors": sector_counts,
-            "cleared_existing": existing_count if clear_existing else 0
+            "message": f"Successfully seeded {len(news_items)} news items",
+            "items_created": len(news_items)
         }
         
     except Exception as e:
+        logger.error(f"Failed to seed news: {str(e)}")
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to seed database: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to seed news: {str(e)}")
 
-@router.delete("/news")
-async def clear_news_database(db: Session = Depends(deps.get_db)):
-    """Clear all news data from the database."""
+@router.post("/all")
+async def seed_all_data(clear_existing: bool = False, db: Session = Depends(get_db)):
+    """Seed all test data: users, projects, tasks, grants, and news"""
     try:
-        deleted_count = db.query(IndustryNews).count()
-        db.query(IndustryNews).delete()
+        logger.info("🌱 Starting comprehensive data seeding...")
+        
+        if clear_existing:
+            logger.info("🧹 Clearing existing data...")
+            # Clear in reverse dependency order
+            db.execute(text("DELETE FROM task_comments"))
+            db.execute(text("DELETE FROM time_entries"))
+            db.execute(text("DELETE FROM team_members"))
+            db.execute(text("DELETE FROM tasks"))
+            db.execute(text("DELETE FROM projects"))
+            db.execute(text("DELETE FROM industry_news"))
+            db.execute(text("DELETE FROM grants"))
+            db.execute(text("DELETE FROM users WHERE email LIKE '%@navimpact.test'"))
+            db.commit()
+            logger.info("✅ Cleared existing test data")
+        
+        # 1. Create test users
+        logger.info("👤 Creating test users...")
+        test_users = [
+            {
+                "email": "admin@navimpact.test",
+                "username": "admin",
+                "full_name": "Admin User",
+                "hashed_password": get_password_hash("admin123"),
+                "is_active": True,
+                "is_superuser": True
+            },
+            {
+                "email": "demo@navimpact.test", 
+                "username": "demo",
+                "full_name": "Demo User",
+                "hashed_password": get_password_hash("demo123"),
+                "is_active": True,
+                "is_superuser": False
+            },
+            {
+                "email": "project.manager@navimpact.test",
+                "username": "pmgr",
+                "full_name": "Project Manager",
+                "hashed_password": get_password_hash("pm123"),
+                "is_active": True,
+                "is_superuser": False
+            }
+        ]
+        
+        user_ids = []
+        for user_data in test_users:
+            # Check if user already exists
+            result = db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": user_data["email"]})
+            existing_user = result.fetchone()
+            
+            if existing_user:
+                user_ids.append(existing_user[0])
+                logger.info(f"✅ User {user_data['email']} already exists")
+            else:
+                result = db.execute(text("""
+                    INSERT INTO users (email, username, full_name, hashed_password, is_active, is_superuser, created_at, updated_at)
+                    VALUES (:email, :username, :full_name, :hashed_password, :is_active, :is_superuser, NOW(), NOW())
+                    RETURNING id
+                """), user_data)
+                user_id = result.scalar()
+                user_ids.append(user_id)
+                logger.info(f"✅ Created user: {user_data['email']}")
+        
         db.commit()
+        
+        # 2. Create test projects
+        logger.info("📁 Creating test projects...")
+        sample_projects = [
+            {
+                "name": "Community Health Initiative",
+                "description": "A comprehensive health program targeting underserved communities with mobile clinics and health education workshops.",
+                "status": "active",
+                "start_date": datetime.now() - timedelta(days=30),
+                "end_date": datetime.now() + timedelta(days=90),
+                "budget": 75000.0,
+                "budget_currency": "AUD",
+                "owner_id": user_ids[0]
+            },
+            {
+                "name": "Youth Education Program",
+                "description": "After-school tutoring and mentorship program for at-risk youth in urban areas.",
+                "status": "planning",
+                "start_date": datetime.now() + timedelta(days=15),
+                "end_date": datetime.now() + timedelta(days=120),
+                "budget": 45000.0,
+                "budget_currency": "AUD",
+                "owner_id": user_ids[1]
+            },
+            {
+                "name": "Environmental Conservation Project",
+                "description": "Local ecosystem restoration and community awareness campaign for coastal preservation.",
+                "status": "active",
+                "start_date": datetime.now() - timedelta(days=15),
+                "end_date": datetime.now() + timedelta(days=75),
+                "budget": 60000.0,
+                "budget_currency": "AUD",
+                "owner_id": user_ids[2]
+            },
+            {
+                "name": "Digital Literacy Workshop",
+                "description": "Computer skills training for seniors and low-income families to bridge the digital divide.",
+                "status": "completed",
+                "start_date": datetime.now() - timedelta(days=120),
+                "end_date": datetime.now() - timedelta(days=30),
+                "budget": 30000.0,
+                "budget_currency": "AUD",
+                "owner_id": user_ids[0]
+            },
+            {
+                "name": "Food Security Initiative",
+                "description": "Community garden development and sustainable agriculture training for local families.",
+                "status": "on-hold",
+                "start_date": datetime.now() + timedelta(days=30),
+                "end_date": datetime.now() + timedelta(days=150),
+                "budget": 55000.0,
+                "budget_currency": "AUD",
+                "owner_id": user_ids[1]
+            }
+        ]
+        
+        project_ids = []
+        for project_data in sample_projects:
+            result = db.execute(text("""
+                INSERT INTO projects 
+                (name, description, status, start_date, end_date, budget, budget_currency, owner_id, created_at, updated_at)
+                VALUES (:name, :description, :status, :start_date, :end_date, :budget, :budget_currency, :owner_id, NOW(), NOW())
+                RETURNING id
+            """), project_data)
+            project_id = result.scalar()
+            project_ids.append(project_id)
+            logger.info(f"✅ Created project: {project_data['name']}")
+        
+        db.commit()
+        
+        # 3. Create test tasks
+        logger.info("📋 Creating test tasks...")
+        task_templates = [
+            ("Project Planning", "Develop detailed project plan and timeline", "COMPLETED", "HIGH"),
+            ("Team Recruitment", "Hire and onboard project team members", "IN_PROGRESS", "HIGH"),
+            ("Stakeholder Engagement", "Engage with key stakeholders and partners", "PENDING", "MEDIUM"),
+            ("Budget Review", "Review and approve project budget allocation", "COMPLETED", "HIGH"),
+            ("Risk Assessment", "Identify and mitigate project risks", "IN_PROGRESS", "MEDIUM"),
+            ("Progress Reporting", "Prepare monthly progress reports", "PENDING", "LOW")
+        ]
+        
+        tasks_created = 0
+        for project_id in project_ids:
+            for i, (title, description, status, priority) in enumerate(task_templates[:4]):  # 4 tasks per project
+                due_date = datetime.now() + timedelta(days=(i * 7))
+                estimated_hours = 8.0 + (i * 4.0)
+                actual_hours = estimated_hours if status == "COMPLETED" else (estimated_hours * 0.5 if status == "IN_PROGRESS" else 0.0)
+                
+                db.execute(text("""
+                    INSERT INTO tasks 
+                    (title, description, status, priority, due_date, estimated_hours, actual_hours, 
+                     project_id, assignee_id, creator_id, created_at, updated_at)
+                    VALUES (:title, :description, :status, :priority, :due_date, :estimated_hours, :actual_hours,
+                            :project_id, :assignee_id, :creator_id, NOW(), NOW())
+                """), {
+                    "title": title,
+                    "description": description,
+                    "status": status,
+                    "priority": priority,
+                    "due_date": due_date,
+                    "estimated_hours": estimated_hours,
+                    "actual_hours": actual_hours,
+                    "project_id": project_id,
+                    "assignee_id": user_ids[i % len(user_ids)],
+                    "creator_id": user_ids[0]
+                })
+                tasks_created += 1
+        
+        db.commit()
+        logger.info(f"✅ Created {tasks_created} tasks")
+        
+        # 4. Create test grants
+        logger.info("💰 Creating test grants...")
+        sample_grants = [
+            {
+                "title": "Healthcare Innovation Grant 2024",
+                "description": "Funding for innovative healthcare solutions in rural communities",
+                "funding_body": "Department of Health",
+                "amount": 100000.0,
+                "currency": "AUD",
+                "deadline": datetime.now() + timedelta(days=45),
+                "status": "open",
+                "eligibility_criteria": "Healthcare organizations, NGOs, research institutions",
+                "application_url": "https://health.gov.au/grants/healthcare-innovation",
+                "sector": "healthcare",
+                "location": "Australia"
+            },
+            {
+                "title": "Education Technology Development Fund",
+                "description": "Support for developing educational technology solutions",
+                "funding_body": "Department of Education",
+                "amount": 75000.0,
+                "currency": "AUD",
+                "deadline": datetime.now() + timedelta(days=60),
+                "status": "open",
+                "eligibility_criteria": "Educational institutions, EdTech startups",
+                "application_url": "https://education.gov.au/grants/edtech-fund",
+                "sector": "education",
+                "location": "Australia"
+            },
+            {
+                "title": "Environmental Conservation Grant",
+                "description": "Funding for environmental protection and conservation projects",
+                "funding_body": "Environmental Protection Agency",
+                "amount": 150000.0,
+                "currency": "AUD",
+                "deadline": datetime.now() + timedelta(days=30),
+                "status": "open",
+                "eligibility_criteria": "Environmental organizations, research institutions",
+                "application_url": "https://epa.gov.au/grants/conservation",
+                "sector": "environment",
+                "location": "Australia"
+            }
+        ]
+        
+        for grant_data in sample_grants:
+            db.execute(text("""
+                INSERT INTO grants 
+                (title, description, funding_body, amount, currency, deadline, status, 
+                 eligibility_criteria, application_url, sector, location, created_at, updated_at)
+                VALUES (:title, :description, :funding_body, :amount, :currency, :deadline, :status,
+                        :eligibility_criteria, :application_url, :sector, :location, NOW(), NOW())
+            """), grant_data)
+            logger.info(f"✅ Created grant: {grant_data['title']}")
+        
+        db.commit()
+        
+        # 5. Seed news (reuse existing function)
+        await seed_news(clear_existing=True, db=db)
+        
+        # Get final counts
+        users_count = db.execute(text("SELECT COUNT(*) FROM users WHERE email LIKE '%@navimpact.test'")).scalar()
+        projects_count = db.execute(text("SELECT COUNT(*) FROM projects")).scalar()
+        tasks_count = db.execute(text("SELECT COUNT(*) FROM tasks")).scalar()
+        grants_count = db.execute(text("SELECT COUNT(*) FROM grants")).scalar()
+        news_count = db.execute(text("SELECT COUNT(*) FROM industry_news")).scalar()
+        
+        logger.info("🎉 Data seeding completed successfully!")
         
         return {
             "status": "success",
-            "message": f"Cleared {deleted_count} news items from database",
-            "deleted_count": deleted_count
+            "message": "Successfully seeded all test data",
+            "data_created": {
+                "users": users_count,
+                "projects": projects_count,
+                "tasks": tasks_count,
+                "grants": grants_count,
+                "news": news_count
+            },
+            "test_credentials": {
+                "admin": {"email": "admin@navimpact.test", "password": "admin123"},
+                "demo": {"email": "demo@navimpact.test", "password": "demo123"},
+                "project_manager": {"email": "project.manager@navimpact.test", "password": "pm123"}
+            }
         }
         
     except Exception as e:
+        logger.error(f"Failed to seed all data: {str(e)}")
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to clear database: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to seed data: {str(e)}")
 
 @router.get("/status")
-async def get_database_status(db: Session = Depends(deps.get_db)):
-    """Get current database seeding status."""
+async def get_seed_status(db: Session = Depends(get_db)):
+    """Check current database seeding status"""
     try:
-        news_count = db.query(IndustryNews).count()
+        counts = {}
+        tables = ["users", "projects", "tasks", "grants", "industry_news", "team_members", "task_comments", "time_entries"]
         
-        sectors = {}
-        if news_count > 0:
-            sector_data = db.query(IndustryNews.sector).distinct().all()
-            for (sector,) in sector_data:
-                count = db.query(IndustryNews).filter(IndustryNews.sector == sector).count()
-                sectors[sector] = count
+        for table in tables:
+            result = db.execute(text(f"SELECT COUNT(*) FROM {table}"))
+            counts[table] = result.scalar()
         
         return {
             "status": "success",
-            "news_count": news_count,
-            "sectors": sectors,
-            "database_ready": news_count > 0
+            "database_status": "connected",
+            "table_counts": counts,
+            "is_seeded": counts["projects"] > 0 and counts["users"] > 0
         }
         
     except Exception as e:
+        logger.error(f"Failed to get seed status: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get status: {str(e)}") 
