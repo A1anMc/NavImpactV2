@@ -19,8 +19,9 @@ class ProjectCreate(BaseModel):
     status: str = "planning"
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    budget: Optional[float] = None
-    budget_currency: str = "AUD"
+    # Temporarily remove budget fields until migration is applied
+    # budget: Optional[float] = None
+    # budget_currency: str = "AUD"
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
@@ -28,8 +29,9 @@ class ProjectUpdate(BaseModel):
     status: Optional[str] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    budget: Optional[float] = None
-    budget_currency: Optional[str] = None
+    # Temporarily remove budget fields until migration is applied
+    # budget: Optional[float] = None
+    # budget_currency: Optional[str] = None
 
 class ProjectResponse(BaseModel):
     id: int
@@ -38,8 +40,9 @@ class ProjectResponse(BaseModel):
     status: str
     start_date: Optional[datetime]
     end_date: Optional[datetime]
-    budget: Optional[float]
-    budget_currency: str
+    # Temporarily remove budget fields until migration is applied
+    # budget: Optional[float]
+    # budget_currency: str
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     owner_id: int
@@ -95,8 +98,8 @@ async def list_projects(
                 "status": project.status,
                 "start_date": project.start_date.isoformat() if project.start_date else None,
                 "end_date": project.end_date.isoformat() if project.end_date else None,
-                "budget": budget,
-                "budget_currency": budget_currency,
+                "budget": None,  # Will be available after migration
+                "budget_currency": "AUD",  # Will be available after migration
                 "created_at": project.created_at.isoformat() if project.created_at else None,
                 "updated_at": project.updated_at.isoformat() if project.updated_at else None,
                 "owner_id": project.owner_id,
@@ -147,8 +150,9 @@ async def create_project(
             status=project_data.status,
             start_date=project_data.start_date,
             end_date=project_data.end_date,
-            budget=project_data.budget,
-            budget_currency=project_data.budget_currency,
+            # Temporarily remove budget fields until migration is applied
+            # budget=project_data.budget,
+            # budget_currency=project_data.budget_currency,
             owner_id=owner_id
         )
         
@@ -163,8 +167,8 @@ async def create_project(
             "status": project.status,
             "start_date": project.start_date.isoformat() if project.start_date else None,
             "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": project.budget,
-            "budget_currency": project.budget_currency,
+            "budget": None,  # Will be available after migration
+            "budget_currency": "AUD",  # Will be available after migration
             "created_at": project.created_at.isoformat() if project.created_at else None,
             "updated_at": project.updated_at.isoformat() if project.updated_at else None,
             "owner_id": project.owner_id,
@@ -202,14 +206,6 @@ async def get_project(
         # Calculate budget utilisation (placeholder)
         budget_utilised = 0.0
         
-        # Handle budget fields gracefully (in case columns don't exist yet)
-        try:
-            budget = project.budget
-            budget_currency = project.budget_currency
-        except AttributeError:
-            budget = None
-            budget_currency = "AUD"
-        
         return {
             "id": project.id,
             "name": project.name,
@@ -217,8 +213,8 @@ async def get_project(
             "status": project.status,
             "start_date": project.start_date.isoformat() if project.start_date else None,
             "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": budget,
-            "budget_currency": budget_currency,
+            "budget": None,  # Will be available after migration
+            "budget_currency": "AUD",  # Will be available after migration
             "created_at": project.created_at.isoformat() if project.created_at else None,
             "updated_at": project.updated_at.isoformat() if project.updated_at else None,
             "owner_id": project.owner_id,
@@ -272,10 +268,11 @@ async def update_project(
             project.start_date = project_data.start_date
         if project_data.end_date is not None:
             project.end_date = project_data.end_date
-        if project_data.budget is not None:
-            project.budget = project_data.budget
-        if project_data.budget_currency is not None:
-            project.budget_currency = project_data.budget_currency
+        # Temporarily remove budget fields until migration is applied
+        # if project_data.budget is not None:
+        #     project.budget = project_data.budget
+        # if project_data.budget_currency is not None:
+        #     project.budget_currency = project_data.budget_currency
         
         project.updated_at = datetime.utcnow()
         
@@ -292,8 +289,8 @@ async def update_project(
             "status": project.status,
             "start_date": project.start_date.isoformat() if project.start_date else None,
             "end_date": project.end_date.isoformat() if project.end_date else None,
-            "budget": project.budget,
-            "budget_currency": project.budget_currency,
+            "budget": None,  # Will be available after migration
+            "budget_currency": "AUD",  # Will be available after migration
             "created_at": project.created_at.isoformat() if project.created_at else None,
             "updated_at": project.updated_at.isoformat() if project.updated_at else None,
             "owner_id": project.owner_id,
