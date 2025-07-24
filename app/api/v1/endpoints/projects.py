@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.core.deps import get_db
+from app.core.auth import get_current_user
 from app.models.project import Project
 from app.models.user import User
 from app.models.team_member import TeamMember
@@ -133,12 +134,13 @@ async def list_projects(
 @router.post("/")
 async def create_project(
     project_data: ProjectCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new project."""
     try:
-        # For now, use a default user ID (will be replaced with proper auth)
-        owner_id = 1  # TODO: Get from current_user
+        # Use the authenticated user as the owner
+        owner_id = current_user.id
         
         project = Project(
             name=project_data.name,
