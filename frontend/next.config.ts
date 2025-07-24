@@ -5,13 +5,21 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Disable static generation
+  // Completely disable static generation and ISR
   experimental: {
     isrMemoryCacheSize: 0,
   },
   
-  // Force all pages to be dynamic
+  // Force all pages to be dynamic - no static generation
   trailingSlash: false,
+  
+  // Disable static optimization completely
+  distDir: '.next',
+  
+  // Force dynamic rendering for all pages
+  async generateStaticParams() {
+    return [];
+  },
   
   // Environment variables
   env: {
@@ -22,6 +30,21 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['navimpact-web.onrender.com', 'navimpact-api.onrender.com'],
     unoptimized: true, // Disable image optimization during build
+  },
+  
+  // Webpack configuration to handle client modules properly
+  webpack: (config, { isServer }) => {
+    // Ensure proper handling of client and server modules
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
+    return config;
   },
   
   // Security headers - Remove CSP for now to fix the eval issue

@@ -7,8 +7,6 @@ export const revalidate = false;
 export const fetchCache = 'force-no-store';
 export const runtime = 'nodejs';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
   DocumentMagnifyingGlassIcon, 
@@ -17,35 +15,24 @@ import {
   ClockIcon,
   CpuChipIcon
 } from '@heroicons/react/24/outline';
-import { Target, TrendingUp, Zap, Globe, Shield } from 'lucide-react';
-import AnimatedMetric from '@/components/ui/AnimatedMetric';
-import AnimatedCard from '@/components/ui/AnimatedCard';
-import GradientText from '@/components/ui/GradientText';
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Simplified Background Elements */}
-      <div className="absolute inset-0 overflow-hidden motion-reduce:hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 motion-reduce:opacity-5"></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Modern Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+        {/* Simple Header */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-                          <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                  <CpuChipIcon className="w-8 h-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900 motion-reduce:animate-none animate-pulse"></div>
+            <div className="relative">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                <CpuChipIcon className="w-8 h-8 text-white" />
               </div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900"></div>
+            </div>
             <div>
-              <GradientText className="text-4xl font-bold mb-2">
+              <h1 className="text-4xl font-bold text-white mb-2">
                 NavImpact Command Center
-              </GradientText>
+              </h1>
               <div className="space-y-3">
                 <p className="text-slate-300 text-lg font-medium">Welcome to NavImpact</p>
                 <p className="text-slate-300 text-base">A new way to see, shape, and scale impact.</p>
@@ -73,11 +60,11 @@ export default function DashboardPage() {
           </div>
           
           {/* Status Bar */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-4 mb-8">
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-4 mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full motion-reduce:animate-none animate-pulse"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                   <span className="text-white font-medium">All Systems Operational</span>
                 </div>
                 <div className="hidden md:flex items-center gap-4 text-slate-300 text-sm">
@@ -87,57 +74,69 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full motion-reduce:animate-none animate-ping"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span className="text-green-400 text-sm font-mono">LIVE</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Modern Stats Grid */}
+        {/* Simple Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <AnimatedMetric
-            value={8}
-            label="Active Grants"
-            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />}
-            color="text-white"
-            suffix=""
-            delay={0.05}
-          />
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-slate-300 text-sm font-medium mb-1">Active Grants</p>
+                <div className="text-3xl font-bold text-white">8</div>
+              </div>
+            </div>
+          </div>
           
-          <AnimatedMetric
-            value={3}
-            label="Live Projects"
-            icon={<FolderIcon className="h-6 w-6 text-white" />}
-            color="text-white"
-            suffix=""
-            delay={0.1}
-          />
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <FolderIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-slate-300 text-sm font-medium mb-1">Live Projects</p>
+                <div className="text-3xl font-bold text-white">3</div>
+              </div>
+            </div>
+          </div>
           
-          <AnimatedMetric
-            value={12}
-            label="Pending Tasks"
-            icon={<ClipboardDocumentListIcon className="h-6 w-6 text-white" />}
-            color="text-white"
-            suffix=""
-            delay={0.15}
-          />
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <ClipboardDocumentListIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-slate-300 text-sm font-medium mb-1">Pending Tasks</p>
+                <div className="text-3xl font-bold text-white">12</div>
+              </div>
+            </div>
+          </div>
           
-          <AnimatedMetric
-            value={5}
-            label="Deadlines"
-            icon={<ClockIcon className="h-6 w-6 text-white" />}
-            color="text-white"
-            suffix=""
-            delay={0.2}
-          />
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <ClockIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-slate-300 text-sm font-medium mb-1">Deadlines</p>
+                <div className="text-3xl font-bold text-white">5</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <AnimatedCard className="p-6" delay={0.25}>
+        <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-              <Zap className="h-5 w-5 text-white" />
+              <DocumentMagnifyingGlassIcon className="h-5 w-5 text-white" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Quick Actions</h2>
@@ -145,32 +144,32 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/grants">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-                <DocumentMagnifyingGlassIcon className="h-4 w-4 mr-3" />
+            <Link href="/grants" className="inline-block">
+              <div className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 rounded-lg px-4 py-3 text-center transition-all duration-300">
+                <DocumentMagnifyingGlassIcon className="h-4 w-4 mx-auto mb-2" />
                 Browse All Grants
-              </Button>
+              </div>
             </Link>
-            <Link href="/projects">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-                <FolderIcon className="h-4 w-4 mr-3" />
+            <Link href="/projects" className="inline-block">
+              <div className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 rounded-lg px-4 py-3 text-center transition-all duration-300">
+                <FolderIcon className="h-4 w-4 mx-auto mb-2" />
                 Manage Projects
-              </Button>
+              </div>
             </Link>
-            <Link href="/tasks">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-                <ClipboardDocumentListIcon className="h-4 w-4 mr-3" />
+            <Link href="/tasks" className="inline-block">
+              <div className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 rounded-lg px-4 py-3 text-center transition-all duration-300">
+                <ClipboardDocumentListIcon className="h-4 w-4 mx-auto mb-2" />
                 View Tasks
-              </Button>
+              </div>
             </Link>
-            <Link href="/settings">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-                <Shield className="h-4 w-4 mr-3" />
+            <Link href="/settings" className="inline-block">
+              <div className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 rounded-lg px-4 py-3 text-center transition-all duration-300">
+                <ClockIcon className="h-4 w-4 mx-auto mb-2" />
                 Settings
-              </Button>
+              </div>
             </Link>
           </div>
-        </AnimatedCard>
+        </div>
       </div>
     </div>
   );
