@@ -83,13 +83,9 @@ async def list_projects(
             # Calculate budget utilisation (placeholder)
             budget_utilised = 0.0  # TODO: Calculate based on expenses
             
-            # Handle budget fields gracefully (in case columns don't exist yet)
-            try:
-                budget = project.budget
-                budget_currency = project.budget_currency
-            except AttributeError:
-                budget = None
-                budget_currency = "AUD"
+            # Budget fields temporarily disabled until migration is applied
+            budget = None
+            budget_currency = "AUD"
             
             project_list.append({
                 "id": project.id,
