@@ -25,22 +25,24 @@ services:
     name: navimpact-web
     env: node
     plan: starter
-    buildCommand: cd frontend && npm install && npm run build:dynamic
+    buildCommand: cd frontend && npm install && npm run build:force-dynamic
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_VERSION
         value: 20.x
-      - key: NEXT_PUBLIC_API_URL
-        value: https://navimpact-api.onrender.com
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://navimpact-api.onrender.com
       - key: NEXT_DISABLE_STATIC_GENERATION
-        value: true
+        value: "true"
+      - key: NEXT_FORCE_DYNAMIC
+        value: "true"
     healthCheckPath: /
-    autoDeploy: true  # Enable auto-deployment for simple workflow
+    autoDeploy: true
 
 databases:
   - name: navimpact-db
-    databaseName: navimpact
-    user: navimpact
-    plan: starter 
+    env: postgresql
+    plan: starter
+    ipAllowList: [] 
