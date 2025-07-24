@@ -5,21 +5,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Completely disable static generation
+  // Disable static generation
   experimental: {
     isrMemoryCacheSize: 0,
-    // Disable static generation
-    staticPageGenerationTimeout: 0,
   },
   
   // Force all pages to be dynamic
   trailingSlash: false,
-  
-  // Disable static optimization
-  generateStaticParams: false,
-  
-  // Disable static exports
-  exportPathMap: undefined,
   
   // Environment variables
   env: {
