@@ -30,7 +30,7 @@ const Sidebar: FC = () => {
     <div className="flex h-full w-64 flex-col bg-gray-900">
       <div className="flex h-16 items-center px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-white">SGE Dashboard</span>
+          <span className="text-xl font-bold text-white">NavImpact Dashboard</span>
         </Link>
       </div>
       
