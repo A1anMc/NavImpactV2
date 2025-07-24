@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Task Assignment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+        }
+        .task-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .task-description {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>New Task Assignment</h1>
+    </div>
+    <div class="content">
+        <p>Hello {{ assignee_name }},</p>
+        
+        <p>A new task has been assigned to you:</p>
+        
+        <div class="task-title">
+            {{ task_title }}
+        </div>
+        
+        <div class="task-description">
+            {{ task_description }}
+        </div>
+        
+        <p>Please review the task details and take appropriate action.</p>
+        
+        <p>Best regards,<br>NavImpact Team</p>
+    </div>
+    <div class="footer">
+        <p>This is an automated message from the NavImpact Dashboard. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

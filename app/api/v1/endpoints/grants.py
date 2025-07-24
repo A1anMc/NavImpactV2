@@ -1,0 +1,945 @@
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, status
+from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_
+from datetime import datetime, timedelta
+from app.core.deps import get_db, get_current_user
+from app.models.grant import Grant
+from app.models.user import User
+from app.schemas.grant import GrantResponse, GrantList
+# from app.services.scrapers.scraper_service import ScraperService  # Disabled - requires bs4
+
+router = APIRouter()
+
+# Industry focus options
+INDUSTRY_FOCUS_OPTIONS = [
+    "technology", "healthcare", "education", "environment",
+    "agriculture", "manufacturing", "services", "research", "other"
+]
+
+# Location eligibility options
+LOCATION_ELIGIBILITY_OPTIONS = [
+    "national", "state", "regional", "local", "international"
+]
+
+# Organization type options
+ORG_TYPE_OPTIONS = [
+    "startup", "sme", "enterprise", "nonprofit", "government", "academic", "any"
+]
+
+@router.get("/", response_model=GrantList)
+def get_grants(
+    skip: int = 0,
+    limit: int = 100,
+    source: Optional[str] = None,
+    industry_focus: Optional[str] = Query(None, enum=INDUSTRY_FOCUS_OPTIONS),
+    location: Optional[str] = Query(None, enum=LOCATION_ELIGIBILITY_OPTIONS),
+    org_type: Optional[str] = Query(None, enum=ORG_TYPE_OPTIONS),
+    status: Optional[str] = Query(None, enum=["open", "closed", "draft", "active"])
+):
+    """Get list of grants with optional filtering."""
+    try:
+        # Use direct engine access with SQLAlchemy ORM
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        from sqlalchemy import and_, or_
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        try:
+            # Build query with filters
+            query = db.query(Grant)
+            
+            if source:
+                query = query.filter(Grant.source == source)
+            
+            if industry_focus:
+                query = query.filter(Grant.industry_focus == industry_focus)
+                
+            if location:
+                query = query.filter(Grant.location_eligibility == location)
+                
+            if org_type:
+                query = query.filter(Grant.org_type_eligible.contains([org_type]))
+                
+            if status:
+                query = query.filter(Grant.status == status)
+            
+            # Get total count
+            total = query.count()
+            
+            # Apply pagination
+            grants = query.offset(skip).limit(limit).all()
+            
+            # Convert to response format
+            grant_items = []
+            for grant in grants:
+                grant_items.append({
+                    "id": grant.id,
+                    "title": grant.title,
+                    "description": grant.description,
+                    "source": grant.source,
+                    "source_url": grant.source_url,
+                    "application_url": grant.application_url,
+                    "contact_email": grant.contact_email,
+                    "min_amount": float(grant.min_amount) if grant.min_amount else None,
+                    "max_amount": float(grant.max_amount) if grant.max_amount else None,
+                    "open_date": grant.open_date.isoformat() if grant.open_date else None,
+                    "deadline": grant.deadline.isoformat() if grant.deadline else None,
+                    "industry_focus": grant.industry_focus,
+                    "location_eligibility": grant.location_eligibility,
+                    "org_type_eligible": grant.org_type_eligible or [],
+                    "funding_purpose": grant.funding_purpose or [],
+                    "audience_tags": grant.audience_tags or [],
+                    "status": grant.status,
+                    "notes": grant.notes,
+                    "created_at": grant.created_at.isoformat() if grant.created_at else None,
+                    "updated_at": grant.updated_at.isoformat() if grant.updated_at else None
+                })
+            
+            return GrantList(
+                items=grant_items,
+                total=total,
+                page=skip // limit + 1,
+                size=limit,
+                has_next=skip + limit < total,
+                has_prev=skip > 0
+            )
+            
+        finally:
+            db.close()
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching grants: {str(e)}"
+        )
+
+@router.post("/scrape")
+async def scrape_all_sources(
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """Trigger scraping of all available grant sources."""
+    return {
+        "status": "disabled",
+        "message": "Grant scraping is currently disabled to reduce dependencies",
+        "available_sources": []
+    }
+
+@router.post("/scrape/{source}")
+async def scrape_specific_source(
+    source: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """Trigger scraping of a specific grant source."""
+    return {
+        "status": "disabled",
+        "message": f"Grant scraping for {source} is currently disabled to reduce dependencies"
+    }
+
+@router.get("/sources")
+def get_available_sources(db: Session = Depends(get_db)):
+    """Get list of available grant sources with their status."""
+    return {
+        "sources": [],
+        "total": 0,
+        "status": "disabled",
+        "message": "Grant scraping sources are currently disabled to reduce dependencies"
+    }
+
+@router.get("/test")
+def test_grants():
+    """Test endpoint that doesn't use dependency injection."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy import text
+        
+        engine = get_engine()
+        with engine.connect() as conn:
+            # Check if grants table exists
+            result = conn.execute(text("SELECT COUNT(*) FROM grants"))
+            count = result.scalar()
+            
+        return {
+            "status": "success",
+            "grants_count": count,
+            "message": "Direct database access working"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Direct database access failed"
+        }
+
+@router.post("/add-test")
+def add_test_grant():
+    """Add a single test grant to the database."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        from datetime import datetime, timedelta
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        try:
+            # Create a simple test grant
+            test_grant = Grant(
+                title="Test Community Grant",
+                description="A test grant for community development",
+                source="Test Foundation",
+                source_url="https://example.com/test",
+                application_url="https://example.com/apply",
+                contact_email="test@example.com",
+                min_amount=1000.00,
+                max_amount=10000.00,
+                open_date=datetime.now(),
+                deadline=datetime.now() + timedelta(days=30),
+                industry_focus="community",
+                location_eligibility="local",
+                org_type_eligible=["nonprofit"],
+                funding_purpose=["community development"],
+                audience_tags=["community organizations"],
+                status="open"
+            )
+            
+            db.add(test_grant)
+            db.commit()
+            
+            return {
+                "status": "success",
+                "message": "Added test grant",
+                "grant_id": test_grant.id
+            }
+            
+        finally:
+            db.close()
+            
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Failed to add test grant"
+        }
+
+@router.post("/clear")
+def clear_all_grants():
+    """Clear all grants from the database."""
+    db = next(get_db())
+    
+    try:
+        # Delete all grants
+        deleted_count = db.query(Grant).delete()
+        db.commit()
+        
+        return {
+            "message": f"Successfully cleared {deleted_count} grants from the database",
+            "grants_deleted": deleted_count
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error clearing grants: {str(e)}")
+    finally:
+        db.close()
+
+@router.post("/seed-simple")
+def seed_simple_grants(db: Session = Depends(get_db)):
+    """Seed the database with a simple set of diverse grants for testing."""
+    
+    # Check if grants already exist
+    existing_count = db.query(Grant).count()
+    if existing_count > 0:
+        return {
+            "message": f"Database already has {existing_count} grants. Use /clear first to reset.",
+            "existing_grants": existing_count
+        }
+    
+    sample_grants = [
+        # MEDIA SECTOR
+        {
+            "title": "Digital Media Innovation Fund",
+            "description": "Supporting innovative digital media projects that push creative boundaries and engage new audiences through technology.",
+            "source": "Creative Australia",
+            "source_url": "https://creative.gov.au",
+            "application_url": "https://creative.gov.au/apply",
+            "contact_email": "grants@creative.gov.au",
+            "min_amount": 50000,
+            "max_amount": 200000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=45),
+            "industry_focus": "technology",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "funding_purpose": ["Digital Media", "Innovation"],
+            "audience_tags": ["Digital Creators", "Tech Startups"],
+            "status": "open",
+            "notes": "Focus on digital storytelling"
+        },
+        {
+            "title": "Indigenous Film Production Grant",
+            "description": "Supporting Indigenous filmmakers to tell authentic stories and preserve cultural heritage through film.",
+            "source": "Screen Australia",
+            "source_url": "https://screenaustralia.gov.au",
+            "application_url": "https://screenaustralia.gov.au/indigenous",
+            "contact_email": "indigenous@screenaustralia.gov.au",
+            "min_amount": 25000,
+            "max_amount": 150000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=30),
+            "industry_focus": "services",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Indigenous Business", "Nonprofit"],
+            "funding_purpose": ["Film Production", "Cultural Preservation"],
+            "audience_tags": ["Indigenous Communities", "Filmmakers"],
+            "status": "open",
+            "notes": "Priority for Indigenous-owned companies"
+        },
+        
+        # COMMUNITY SECTOR
+        {
+            "title": "Youth Mental Health Initiative",
+            "description": "Supporting community organizations to provide mental health services and support programs for young people.",
+            "source": "Department of Health",
+            "source_url": "https://health.gov.au",
+            "application_url": "https://health.gov.au/youth-mental-health",
+            "contact_email": "youth.health@health.gov.au",
+            "min_amount": 50000,
+            "max_amount": 500000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=75),
+            "industry_focus": "healthcare",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Nonprofit", "Healthcare Provider"],
+            "funding_purpose": ["Mental Health", "Youth Services"],
+            "audience_tags": ["Youth", "Mental Health Professionals"],
+            "status": "open",
+            "notes": "Priority for evidence-based programs"
+        },
+        {
+            "title": "Social Enterprise Accelerator",
+            "description": "Supporting social enterprises to scale their impact and create sustainable business models.",
+            "source": "Social Traders",
+            "source_url": "https://socialtraders.com.au",
+            "application_url": "https://socialtraders.com.au/accelerator",
+            "contact_email": "accelerator@socialtraders.com.au",
+            "min_amount": 25000,
+            "max_amount": 150000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=30),
+            "industry_focus": "services",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Social Enterprise", "Nonprofit"],
+            "funding_purpose": ["Social Enterprise", "Business Development"],
+            "audience_tags": ["Social Entrepreneurs", "Nonprofits"],
+            "status": "open",
+            "notes": "Must have proven social impact model"
+        },
+        
+        # SUSTAINABILITY SECTOR
+        {
+            "title": "Renewable Energy Innovation Grant",
+            "description": "Supporting innovative renewable energy projects that can accelerate Australia's transition to clean energy.",
+            "source": "Australian Renewable Energy Agency",
+            "source_url": "https://arena.gov.au",
+            "application_url": "https://arena.gov.au/innovation",
+            "contact_email": "innovation@arena.gov.au",
+            "min_amount": 100000,
+            "max_amount": 2000000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=120),
+            "industry_focus": "technology",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Startup", "SME", "Research Institution"],
+            "funding_purpose": ["Renewable Energy", "Innovation"],
+            "audience_tags": ["Energy Companies", "Researchers"],
+            "status": "open",
+            "notes": "Must demonstrate commercial potential"
+        },
+        {
+            "title": "Circular Economy Solutions",
+            "description": "Supporting businesses to develop circular economy solutions that reduce waste and create sustainable value chains.",
+            "source": "Circular Economy Australia",
+            "source_url": "https://circulareconomy.org.au",
+            "application_url": "https://circulareconomy.org.au/solutions-fund",
+            "contact_email": "solutions@circulareconomy.org.au",
+            "min_amount": 25000,
+            "max_amount": 300000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=75),
+            "industry_focus": "manufacturing",
+            "location_eligibility": "National",
+            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "funding_purpose": ["Circular Economy", "Waste Reduction"],
+            "audience_tags": ["Manufacturers", "Sustainability Experts"],
+            "status": "open",
+            "notes": "Focus on scalable circular economy models"
+        },
+        {
+            "title": "Sustainable Agriculture Innovation",
+            "description": "Supporting farmers to adopt sustainable practices and reduce environmental impact.",
+            "source": "Department of Agriculture",
+            "source_url": "https://agriculture.gov.au",
+            "application_url": "https://agriculture.gov.au/sustainable-ag",
+            "contact_email": "sustainable.ag@agriculture.gov.au",
+            "min_amount": 50000,
+            "max_amount": 500000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=90),
+            "industry_focus": "agriculture",
+            "location_eligibility": "Regional",
+            "org_type_eligible": ["SME", "Farmer", "Research Institution"],
+            "funding_purpose": ["Sustainable Agriculture", "Innovation"],
+            "audience_tags": ["Farmers", "Agricultural Researchers"],
+            "status": "active",
+            "notes": "Must demonstrate environmental benefits"
+        },
+        {
+            "title": "Marine Conservation Initiative",
+            "description": "Supporting marine conservation projects that protect Australia's unique marine ecosystems.",
+            "source": "Great Barrier Reef Foundation",
+            "source_url": "https://barrierreef.org",
+            "application_url": "https://barrierreef.org/conservation",
+            "contact_email": "conservation@barrierreef.org",
+            "min_amount": 25000,
+            "max_amount": 250000,
+            "open_date": datetime.now(),
+            "deadline": datetime.now() + timedelta(days=45),
+            "industry_focus": "environment",
+            "location_eligibility": "Coastal",
+            "org_type_eligible": ["Nonprofit", "Research Institution"],
+            "funding_purpose": ["Marine Conservation", "Biodiversity"],
+            "audience_tags": ["Marine Biologists", "Conservationists"],
+            "status": "open",
+            "notes": "Priority for Great Barrier Reef projects"
+        }
+    ]
+    
+    try:
+        # Add grants one by one with better error handling
+        added_count = 0
+        for grant_data in sample_grants:
+            try:
+                grant = Grant(**grant_data)
+                db.add(grant)
+                db.flush()  # Flush to catch any immediate errors
+                added_count += 1
+            except Exception as e:
+                print(f"Error adding grant {grant_data.get('title', 'Unknown')}: {str(e)}")
+                continue
+        
+        db.commit()
+        return {
+            "message": f"Successfully seeded {added_count} diverse grants across Media, Community Impact, and Sustainability sectors",
+            "grants_added": added_count,
+            "total_attempted": len(sample_grants),
+            "sectors": ["Media & Creative", "Community & Social Impact", "Sustainability & Environment"],
+            "note": f"Added {added_count} out of {len(sample_grants)} grants successfully"
+        }
+    except Exception as e:
+        db.rollback()
+        print(f"Database error during seeding: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error seeding grants: {str(e)}") 
+
+@router.get("/match", response_model=List[GrantResponse])
+def get_matching_grants(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    skip: int = 0,
+    limit: int = 20,
+) -> List[GrantResponse]:
+    """Get grants that match the current user's profile preferences."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get user profile
+    user_profile = db.query(UserProfile).filter(
+        UserProfile.user_id == current_user.id
+    ).first()
+    
+    if not user_profile:
+        # If no profile, return all grants
+        grants = db.query(Grant).offset(skip).limit(limit).all()
+        return grants
+    
+    # Build query based on user preferences
+    query = db.query(Grant)
+    
+    # Filter by funding range
+    if user_profile.preferred_funding_range_min is not None:
+        query = query.filter(Grant.max_amount >= user_profile.preferred_funding_range_min)
+    
+    if user_profile.preferred_funding_range_max is not None:
+        query = query.filter(Grant.min_amount <= user_profile.preferred_funding_range_max)
+    
+    # Filter by grant amount range
+    if user_profile.min_grant_amount is not None:
+        query = query.filter(Grant.max_amount >= user_profile.min_grant_amount)
+    
+    if user_profile.max_grant_amount is not None:
+        query = query.filter(Grant.min_amount <= user_profile.max_grant_amount)
+    
+    # Filter by deadline (only show grants within user's preferred timeframe)
+    if user_profile.max_deadline_days is not None:
+        cutoff_date = datetime.utcnow() + timedelta(days=user_profile.max_deadline_days)
+        query = query.filter(Grant.deadline <= cutoff_date)
+    
+    # Filter by industry focus (if user has industry focus)
+    if user_profile.industry_focus:
+        query = query.filter(
+            or_(
+                Grant.industry_focus.ilike(f"%{user_profile.industry_focus}%"),
+                Grant.industry_focus.is_(None)  # Include grants without industry focus
+            )
+        )
+    
+    # Filter by preferred industries
+    if user_profile.preferred_industries:
+        industry_filters = []
+        for industry in user_profile.preferred_industries:
+            industry_filters.append(Grant.industry_focus.ilike(f"%{industry}%"))
+        if industry_filters:
+            query = query.filter(or_(*industry_filters))
+    
+    # Filter by preferred locations
+    if user_profile.preferred_locations:
+        location_filters = []
+        for location in user_profile.preferred_locations:
+            location_filters.append(Grant.location_eligibility.ilike(f"%{location}%"))
+        if location_filters:
+            query = query.filter(or_(*location_filters))
+    
+    # Filter by preferred organization types
+    if user_profile.preferred_org_types:
+        org_type_filters = []
+        for org_type in user_profile.preferred_org_types:
+            org_type_filters.append(Grant.org_type_eligible.contains([org_type]))
+        if org_type_filters:
+            query = query.filter(or_(*org_type_filters))
+    
+    # Only show open grants
+    query = query.filter(Grant.status == "open")
+    
+    # Order by deadline (closest first)
+    query = query.order_by(Grant.deadline.asc())
+    
+    # Apply pagination
+    grants = query.offset(skip).limit(limit).all()
+    
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses
+
+@router.get("/recommendations", response_model=List[GrantResponse])
+def get_grant_recommendations(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    limit: int = 5,
+) -> List[GrantResponse]:
+    """Get top grant recommendations for the current user."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get user profile
+    user_profile = db.query(UserProfile).filter(
+        UserProfile.user_id == current_user.id
+    ).first()
+    
+    if not user_profile:
+        # If no profile, return recent grants
+        grants = db.query(Grant).filter(
+            Grant.status == "open"
+        ).order_by(Grant.deadline.asc()).limit(limit).all()
+        
+        # Convert to response format
+        grant_responses = []
+        for grant in grants:
+            grant_responses.append(GrantResponse(
+                id=grant.id,
+                title=grant.title,
+                description=grant.description,
+                source=grant.source,
+                source_url=grant.source_url,
+                application_url=grant.application_url,
+                contact_email=grant.contact_email,
+                min_amount=float(grant.min_amount) if grant.min_amount else None,
+                max_amount=float(grant.max_amount) if grant.max_amount else None,
+                open_date=grant.open_date.isoformat() if grant.open_date else None,
+                deadline=grant.deadline.isoformat() if grant.deadline else None,
+                industry_focus=grant.industry_focus,
+                location_eligibility=grant.location_eligibility,
+                org_type_eligible=grant.org_type_eligible or [],
+                funding_purpose=grant.funding_purpose or [],
+                audience_tags=grant.audience_tags or [],
+                status=grant.status,
+                notes=grant.notes,
+                created_at=grant.created_at.isoformat() if grant.created_at else None,
+                updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+            ))
+        
+        return grant_responses
+    
+    # Build scoring query
+    query = db.query(Grant)
+    
+    # Base filters
+    query = query.filter(Grant.status == "open")
+    
+    # Filter by deadline (only show grants within user's preferred timeframe)
+    if user_profile.max_deadline_days is not None:
+        cutoff_date = datetime.utcnow() + timedelta(days=user_profile.max_deadline_days)
+        query = query.filter(Grant.deadline <= cutoff_date)
+    
+    # Apply preference filters
+    if user_profile.preferred_funding_range_min is not None:
+        query = query.filter(Grant.max_amount >= user_profile.preferred_funding_range_min)
+    
+    if user_profile.preferred_funding_range_max is not None:
+        query = query.filter(Grant.min_amount <= user_profile.preferred_funding_range_max)
+    
+    # Order by relevance score (we'll implement this later)
+    # For now, order by deadline and funding amount
+    query = query.order_by(
+        Grant.deadline.asc(),
+        Grant.max_amount.desc()
+    )
+    
+    grants = query.limit(limit).all()
+    
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses 
+
+@router.get("/test-recommendations", response_model=List[GrantResponse])
+def test_grant_recommendations(
+    db: Session = Depends(get_db),
+    limit: int = 5,
+    industry_preference: Optional[str] = Query(None, description="Preferred industry"),
+    location_preference: Optional[str] = Query(None, description="Preferred location"),
+    min_amount: Optional[float] = Query(None, description="Minimum grant amount"),
+    max_amount: Optional[float] = Query(None, description="Maximum grant amount"),
+    org_type: Optional[str] = Query(None, description="Organization type"),
+) -> List[GrantResponse]:
+    """Enhanced test endpoint for grant recommendations with intelligent scoring."""
+    from datetime import datetime, timedelta
+    
+    # Get all open grants
+    query = db.query(Grant).filter(Grant.status == "open")
+    
+    # Apply basic filters if provided
+    if industry_preference:
+        query = query.filter(Grant.industry_focus.ilike(f"%{industry_preference}%"))
+    
+    if location_preference:
+        query = query.filter(Grant.location_eligibility.ilike(f"%{location_preference}%"))
+    
+    if min_amount:
+        query = query.filter(Grant.max_amount >= min_amount)
+    
+    if max_amount:
+        query = query.filter(Grant.min_amount <= max_amount)
+    
+    if org_type:
+        query = query.filter(Grant.org_type_eligible.contains([org_type]))
+    
+    grants = query.all()
+    
+    # Enhanced scoring algorithm
+    scored_grants = []
+    now = datetime.utcnow()
+    
+    for grant in grants:
+        score = 0
+        
+        # Deadline urgency scoring (higher score for closer deadlines)
+        if grant.deadline:
+            days_until_deadline = (grant.deadline - now).days
+            if days_until_deadline <= 7:
+                score += 50  # High urgency
+            elif days_until_deadline <= 14:
+                score += 30  # Medium urgency
+            elif days_until_deadline <= 30:
+                score += 15  # Low urgency
+            else:
+                score += 5   # No urgency
+        
+        # Funding amount scoring (prefer medium to large grants)
+        if grant.max_amount:
+            if grant.max_amount >= 100000:
+                score += 20  # Large grants
+            elif grant.max_amount >= 50000:
+                score += 15  # Medium grants
+            elif grant.max_amount >= 10000:
+                score += 10  # Small grants
+            else:
+                score += 5   # Micro grants
+        
+        # Industry match scoring
+        if industry_preference and grant.industry_focus:
+            if industry_preference.lower() in grant.industry_focus.lower():
+                score += 25
+        
+        # Location match scoring
+        if location_preference and grant.location_eligibility:
+            if location_preference.lower() in grant.location_eligibility.lower():
+                score += 20
+        
+        # Organization type match scoring
+        if org_type and grant.org_type_eligible:
+            if org_type in grant.org_type_eligible:
+                score += 15
+        
+        # Source diversity bonus (prefer different sources)
+        score += 5
+        
+        scored_grants.append((grant, score))
+    
+    # Sort by score (highest first) and take top results
+    scored_grants.sort(key=lambda x: x[1], reverse=True)
+    top_grants = [grant for grant, score in scored_grants[:limit]]
+    
+    # Convert to response format
+    grant_responses = []
+    for grant in top_grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses
+
+@router.get("/test-match", response_model=List[GrantResponse])
+def test_matching_grants(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 20,
+) -> List[GrantResponse]:
+    """Test endpoint for matching grants without authentication."""
+    from app.models.user_profile import UserProfile
+    from datetime import datetime, timedelta
+    
+    # Get all open grants
+    grants = db.query(Grant).filter(
+        Grant.status == "open"
+    ).order_by(Grant.deadline.asc()).offset(skip).limit(limit).all()
+    
+    # Convert to response format
+    grant_responses = []
+    for grant in grants:
+        grant_responses.append(GrantResponse(
+            id=grant.id,
+            title=grant.title,
+            description=grant.description,
+            source=grant.source,
+            source_url=grant.source_url,
+            application_url=grant.application_url,
+            contact_email=grant.contact_email,
+            min_amount=float(grant.min_amount) if grant.min_amount else None,
+            max_amount=float(grant.max_amount) if grant.max_amount else None,
+            open_date=grant.open_date.isoformat() if grant.open_date else None,
+            deadline=grant.deadline.isoformat() if grant.deadline else None,
+            industry_focus=grant.industry_focus,
+            location_eligibility=grant.location_eligibility,
+            org_type_eligible=grant.org_type_eligible or [],
+            funding_purpose=grant.funding_purpose or [],
+            audience_tags=grant.audience_tags or [],
+            status=grant.status,
+            notes=grant.notes,
+            created_at=grant.created_at.isoformat() if grant.created_at else None,
+            updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+        ))
+    
+    return grant_responses 
+
+@router.post("/track-interaction")
+def track_grant_interaction(
+    grant_id: int,
+    interaction_type: str = Query(..., description="Type of interaction: view, save, compare, apply"),
+    db: Session = Depends(get_db)
+):
+    """Track user interactions with grants for session-based learning."""
+    try:
+        # In a real implementation, this would store in a session table
+        # For now, we'll just log the interaction
+        grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        if grant:
+            # Log the interaction (in production, store in database)
+            print(f"User interaction: {interaction_type} on grant {grant_id} - {grant.title}")
+            
+            return {
+                "success": True,
+                "message": f"Tracked {interaction_type} interaction for grant {grant_id}",
+                "grant_title": grant.title
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Grant not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to track interaction: {str(e)}")
+
+@router.get("/similar-grants/{grant_id}")
+def get_similar_grants(
+    grant_id: int,
+    limit: int = 5,
+    db: Session = Depends(get_db)
+) -> List[GrantResponse]:
+    """Get grants similar to a specific grant based on industry, location, and funding."""
+    try:
+        # Get the reference grant
+        reference_grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        if not reference_grant:
+            raise HTTPException(status_code=404, detail="Grant not found")
+        
+        # Find similar grants
+        similar_grants = db.query(Grant).filter(
+            Grant.id != grant_id,
+            Grant.status == "open"
+        ).all()
+        
+        # If no similar grants found, return empty list with message
+        if not similar_grants:
+            return []
+        
+        # Score similarity
+        scored_grants = []
+        for grant in similar_grants:
+            score = 0
+            
+            # Industry similarity
+            if reference_grant.industry_focus and grant.industry_focus:
+                if reference_grant.industry_focus == grant.industry_focus:
+                    score += 30
+                elif reference_grant.industry_focus in grant.industry_focus or grant.industry_focus in reference_grant.industry_focus:
+                    score += 15
+            
+            # Location similarity
+            if reference_grant.location_eligibility and grant.location_eligibility:
+                if reference_grant.location_eligibility == grant.location_eligibility:
+                    score += 25
+                elif reference_grant.location_eligibility in grant.location_eligibility or grant.location_eligibility in reference_grant.location_eligibility:
+                    score += 10
+            
+            # Funding amount similarity
+            if reference_grant.max_amount and grant.max_amount:
+                ref_amount = float(reference_grant.max_amount)
+                grant_amount = float(grant.max_amount)
+                amount_diff = abs(ref_amount - grant_amount) / ref_amount
+                if amount_diff <= 0.2:  # Within 20%
+                    score += 20
+                elif amount_diff <= 0.5:  # Within 50%
+                    score += 10
+            
+            # Organization type similarity
+            if reference_grant.org_type_eligible and grant.org_type_eligible:
+                common_types = set(reference_grant.org_type_eligible) & set(grant.org_type_eligible)
+                if common_types:
+                    score += len(common_types) * 5
+            
+            scored_grants.append((grant, score))
+        
+        # Sort by similarity score and take top results
+        scored_grants.sort(key=lambda x: x[1], reverse=True)
+        top_similar = [grant for grant, score in scored_grants[:limit]]
+        
+        # Convert to response format
+        grant_responses = []
+        for grant in top_similar:
+            grant_responses.append(GrantResponse(
+                id=grant.id,
+                title=grant.title,
+                description=grant.description,
+                source=grant.source,
+                source_url=grant.source_url,
+                application_url=grant.application_url,
+                contact_email=grant.contact_email,
+                min_amount=float(grant.min_amount) if grant.min_amount else None,
+                max_amount=float(grant.max_amount) if grant.max_amount else None,
+                open_date=grant.open_date.isoformat() if grant.open_date else None,
+                deadline=grant.deadline.isoformat() if grant.deadline else None,
+                industry_focus=grant.industry_focus,
+                location_eligibility=grant.location_eligibility,
+                org_type_eligible=grant.org_type_eligible or [],
+                funding_purpose=grant.funding_purpose or [],
+                audience_tags=grant.audience_tags or [],
+                status=grant.status,
+                notes=grant.notes,
+                created_at=grant.created_at.isoformat() if grant.created_at else None,
+                updated_at=grant.updated_at.isoformat() if grant.updated_at else None
+            ))
+        
+        return grant_responses
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get similar grants: {str(e)}") 
