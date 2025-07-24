@@ -1,4 +1,4 @@
-// Base interfaces for the NavImpact Dashboard
+// Base interfaces for the SGE Dashboard
 
 export interface User {
   id: string;

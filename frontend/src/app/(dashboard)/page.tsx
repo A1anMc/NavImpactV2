@@ -11,6 +11,9 @@ import {
   CpuChipIcon
 } from '@heroicons/react/24/outline';
 import { Target, TrendingUp, Zap, Globe, Shield } from 'lucide-react';
+import AnimatedMetric from '@/components/ui/AnimatedMetric';
+import AnimatedCard from '@/components/ui/AnimatedCard';
+import GradientText from '@/components/ui/GradientText';
 
 export default function DashboardPage() {
   return (
@@ -33,10 +36,32 @@ export default function DashboardPage() {
               <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900 animate-pulse"></div>
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent mb-2">
+              <GradientText className="text-4xl font-bold mb-2">
                 NavImpact Command Center
-              </h1>
-              <p className="text-slate-300 text-lg">Welcome to the future of grant management</p>
+              </GradientText>
+              <div className="space-y-3">
+                <p className="text-slate-300 text-lg font-medium">Welcome to NavImpact</p>
+                <p className="text-slate-300 text-base">A new way to see, shape, and scale impact.</p>
+                <div className="space-y-2 text-sm text-slate-400">
+                  <p>It's more than grants.</p>
+                  <p>It's more than projects.</p>
+                  <p>It's the connection between funding and real human outcomes.</p>
+                </div>
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <div className="flex items-center gap-2 text-green-400 text-sm">
+                    <span className="text-lg">✔</span>
+                    <span>Empower your team</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-400 text-sm">
+                    <span className="text-lg">✔</span>
+                    <span>Streamline complex funding</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-400 text-sm">
+                    <span className="text-lg">✔</span>
+                    <span>Turn data into stories that matter</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -63,82 +88,46 @@ export default function DashboardPage() {
         </div>
 
         {/* Modern Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <Card className="relative backdrop-blur-xl bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-300 text-sm font-medium mb-1">Active Grants</p>
-                    <p className="text-3xl font-bold text-white">8</p>
-                    <p className="text-green-400 text-xs mt-1">+12% this month</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                    <DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <Card className="relative backdrop-blur-xl bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-300 text-sm font-medium mb-1">Live Projects</p>
-                    <p className="text-3xl font-bold text-white">3</p>
-                    <p className="text-green-400 text-xs mt-1">2 in progress</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                    <FolderIcon className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <Card className="relative backdrop-blur-xl bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-300 text-sm font-medium mb-1">Pending Tasks</p>
-                    <p className="text-3xl font-bold text-white">12</p>
-                    <p className="text-orange-400 text-xs mt-1">3 urgent</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                    <ClipboardDocumentListIcon className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <Card className="relative backdrop-blur-xl bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-300 text-sm font-medium mb-1">Deadlines</p>
-                    <p className="text-3xl font-bold text-white">5</p>
-                    <p className="text-red-400 text-xs mt-1">This week</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl flex items-center justify-center">
-                    <ClockIcon className="h-6 w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <AnimatedMetric
+            value={8}
+            label="Active Grants"
+            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />}
+            color="text-white"
+            suffix=""
+            delay={0.1}
+          />
+          
+          <AnimatedMetric
+            value={3}
+            label="Live Projects"
+            icon={<FolderIcon className="h-6 w-6 text-white" />}
+            color="text-white"
+            suffix=""
+            delay={0.2}
+          />
+          
+          <AnimatedMetric
+            value={12}
+            label="Pending Tasks"
+            icon={<ClipboardDocumentListIcon className="h-6 w-6 text-white" />}
+            color="text-white"
+            suffix=""
+            delay={0.3}
+          />
+          
+          <AnimatedMetric
+            value={5}
+            label="Deadlines"
+            icon={<ClockIcon className="h-6 w-6 text-white" />}
+            color="text-white"
+            suffix=""
+            delay={0.4}
+          />
         </div>
 
         {/* Quick Actions */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
+        <AnimatedCard className="p-6" delay={0.5}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
               <Zap className="h-5 w-5 text-white" />
@@ -150,31 +139,31 @@ export default function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link href="/grants">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl">
+              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
                 <DocumentMagnifyingGlassIcon className="h-4 w-4 mr-3" />
                 Browse All Grants
               </Button>
             </Link>
             <Link href="/projects">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl">
+              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
                 <FolderIcon className="h-4 w-4 mr-3" />
                 Manage Projects
               </Button>
             </Link>
             <Link href="/tasks">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl">
+              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
                 <ClipboardDocumentListIcon className="h-4 w-4 mr-3" />
                 View Tasks
               </Button>
             </Link>
             <Link href="/settings">
-              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl">
+              <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-xl transition-all duration-300 hover:scale-105">
                 <Shield className="h-4 w-4 mr-3" />
                 Settings
               </Button>
             </Link>
           </div>
-        </div>
+        </AnimatedCard>
       </div>
     </div>
   );

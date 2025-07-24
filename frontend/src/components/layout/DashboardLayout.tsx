@@ -10,20 +10,20 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-// Custom NavImpact dashboard layout, built by Alan – not boilerplate
+// Custom SGE dashboard layout, built by Alan – not boilerplate
 const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-gray-900">
           <div className="absolute right-0 top-0 -mr-12 pt-2">
             <button
               type="button"
-              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               onClick={() => setSidebarOpen(false)}
             >
               <span className="sr-only">Close sidebar</span>
@@ -42,10 +42,10 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         <div className="sticky top-0 z-10">
-          <div className="flex h-16 items-center gap-x-4 border-b border-white/10 backdrop-blur-xl bg-slate-900/80 px-4 shadow-lg sm:gap-x-6 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <button
               type="button"
-              className="-m-2.5 p-2.5 text-white lg:hidden hover:bg-white/10 rounded-lg transition-colors"
+              className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <span className="sr-only">Open sidebar</span>
@@ -55,7 +55,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
@@ -65,11 +65,8 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
         toastOptions={{
           duration: 5000,
           style: {
-            background: 'rgba(15, 23, 42, 0.95)',
+            background: '#333',
             color: '#fff',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '12px',
           },
         }} 
       />

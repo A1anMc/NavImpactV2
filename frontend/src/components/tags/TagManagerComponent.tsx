@@ -1,18 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { LoadingState } from '../ui/loading-state';
-import { ErrorAlert } from '../ui/error-alert';
+import { Textarea } from '../ui/textarea';
 import { Tag } from '../../types/models';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../../services/api';
+import { api } from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 interface TagFormData {
@@ -26,58 +39,49 @@ const TagManagerComponent = () => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: tags, isLoading, error } = useQuery({
+  const { data: tags, isLoading } = useQuery({
     queryKey: ['tags'],
     queryFn: async () => {
-      const response = await apiClient.getTags();
-      // Handle different response formats
-      return (response as any)?.items || (response as any)?.data || response || [];
+      const response = await api.get<Tag[]>('/tags');
+      return response.data;
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: TagFormData) => {
-      // Note: getTags method exists but createTag doesn't yet
-      // For now, we'll use a placeholder
-      console.log('Creating tag:', data);
-      return { id: 'temp', ...data };
+      const response = await api.post<Tag>('/tags', data);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success('Tag created successfully');
       setIsOpen(false);
-      setSelectedTag(null);
+      toast.success('Tag created successfully');
     },
     onError: (error) => {
       toast.error('Failed to create tag');
-      console.error('Create tag error:', error);
+      console.error('Error creating tag:', error);
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: TagFormData }) => {
-      // Note: updateTag method doesn't exist yet
-      // For now, we'll use a placeholder
-      console.log('Updating tag:', id, data);
-      return { id, ...data };
+      const response = await api.put<Tag>(`/tags/${id}`, data);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success('Tag updated successfully');
       setIsOpen(false);
-      setSelectedTag(null);
+      toast.success('Tag updated successfully');
     },
     onError: (error) => {
       toast.error('Failed to update tag');
-      console.error('Update tag error:', error);
+      console.error('Error updating tag:', error);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Note: deleteTag method doesn't exist yet
-      // For now, we'll use a placeholder
-      console.log('Deleting tag:', id);
+      await api.delete(`/tags/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
@@ -85,7 +89,7 @@ const TagManagerComponent = () => {
     },
     onError: (error) => {
       toast.error('Failed to delete tag');
-      console.error('Delete tag error:', error);
+      console.error('Error deleting tag:', error);
     },
   });
 
@@ -117,14 +121,8 @@ const TagManagerComponent = () => {
   };
 
   if (isLoading) {
-    return <LoadingState message="Loading tags..." />;
+    return <div>Loading...</div>;
   }
-
-  if (error) {
-    return <ErrorAlert message="Failed to load tags" retryable={true} />;
-  }
-
-  const tagsList = Array.isArray(tags) ? tags : [];
 
   return (
     <div className="space-y-4">
@@ -170,7 +168,7 @@ const TagManagerComponent = () => {
                   <Label htmlFor="description" className="text-right">
                     Description
                   </Label>
-                  <Input
+                  <Textarea
                     id="description"
                     name="description"
                     defaultValue={selectedTag?.description}
@@ -207,55 +205,57 @@ const TagManagerComponent = () => {
         </Dialog>
       </div>
 
-      <div className="grid gap-4">
-        {tagsList.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-500">No tags found. Create your first tag to get started.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          tagsList.map((tag) => (
-            <Card key={tag.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+      <div className="border rounded-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Usage</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tags?.map((tag) => (
+              <TableRow key={tag.id}>
+                <TableCell>
+                  <div className="flex items-center gap-2">
                     <div
                       className="w-4 h-4 rounded-full"
                       style={{ backgroundColor: tag.color || '#000000' }}
                     />
-                    <div>
-                      <h3 className="font-semibold">{tag.name}</h3>
-                      <p className="text-sm text-gray-600">{tag.description}</p>
-                    </div>
+                    {tag.name}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-2">
-                      <Badge variant="default">{tag.grant_count || 0} Grants</Badge>
-                      <Badge variant="default">{tag.project_count || 0} Projects</Badge>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(tag)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(tag)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
+                </TableCell>
+                <TableCell>{tag.description}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Badge variant="default">{tag.grant_count} Grants</Badge>
+                    <Badge variant="default">{tag.project_count} Projects</Badge>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(tag)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(tag)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

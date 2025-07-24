@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../../services/api';
+import { api } from '../../services/api';
 import { Tag } from '../../types/models';
 import {
   Command,
@@ -30,18 +30,17 @@ export function TagSelector({ selectedTags, onTagsChange }: TagSelectorProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const { data: tags, isLoading } = useQuery({
+  const { data: tags } = useQuery({
     queryKey: ['tags'],
     queryFn: async () => {
-      const response = await apiClient.getTags();
-      // Handle different response formats
-      return (response as any)?.items || (response as any)?.data || response || [];
+      const response = await api.get<Tag[]>('/tags');
+      return response.data;
     },
   });
 
-  const filteredTags = tags?.filter((tag: any) =>
+  const filteredTags = tags?.filter((tag) =>
     tag.name.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  );
 
   const handleSelect = (tagId: string) => {
     if (selectedTags.includes(tagId)) {
@@ -77,19 +76,20 @@ export function TagSelector({ selectedTags, onTagsChange }: TagSelectorProps) {
             />
             <CommandEmpty>No tags found.</CommandEmpty>
             <CommandGroup>
-              {filteredTags?.map((tag: any) => (
+              {filteredTags?.map((tag) => (
                 <CommandItem
                   key={tag.id}
                   value={tag.name}
                   onSelect={() => handleSelect(tag.id)}
                 >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: tag.color || '#000000' }}
-                    />
-                    {tag.name}
-                  </div>
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: tag.color || '#000000' }}
+                  />
+                  {tag.name}
+                  {selectedTags.includes(tag.id) && (
+                    <span className="ml-auto text-green-600">✓</span>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -99,21 +99,24 @@ export function TagSelector({ selectedTags, onTagsChange }: TagSelectorProps) {
 
       <div className="flex flex-wrap gap-2">
         {selectedTags.map((tagId) => {
-          const tag = tags?.find((t: any) => t.id === tagId);
+          const tag = tags?.find((t) => t.id === tagId);
           if (!tag) return null;
           return (
             <Badge
               key={tag.id}
-              variant="default"
+              variant="secondary"
               className="flex items-center gap-1"
             >
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: tag.color || '#000000' }}
+              />
               {tag.name}
               <button
-                type="button"
-                className="ml-1 text-xs text-gray-500 hover:text-red-500"
-                onClick={() => handleSelect(tag.id)}
+                className="ml-1 hover:text-destructive"
+                onClick={() => handleRemove(tag.id)}
               >
-                ×
+                <X className="h-3 w-3" />
               </button>
             </Badge>
           );

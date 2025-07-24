@@ -41,11 +41,27 @@ export interface ModelTrainingResult {
   feature_importance: Record<string, number>;
 }
 
+export interface IntelligenceDashboardParams {
+  timeframe?: '30d' | '90d' | '1y';
+  signal?: AbortSignal;
+}
+
+export interface GrantPredictionsParams {
+  limit?: number;
+  timeframe?: '30d' | '90d' | '1y';
+  signal?: AbortSignal;
+}
+
 export const impactIntelligenceService = {
   // Get grant success predictions
-  async getGrantPredictions(limit: number = 10): Promise<GrantPrediction[]> {
+  async getGrantPredictions(limit: number = 10, params?: GrantPredictionsParams): Promise<GrantPrediction[]> {
     try {
-      const response = await apiClient.get(`/api/v1/impact/predictions?limit=${limit}`);
+      const queryParams: Record<string, string> = { limit: limit.toString() };
+      if (params?.timeframe) {
+        queryParams.timeframe = params.timeframe;
+      }
+      
+      const response = await apiClient.get(`/api/v1/impact/predictions`, queryParams);
       return response.data.predictions;
     } catch (error) {
       console.error('Error fetching grant predictions:', error);
@@ -65,9 +81,14 @@ export const impactIntelligenceService = {
   },
 
   // Get intelligence dashboard
-  async getIntelligenceDashboard(): Promise<IntelligenceDashboard> {
+  async getIntelligenceDashboard(params?: IntelligenceDashboardParams): Promise<IntelligenceDashboard> {
     try {
-      const response = await apiClient.get('/api/v1/impact/intelligence');
+      const queryParams: Record<string, string> = {};
+      if (params?.timeframe) {
+        queryParams.timeframe = params.timeframe;
+      }
+      
+      const response = await apiClient.get('/api/v1/impact/intelligence', queryParams);
       return response.data;
     } catch (error) {
       console.error('Error fetching intelligence dashboard:', error);

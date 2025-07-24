@@ -1,235 +1,337 @@
-import { apiClient } from './api';
-import { Grant, CreateGrantInput, GrantFilters, PaginatedResponse } from '@/types/models';
+import { api } from './api';
+import { Grant, GrantFilters, CreateGrantInput, UpdateGrantRequest } from '../types/models';
 
-// API endpoints
+// Constants for API endpoints
 const ENDPOINTS = {
-  BASE: '/api/v1/grants/',
-  SCRAPER_RUN: '/api/v1/scraper/run',
-  SCRAPER_STATUS: '/api/v1/scraper/status',
-  SOURCES: '/api/v1/grants/sources',
+  BASE: '/grants/',
+  SCRAPER_RUN: '/grants/scrape/',
+  SCRAPER_STATUS: '/scraper/sources/',
+  SOURCES: '/grants/sources/',
 } as const;
 
-// Grants API service
+export interface GrantsResponse {
+  items: Grant[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+export interface GrantDashboard {
+  metrics: {
+    total_active: number;
+    total_value: number;
+    success_rate: number;
+    pending_applications: number;
+  };
+  status_distribution: Array<{
+    name: string;
+    value: number;
+  }>;
+  monthly_applications: Array<{
+    month: string;
+    applications: number;
+  }>;
+}
+
+export interface ScraperRunRequest {
+  sources?: string[];
+  force_refresh?: boolean;
+}
+
+export interface ScraperStatus {
+  status: string;
+  last_run?: string;
+  next_scheduled?: string;
+  available_sources: string[];
+  active_sources: string[];
+  error_count: number;
+  success_count: number;
+}
+
 export const grantsApi = {
-  // Get all grants with pagination
-  async getGrants(params?: { skip?: number; limit?: number }): Promise<PaginatedResponse<Grant>> {
+  getGrants: async (filters?: GrantFilters) => {
     try {
-      console.log('[grantsApi.getGrants] Fetching grants with params:', params);
+      console.log('[grantsApi.getGrants] Starting with filters:', filters);
+
+      // Transform pagination parameters from page/size to skip/limit
+      const apiParams: any = filters ? {
+        ...filters,
+        skip: filters.page ? (filters.page - 1) * filters.size : 0,
+        limit: filters.size || 10,
+      } : {
+        skip: 0,
+        limit: 10,
+      };
       
-      const response = await apiClient.getGrants(params);
+      // Remove the page and size parameters since API uses skip/limit
+      if (apiParams.page) delete apiParams.page;
+      if (apiParams.size) delete apiParams.size;
+
+      console.log('[grantsApi.getGrants] Transformed API params:', apiParams);
+      console.log('[grantsApi.getGrants] Making request to:', ENDPOINTS.BASE);
+      console.log('[grantsApi.getGrants] Full URL will be:', `${api.defaults.baseURL}${ENDPOINTS.BASE}`);
       
-      console.log('[grantsApi.getGrants] Response received:', response);
-      
-      return response;
+      // Try axios first, then fallback to fetch
+      let response;
+      try {
+        console.log('[grantsApi.getGrants] Attempting axios request...');
+        response = await api.get<GrantsResponse>(ENDPOINTS.BASE, { 
+          params: apiParams,
+        });
+        console.log('[grantsApi.getGrants] Axios request successful:', response.status);
+      } catch (axiosError) {
+        console.warn('[grantsApi.getGrants] Axios failed, trying fetch fallback:', axiosError);
+        
+        // Fallback to direct fetch
+        const queryString = new URLSearchParams(apiParams).toString();
+        const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const url = `${baseURL}/api/v1/grants/?${queryString}`;
+        
+        console.log('[grantsApi.getGrants] Attempting fetch to:', url);
+        
+        const fetchResponse = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+        
+        console.log('[grantsApi.getGrants] Fetch response status:', fetchResponse.status);
+        
+        if (!fetchResponse.ok) {
+          throw new Error(`HTTP error! status: ${fetchResponse.status}`);
+        }
+        
+        const data = await fetchResponse.json();
+        console.log('[grantsApi.getGrants] Fetch response data:', data);
+        response = { data, status: fetchResponse.status };
+      }
+
+      console.log('[grantsApi.getGrants] Response received:', {
+        status: response.status,
+        dataType: typeof response.data,
+        itemsCount: response.data?.items?.length || 0,
+        total: response.data?.total || 0,
+      });
+
+      // Validate response structure
+      if (!response.data || typeof response.data !== 'object') {
+        throw new Error('Invalid response format: expected object');
+      }
+
+      if (!Array.isArray(response.data.items)) {
+        throw new Error('Invalid response format: items should be an array');
+      }
+
+      console.log('[grantsApi.getGrants] Returning valid response with', response.data.items.length, 'items');
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.getGrants] Error:', error);
+      console.error('[grantsApi.getGrants] Error occurred:', error);
       throw error;
     }
   },
 
-  // Get a single grant by ID
-  async getGrant(id: string): Promise<Grant> {
+  getGrant: async (id: number) => {
     try {
-      console.log('[grantsApi.getGrant] Fetching grant:', id);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getGrant] Called with id:', id);
+      }
+
+      const response = await api.get<Grant>(`${ENDPOINTS.BASE}${id}`);
       
-      const response = await apiClient.getGrant(id);
-      
-      console.log('[grantsApi.getGrant] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getGrant] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.getGrant] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.getGrant] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Create a new grant
-  async createGrant(grantData: Partial<Grant>): Promise<Grant> {
+  createGrant: async (data: CreateGrantInput) => {
     try {
-      console.log('[grantsApi.createGrant] Creating grant:', grantData);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.createGrant] Called with data:', data);
+      }
+
+      const response = await api.post<Grant>(ENDPOINTS.BASE, data);
       
-      const response = await apiClient.createGrant(grantData);
-      
-      console.log('[grantsApi.createGrant] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.createGrant] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.createGrant] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.createGrant] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Update an existing grant
-  async updateGrant(id: string, grantData: Partial<Grant>): Promise<Grant> {
+  updateGrant: async (id: number, data: Partial<CreateGrantInput>) => {
     try {
-      console.log('[grantsApi.updateGrant] Updating grant:', id, grantData);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.updateGrant] Called with id:', id, 'data:', data);
+      }
+
+      const response = await api.put<Grant>(`${ENDPOINTS.BASE}${id}`, data);
       
-      const response = await apiClient.updateGrant(id, grantData);
-      
-      console.log('[grantsApi.updateGrant] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.updateGrant] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.updateGrant] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.updateGrant] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Delete a grant
-  async deleteGrant(id: string): Promise<void> {
+  deleteGrant: async (id: number) => {
     try {
-      console.log('[grantsApi.deleteGrant] Deleting grant:', id);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.deleteGrant] Called with id:', id);
+      }
+
+      await api.delete(`${ENDPOINTS.BASE}${id}`);
       
-      await apiClient.deleteGrant(id);
-      
-      console.log('[grantsApi.deleteGrant] Grant deleted successfully');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.deleteGrant] Delete successful');
+      }
     } catch (error) {
-      console.error('[grantsApi.deleteGrant] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.deleteGrant] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Get grants by source
-  async getGrantsBySource(source: string, params?: { skip?: number; limit?: number }): Promise<PaginatedResponse<Grant>> {
+  runScraper: async () => {
     try {
-      console.log('[grantsApi.getGrantsBySource] Fetching grants for source:', source, params);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.runScraper] Called');
+      }
+
+      await api.post(ENDPOINTS.SCRAPER_RUN);
       
-      const response = await apiClient.getGrantsBySource(source, params);
-      
-      console.log('[grantsApi.getGrantsBySource] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.runScraper] Scraper started successfully');
+      }
     } catch (error) {
-      console.error('[grantsApi.getGrantsBySource] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.runScraper] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Run scraper
-  async runScraper(): Promise<void> {
+  getScraperStatus: async (): Promise<ScraperStatus> => {
     try {
-      console.log('[grantsApi.runScraper] Running scraper');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getScraperStatus] Called');
+      }
+
+      const response = await api.get(ENDPOINTS.SCRAPER_STATUS);
       
-      await apiClient.makeRequest(ENDPOINTS.SCRAPER_RUN, { method: 'POST' });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getScraperStatus] Response received:', response.data);
+      }
+
+      // Transform the array response to match the expected format
+      const sources = response.data || [];
+      const totalSources = sources.length;
+      const successfulSources = sources.filter((s: any) => s.status === 'success').length;
+      const errorSources = sources.filter((s: any) => s.status === 'error').length;
       
-      console.log('[grantsApi.runScraper] Scraper started successfully');
+      return {
+        status: totalSources > 0 ? (successfulSources > 0 ? 'active' : 'error') : 'inactive',
+        available_sources: sources.map((s: any) => s.source_name),
+        active_sources: sources.filter((s: any) => s.status === 'success').map((s: any) => s.source_name),
+        last_run: sources.length > 0 ? sources[0].last_run : undefined,
+        next_scheduled: sources.length > 0 ? sources[0].next_scheduled : undefined,
+        success_count: successfulSources,
+        error_count: errorSources
+      };
     } catch (error) {
-      console.error('[grantsApi.runScraper] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.getScraperStatus] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Get scraper status
-  async getScraperStatus(): Promise<any> {
+  runScrapers: async (request: ScraperRunRequest) => {
     try {
-      console.log('[grantsApi.getScraperStatus] Fetching scraper status');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.runScrapers] Called with request:', request);
+      }
+
+      const response = await api.post(ENDPOINTS.SCRAPER_RUN, request);
       
-      const response = await apiClient.makeRequest<any>(ENDPOINTS.SCRAPER_STATUS);
-      
-      console.log('[grantsApi.getScraperStatus] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.runScrapers] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.getScraperStatus] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.runScrapers] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Get available sources
-  async getSources(): Promise<string[]> {
+  // New endpoints for managing grant sources
+  getSources: async () => {
     try {
-      console.log('[grantsApi.getSources] Fetching sources');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getSources] Called');
+      }
+
+      const response = await api.get<string[]>(ENDPOINTS.SOURCES);
       
-      const response = await apiClient.makeRequest<string[]>(ENDPOINTS.SOURCES);
-      
-      console.log('[grantsApi.getSources] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getSources] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.getSources] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.getSources] Error occurred:', error);
+      }
       throw error;
     }
   },
 
-  // Get grants with filters
-  async getGrantsWithFilters(filters: GrantFilters): Promise<PaginatedResponse<Grant>> {
+  getBySource: async (source: string, filters?: GrantFilters) => {
     try {
-      console.log('[grantsApi.getGrantsWithFilters] Fetching grants with filters:', filters);
-      
-      const response = await apiClient.makeRequest<PaginatedResponse<Grant>>(`${ENDPOINTS.BASE}filter`, {
-        method: 'POST',
-        body: JSON.stringify(filters),
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getBySource] Called with source:', source, 'filters:', filters);
+      }
+
+      const response = await api.get<GrantsResponse>(`${ENDPOINTS.BASE}source/${source}`, { 
+        params: filters,
+        validateStatus: (status) => status < 500,
       });
       
-      console.log('[grantsApi.getGrantsWithFilters] Response received:', response);
-      
-      return response;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[grantsApi.getBySource] Response received:', response.data);
+      }
+
+      return response.data;
     } catch (error) {
-      console.error('[grantsApi.getGrantsWithFilters] Error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[grantsApi.getBySource] Error occurred:', error);
+      }
       throw error;
     }
   },
-
-  // Get matching grants for current user
-  async getMatchingGrants(skip = 0, limit = 20): Promise<Grant[]> {
-    const queryParams = {
-      skip: skip.toString(),
-      limit: limit.toString()
-    };
-    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-match`, {}, queryParams);
-  },
-
-  // Get grant recommendations for current user
-  async getRecommendations(limit = 5): Promise<Grant[]> {
-    const queryParams = {
-      limit: limit.toString()
-    };
-    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-recommendations`, {}, queryParams);
-  },
-
-  // Get enhanced recommendations with preferences
-  async getEnhancedRecommendations(params: {
-    limit?: number;
-    industry_preference?: string;
-    location_preference?: string;
-    min_amount?: number;
-    max_amount?: number;
-    org_type?: string;
-  }): Promise<Grant[]> {
-    const queryParams: Record<string, string> = {
-      limit: (params.limit || 5).toString()
-    };
-    
-    if (params.industry_preference) queryParams.industry_preference = params.industry_preference;
-    if (params.location_preference) queryParams.location_preference = params.location_preference;
-    if (params.min_amount) queryParams.min_amount = params.min_amount.toString();
-    if (params.max_amount) queryParams.max_amount = params.max_amount.toString();
-    if (params.org_type) queryParams.org_type = params.org_type;
-    
-    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}test-recommendations`, {}, queryParams);
-  },
-
-  // Track user interaction with a grant
-  async trackInteraction(grantId: number, interactionType: 'view' | 'save' | 'compare' | 'apply'): Promise<void> {
-    try {
-      await apiClient.request(`${ENDPOINTS.BASE}track-interaction`, {
-        method: 'POST',
-        body: JSON.stringify({
-          grant_id: grantId,
-          interaction_type: interactionType
-        })
-      });
-    } catch (error) {
-      console.error('[grantsApi.trackInteraction] Error:', error);
-      // Don't throw - tracking should not break the user experience
-    }
-  },
-
-  // Get similar grants
-  async getSimilarGrants(grantId: number, limit = 5): Promise<Grant[]> {
-    return apiClient.request<Grant[]>(`${ENDPOINTS.BASE}similar-grants/${grantId}`, {}, { limit: limit.toString() });
-  },
-};
-
-// Export types for use in components
-export type { CreateGrantInput, GrantFilters }; 
+}; 

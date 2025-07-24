@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import {
   LightBulbIcon, 
   ChartBarIcon,
   SparklesIcon,
+  ArrowPathIcon,
   ClockIcon,
   CheckCircleIcon,
   EyeIcon,
@@ -16,15 +18,24 @@ import {
   ArrowDownIcon,
   InformationCircleIcon,
   ArrowRightIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  PlayIcon,
+  PauseIcon
 } from '@heroicons/react/24/outline';
 
 import { 
   impactIntelligenceService, 
   GrantPrediction, 
   IntelligenceDashboard,
-  ModelTrainingResult
+  ModelTrainingResult,
+  IntelligenceDashboardParams,
+  GrantPredictionsParams
 } from '@/services/impact-intelligence';
+import Papa from 'papaparse';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { motion } from 'framer-motion';
+import GradientText from '@/components/ui/GradientText';
 
 interface PredictionDetail {
   grant: GrantPrediction;
@@ -33,41 +44,62 @@ interface PredictionDetail {
 }
 
 export default function IntelligenceTab() {
-  const [predictions, setPredictions] = useState<GrantPrediction[]>([]);
-  const [intelligenceData, setIntelligenceData] = useState<IntelligenceDashboard | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [training, setTraining] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState<PredictionDetail | null>(null);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [timeframe, setTimeframe] = useState<'30d' | '90d' | '1y'>('30d');
+  const [autoRefresh, setAutoRefresh] = useState<number | null>(null);
   const [savedInsights, setSavedInsights] = useState<string[]>([]);
 
-  useEffect(() => {
-    loadIntelligenceData();
-  }, []);
+  const {
+    data: predictions = [],
+    isLoading: predictionsLoading,
+    isRefetching: predictionsRefetching,
+    refetch: refetchPredictions,
+  } = useQuery({
+    queryKey: ['grantPredictions', 10, timeframe],
+    queryFn: () => impactIntelligenceService.getGrantPredictions(10, { timeframe }),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const loadIntelligenceData = async () => {
-    try {
-      setLoading(true);
-      const [predictionsData, dashboardData] = await Promise.all([
-        impactIntelligenceService.getGrantPredictions(10),
-        impactIntelligenceService.getIntelligenceDashboard()
-      ]);
-      
-      setPredictions(predictionsData);
-      setIntelligenceData(dashboardData);
-    } catch (error) {
-      console.error('Error loading intelligence data:', error);
-    } finally {
-      setLoading(false);
-    }
+  const {
+    data: intelligenceData,
+    isLoading: dashboardLoading,
+    isRefetching: dashboardRefetching,
+    refetch: refetchDashboard,
+  } = useQuery({
+    queryKey: ['intelligenceDashboard', timeframe],
+    queryFn: () => impactIntelligenceService.getIntelligenceDashboard({ timeframe }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const loading = predictionsLoading || dashboardLoading;
+
+  const refreshData = () => {
+    refetchPredictions();
+    refetchDashboard();
   };
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      refreshData();
+    }, autoRefresh);
+    
+    return () => clearInterval(interval);
+  }, [autoRefresh, refreshData]);
 
   const handleTrainModel = async () => {
     try {
       setTraining(true);
       const result = await impactIntelligenceService.trainModel();
       alert(`Model trained successfully! Accuracy: ${(result.accuracy * 100).toFixed(1)}%`);
-      loadIntelligenceData(); // Reload data
+      // Invalidate cached queries to fetch fresh data
+      queryClient.invalidateQueries({ queryKey: ['grantPredictions'] });
+      queryClient.invalidateQueries({ queryKey: ['intelligenceDashboard'] });
     } catch (error) {
       alert('Error training model. Please try again.');
     } finally {
@@ -97,6 +129,7 @@ export default function IntelligenceTab() {
   const handleSaveReport = () => {
     const reportData = {
       timestamp: new Date().toISOString(),
+      timeframe,
       filter,
       predictions: predictions.length,
       insights: intelligenceData?.insights || [],
@@ -110,6 +143,51 @@ export default function IntelligenceTab() {
     a.download = `intelligence-report-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    const csvData = predictions.map(prediction => ({
+      'Grant ID': prediction.grant_id,
+      'Grant Title': prediction.grant_title,
+      'Funder': prediction.funder,
+      'Amount': prediction.amount,
+      'Success Probability': `${(prediction.success_probability * 100).toFixed(1)}%`,
+      'Confidence Score': `${(prediction.confidence_score * 100).toFixed(1)}%`,
+      'Recommendation': prediction.recommendation,
+    }));
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `grant-predictions-${timeframe}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = async () => {
+    const element = document.getElementById('intelligence-dashboard');
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('landscape', 'mm', 'a4');
+      const imgWidth = 297; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`intelligence-dashboard-${timeframe}-${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
   };
 
   const getRecommendationColor = (recommendation: string) => {
@@ -151,19 +229,31 @@ export default function IntelligenceTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div id="intelligence-dashboard" className="space-y-6">
       {/* Header with Actions */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <GradientText className="text-2xl font-bold flex items-center gap-2" gradient="purple">
             <SparklesIcon className="h-6 w-6 text-purple-600" />
             AI Intelligence Dashboard
-          </h2>
+          </GradientText>
           <p className="text-gray-600 mt-1">
             Machine learning insights and predictions for optimal grant success
           </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Last sync • {new Date().toLocaleTimeString()}
+          </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={refreshData}
+            variant="outline"
+            disabled={predictionsRefetching || dashboardRefetching}
+            className="flex items-center gap-2"
+          >
+            <ArrowPathIcon className="h-4 w-4" />
+            {predictionsRefetching || dashboardRefetching ? 'Refreshing…' : 'Refresh'}
+          </Button>
           <Button 
             onClick={handleTrainModel} 
             disabled={training}
@@ -179,56 +269,98 @@ export default function IntelligenceTab() {
             <ArrowDownIcon className="h-4 w-4" />
             Save Report
           </Button>
+          <Button 
+            onClick={handleExportCSV}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowDownIcon className="h-4 w-4" />
+            Export CSV
+          </Button>
+          <Button 
+            onClick={handleExportPDF}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowDownIcon className="h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button
+            onClick={() => setAutoRefresh(autoRefresh ? null : 30000)} // 30 seconds
+            variant={autoRefresh ? "default" : "outline"}
+            className="flex items-center gap-2"
+          >
+            {autoRefresh ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+            {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh'}
+          </Button>
         </div>
       </div>
 
       {/* Intelligence Metrics */}
       {intelligenceData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Model Accuracy</CardTitle>
-              <ChartBarIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {(intelligenceData.intelligence_metrics.model_accuracy * 100).toFixed(1)}%
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Success prediction accuracy
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Model Accuracy</CardTitle>
+                <ChartBarIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {(intelligenceData.intelligence_metrics.model_accuracy * 100).toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Success prediction accuracy
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Success Probability</CardTitle>
-              <ArrowUpIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {(intelligenceData.intelligence_metrics.average_success_probability * 100).toFixed(1)}%
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Across all grants
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg Success Probability</CardTitle>
+                <ArrowUpIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {(intelligenceData.intelligence_metrics.average_success_probability * 100).toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Across all grants
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">High-Probability Grants</CardTitle>
-              <CheckCircleIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
-                {intelligenceData.intelligence_metrics.high_probability_grants}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                &gt;70% success probability
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">High-Probability Grants</CardTitle>
+                <CheckCircleIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">
+                  {intelligenceData.intelligence_metrics.high_probability_grants}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  &gt;70% success probability
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       )}
 
@@ -241,25 +373,53 @@ export default function IntelligenceTab() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
-            {[
-              { key: 'all', label: 'All', count: predictions.length },
-              { key: 'high', label: 'High', count: predictions.filter(p => p.recommendation === 'High').length },
-              { key: 'medium', label: 'Medium', count: predictions.filter(p => p.recommendation === 'Medium').length },
-              { key: 'low', label: 'Low', count: predictions.filter(p => p.recommendation === 'Low').length }
-            ].map(({ key, label, count }) => (
-              <Button
-                key={key}
-                variant={filter === key ? "default" : "outline"}
-                onClick={() => setFilter(key as any)}
-                className="flex items-center gap-2"
-              >
-                {label}
-                <Badge variant="default" className="ml-1">
-                  {count}
-                </Badge>
-              </Button>
-            ))}
+          <div className="space-y-4">
+            {/* Timeframe Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Timeframe</label>
+              <div className="flex gap-2">
+                {[
+                  { key: '30d', label: '30 Days' },
+                  { key: '90d', label: '90 Days' },
+                  { key: '1y', label: '1 Year' }
+                ].map(({ key, label }) => (
+                  <Button
+                    key={key}
+                    variant={timeframe === key ? "default" : "outline"}
+                    onClick={() => setTimeframe(key as '30d' | '90d' | '1y')}
+                    size="sm"
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Recommendation Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Recommendation</label>
+              <div className="flex gap-2">
+                {[
+                  { key: 'all', label: 'All', count: predictions.length },
+                  { key: 'high', label: 'High', count: predictions.filter(p => p.recommendation === 'High').length },
+                  { key: 'medium', label: 'Medium', count: predictions.filter(p => p.recommendation === 'Medium').length },
+                  { key: 'low', label: 'Low', count: predictions.filter(p => p.recommendation === 'Low').length }
+                ].map(({ key, label, count }) => (
+                  <Button
+                    key={key}
+                    variant={filter === key ? "default" : "outline"}
+                    onClick={() => setFilter(key as any)}
+                    className="flex items-center gap-2"
+                    size="sm"
+                  >
+                    {label}
+                    <Badge variant="default" className="ml-1">
+                      {count}
+                    </Badge>
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
