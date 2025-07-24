@@ -1,5 +1,5 @@
-PROJECT_NAME="SGE Dashboard"
-VERSION="0.1.0"
+PROJECT_NAME="NavImpact"
+VERSION="1.0.0"
 DEBUG=true
 ENV="development"
 
@@ -12,7 +12,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 # IMPORTANT: Set your actual database URL here
 # For Render PostgreSQL: Use the Internal Database URL from your Render dashboard
 # For local development: postgresql://username:password@localhost:5432/database_name
-DATABASE_URL="postgresql://alanmccarthy@localhost:5432/sge_dashboard"
+DATABASE_URL="postgresql://navimpact:g1eSzQIQfN7GiGEElTXlcZddSQv2yYyE@dpg-d1vj88juibrs739eo5dg-a/navimpact"
 
 # CORS
 CORS_ORIGINS='["*"]'
@@ -30,6 +30,6 @@ MAIL_FROM="development@example.com"
 MAIL_PORT=587
 MAIL_SERVER="localhost"
 MAIL_TLS=true
-MAIL_FROM_NAME="SGE Dashboard"
+MAIL_FROM_NAME="NavImpact"
 MAIL_SSL=false
 USE_CREDENTIALS=true 
