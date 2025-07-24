@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "build:dynamic": "NEXT_DISABLE_STATIC_GENERATION=true next build",
     "start": "next start -p $PORT",
     "start:legacy": "next start -p 3000",
     "lint": "next lint",

@@ -5,17 +5,21 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Disable static generation during build to prevent API calls
+  // Completely disable static generation
   experimental: {
-    // This ensures all pages are rendered dynamically
     isrMemoryCacheSize: 0,
+    // Disable static generation
+    staticPageGenerationTimeout: 0,
   },
-  
-  // Disable static optimization to prevent build-time API calls
-  staticPageGenerationTimeout: 0,
   
   // Force all pages to be dynamic
   trailingSlash: false,
+  
+  // Disable static optimization
+  generateStaticParams: false,
+  
+  // Disable static exports
+  exportPathMap: undefined,
   
   // Environment variables
   env: {
@@ -25,6 +29,7 @@ const nextConfig: NextConfig = {
   // Image optimization
   images: {
     domains: ['navimpact-web.onrender.com', 'navimpact-api.onrender.com'],
+    unoptimized: true, // Disable image optimization during build
   },
   
   // Security headers - Remove CSP for now to fix the eval issue
