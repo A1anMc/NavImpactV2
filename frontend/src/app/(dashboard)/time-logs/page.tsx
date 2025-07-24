@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
+
 export default function TimeLogsPage() {
   return (
     <div className="container mx-auto p-6">

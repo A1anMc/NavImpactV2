@@ -34,6 +34,8 @@ export const PersonalizedGrantsDashboard: React.FC<PersonalizedGrantsDashboardPr
     queryKey: ['user-profile'],
     queryFn: profileService.getMyProfile,
     retry: 1,
+    // Disable during build time
+    enabled: typeof window !== 'undefined',
   });
 
   // Temporary mock profile for testing when backend is down

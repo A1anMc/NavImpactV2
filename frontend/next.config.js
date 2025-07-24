@@ -1,17 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enhanced logo deployment trigger
-  experimental: {
-    // Force new build
-  },
-  
-  // Disable static generation to prevent clientModules errors
+  // Universal Baseline: SSR-ready configuration
   output: 'standalone',
-  
-  // Disable static optimization for problematic pages
-  trailingSlash: false,
-  
-
   
   reactStrictMode: true,
   poweredByHeader: false,

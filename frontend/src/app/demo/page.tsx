@@ -1,5 +1,9 @@
 'use client';
 
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardLevels from '@/components/dashboard/DashboardLevels';
 
@@ -49,7 +53,7 @@ export default function DemoPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-lg text-gray-800 mb-2">Welcome back! Here's what's happening with your grants today.</p>
+                <p className="text-lg text-gray-800 mb-2">Welcome back! Here&rsquo;s what&rsquo;s happening with your grants today.</p>
                 <p className="text-sm text-gray-600">Dashboard welcome message (text-lg)</p>
               </div>
               <div>

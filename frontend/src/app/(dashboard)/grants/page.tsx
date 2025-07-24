@@ -2,6 +2,7 @@
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -74,7 +75,7 @@ function GrantsPageContent() {
       console.log('🔍 Testing direct API call...');
       
       // Simple direct API call
-      const response = await fetch('https://navimpact-api.onrender.com/api/v1/grants/');
+      const response = await fetch('/api/grants');
       console.log('📡 Response status:', response.status);
       
       if (!response.ok) {

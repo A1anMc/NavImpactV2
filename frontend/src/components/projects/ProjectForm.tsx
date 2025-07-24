@@ -238,7 +238,7 @@ export default function ProjectForm({ onSubmit, onCancel, loading = false }: Pro
             
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                Team members can be added after the project is created. You'll be able to invite team members and assign roles.
+                Team members can be added after the project is created. You&rsquo;ll be able to invite team members and assign roles.
               </p>
             </div>
           </div>

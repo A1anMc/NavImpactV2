@@ -2,6 +2,7 @@ import Image from "next/image";
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 export default function Home() {
   return (

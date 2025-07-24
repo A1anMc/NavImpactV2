@@ -2,6 +2,7 @@
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,7 +86,7 @@ export default function ImpactPage() {
   const fetchImpactDashboard = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://navimpact-api.onrender.com/api/v1/impact/dashboard');
+      const response = await fetch('/api/impact/dashboard');
       if (!response.ok) {
         throw new Error('Failed to fetch impact data');
       }
@@ -149,7 +150,7 @@ export default function ImpactPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Impact Dashboard</h1>
-        <p className="text-gray-600">Track your organization's impact and grant performance</p>
+        <p className="text-gray-600">Track your organisation&rsquo;s impact and grant performance</p>
       </div>
 
       {/* Key Metrics Cards */}

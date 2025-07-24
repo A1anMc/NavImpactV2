@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
+
 export default function SettingsPage() {
   return (
     <div className="container mx-auto p-6">

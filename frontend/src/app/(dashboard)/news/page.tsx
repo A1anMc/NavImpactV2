@@ -2,6 +2,7 @@
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 import { useState, useEffect } from 'react';
 import { NewsService, IndustryNews } from '@/services/news';

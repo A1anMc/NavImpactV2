@@ -2,6 +2,7 @@
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,9 +47,9 @@ export default function DashboardPage() {
                 <p className="text-slate-300 text-lg font-medium">Welcome to NavImpact</p>
                 <p className="text-slate-300 text-base">A new way to see, shape, and scale impact.</p>
                 <div className="space-y-2 text-sm text-slate-400">
-                  <p>It's more than grants.</p>
-                  <p>It's more than projects.</p>
-                  <p>It's the connection between funding and real human outcomes.</p>
+                  <p>It&rsquo;s more than grants.</p>
+                  <p>It&rsquo;s more than projects.</p>
+                  <p>It&rsquo;s the connection between funding and real human outcomes.</p>
                 </div>
                 <div className="flex flex-wrap gap-4 pt-2">
                   <div className="flex items-center gap-2 text-green-400 text-sm">

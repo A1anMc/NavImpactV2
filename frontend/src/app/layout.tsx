@@ -5,6 +5,7 @@ import QueryProvider from "@/components/QueryProvider";
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
 const inter = Inter({ subsets: ["latin"] });
 

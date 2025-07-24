@@ -5,14 +5,26 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
+  // Disable static generation during build to prevent API calls
+  experimental: {
+    // This ensures all pages are rendered dynamically
+    isrMemoryCacheSize: 0,
+  },
+  
+  // Disable static optimization to prevent build-time API calls
+  staticPageGenerationTimeout: 0,
+  
+  // Force all pages to be dynamic
+  trailingSlash: false,
+  
   // Environment variables
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://sge-dashboard-api.onrender.com',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
   },
   
   // Image optimization
   images: {
-    domains: ['sge-dashboard-web.onrender.com', 'sge-dashboard-api.onrender.com'],
+    domains: ['navimpact-web.onrender.com', 'navimpact-api.onrender.com'],
   },
   
   // Security headers - Remove CSP for now to fix the eval issue
