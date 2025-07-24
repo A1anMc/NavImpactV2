@@ -19,8 +19,9 @@ class ProjectCreate(BaseModel):
     status: str = "planning"
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    budget: Optional[float] = None
-    budget_currency: str = "AUD"
+    # Temporarily comment out budget fields until migration is applied
+    # budget: Optional[float] = None
+    # budget_currency: str = "AUD"
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
@@ -28,8 +29,9 @@ class ProjectUpdate(BaseModel):
     status: Optional[str] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    budget: Optional[float] = None
-    budget_currency: Optional[str] = None
+    # Temporarily comment out budget fields until migration is applied
+    # budget: Optional[float] = None
+    # budget_currency: Optional[str] = None
 
 class ProjectResponse(BaseModel):
     id: int
@@ -38,8 +40,9 @@ class ProjectResponse(BaseModel):
     status: str
     start_date: Optional[datetime]
     end_date: Optional[datetime]
-    budget: Optional[float]
-    budget_currency: str
+    # Temporarily comment out budget fields until migration is applied
+    # budget: Optional[float]
+    # budget_currency: str
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     owner_id: int

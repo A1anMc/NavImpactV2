@@ -1,91 +1,97 @@
 #!/usr/bin/env python3
 """
-Script to apply budget fields migration to production database.
-This will add the missing budget and budget_currency columns to the projects table.
+Script to apply budget migration to production database
+Run this on Render to add budget fields to projects table
 """
 
 import os
 import sys
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 
 def apply_budget_migration():
-    """Apply budget fields migration to production database."""
+    """Apply budget migration to projects table"""
     
-    # Get production database URL from environment
+    # Get database URL from environment
     database_url = os.getenv('DATABASE_URL')
     if not database_url:
-        print("❌ DATABASE_URL environment variable not set")
-        return False
+        print("❌ DATABASE_URL not found in environment")
+        sys.exit(1)
+    
+    print("🔧 Applying Budget Migration to Projects Table")
+    print("=" * 50)
     
     try:
-        # Connect to database
-        print("🔌 Connecting to production database...")
-        conn = psycopg2.connect(database_url)
-        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cursor = conn.cursor()
+        # Create database engine
+        engine = create_engine(database_url)
         
-        # Check if columns already exist
-        print("🔍 Checking if budget columns already exist...")
-        cursor.execute("""
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'projects' AND column_name IN ('budget', 'budget_currency')
-        """)
-        existing_columns = [row[0] for row in cursor.fetchall()]
-        
-        if 'budget' in existing_columns and 'budget_currency' in existing_columns:
-            print("✅ Budget columns already exist in projects table")
-            return True
-        
-        # Add budget column
-        if 'budget' not in existing_columns:
-            print("➕ Adding budget column...")
-            cursor.execute("ALTER TABLE projects ADD COLUMN budget FLOAT")
-            print("✅ Added budget column")
-        
-        # Add budget_currency column
-        if 'budget_currency' not in existing_columns:
-            print("➕ Adding budget_currency column...")
-            cursor.execute("ALTER TABLE projects ADD COLUMN budget_currency VARCHAR(3) NOT NULL DEFAULT 'AUD'")
-            print("✅ Added budget_currency column")
-        
-        # Update alembic_version table
-        print("📝 Updating alembic version...")
-        cursor.execute("UPDATE alembic_version SET version_num = 'ea804a9513f2'")
-        print("✅ Updated alembic version to ea804a9513f2")
-        
-        # Verify the changes
-        print("🔍 Verifying changes...")
-        cursor.execute("""
-            SELECT column_name, data_type, is_nullable, column_default
-            FROM information_schema.columns 
-            WHERE table_name = 'projects' AND column_name IN ('budget', 'budget_currency')
-            ORDER BY column_name
-        """)
-        
-        columns = cursor.fetchall()
-        print("📋 Budget columns in projects table:")
-        for col in columns:
-            print(f"   - {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})")
-        
-        cursor.close()
-        conn.close()
-        
-        print("✅ Budget fields migration applied successfully!")
-        return True
-        
+        with engine.connect() as conn:
+            # Check if columns already exist
+            result = conn.execute(text("""
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'projects' 
+                AND column_name IN ('budget', 'budget_currency')
+            """))
+            
+            existing_columns = [row[0] for row in result]
+            print(f"📋 Existing budget columns: {existing_columns}")
+            
+            # Add budget column if it doesn't exist
+            if 'budget' not in existing_columns:
+                print("🔧 Step 1: Adding budget column...")
+                conn.execute(text("ALTER TABLE projects ADD COLUMN budget FLOAT"))
+                conn.commit()
+                print("✅ Budget column added successfully")
+            else:
+                print("✅ Budget column already exists")
+            
+            # Add budget_currency column if it doesn't exist
+            if 'budget_currency' not in existing_columns:
+                print("🔧 Step 2: Adding budget_currency column...")
+                conn.execute(text("ALTER TABLE projects ADD COLUMN budget_currency VARCHAR(3) NOT NULL DEFAULT 'AUD'"))
+                conn.commit()
+                print("✅ Budget currency column added successfully")
+            else:
+                print("✅ Budget currency column already exists")
+            
+            # Verify the changes
+            print("🔧 Step 3: Verifying changes...")
+            result = conn.execute(text("""
+                SELECT column_name, data_type, is_nullable, column_default
+                FROM information_schema.columns 
+                WHERE table_name = 'projects' 
+                AND column_name IN ('budget', 'budget_currency')
+                ORDER BY column_name
+            """))
+            
+            print("📋 Final schema:")
+            for row in result:
+                print(f"  - {row[0]}: {row[1]} (nullable: {row[2]}, default: {row[3]})")
+            
+            # Test the API
+            print("🔧 Step 4: Testing API...")
+            import requests
+            try:
+                response = requests.get("https://navimpact-api.onrender.com/api/v1/projects/", timeout=10)
+                if response.status_code == 200:
+                    print("✅ API test successful - projects endpoint working")
+                else:
+                    print(f"⚠️ API test returned status {response.status_code}")
+            except Exception as e:
+                print(f"⚠️ API test failed: {e}")
+            
+    except SQLAlchemyError as e:
+        print(f"❌ Database error: {e}")
+        sys.exit(1)
     except Exception as e:
-        print(f"❌ Error applying migration: {e}")
-        return False
+        print(f"❌ Unexpected error: {e}")
+        sys.exit(1)
+    
+    print("=" * 50)
+    print("🎉 Budget migration completed successfully!")
+    print("✅ Projects table now has budget and budget_currency columns")
+    print("✅ API should be working properly")
 
 if __name__ == "__main__":
-    print("🚀 Applying budget fields migration to production database...")
-    success = apply_budget_migration()
-    
-    if success:
-        print("🎉 Migration completed successfully!")
-        sys.exit(0)
-    else:
-        print("💥 Migration failed!")
-        sys.exit(1) 
+    apply_budget_migration() 
