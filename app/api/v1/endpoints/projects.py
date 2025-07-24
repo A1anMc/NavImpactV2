@@ -101,18 +101,19 @@ async def list_projects(
                    created_at, updated_at, owner_id
             FROM projects
         """
-        params = []
+        params = {}
+        conditions = []
         
         if status:
-            query += " WHERE status = %s"
-            params.append(status)
+            conditions.append("status = :status")
+            params['status'] = status
         
         if owner_id:
-            if status:
-                query += " AND owner_id = %s"
-            else:
-                query += " WHERE owner_id = %s"
-            params.append(owner_id)
+            conditions.append("owner_id = :owner_id")
+            params['owner_id'] = owner_id
+        
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
         
         # Get total count
         count_query = f"SELECT COUNT(*) FROM ({query}) as subquery"
@@ -120,8 +121,9 @@ async def list_projects(
         total = count_result.scalar()
         
         # Get paginated results
-        query += " ORDER BY created_at DESC LIMIT %s OFFSET %s"
-        params.extend([limit, skip])
+        query += " ORDER BY created_at DESC LIMIT :limit OFFSET :skip"
+        params['limit'] = limit
+        params['skip'] = skip
         
         result = db.execute(text(query), params)
         projects = [dict(row) for row in result]
@@ -131,8 +133,8 @@ async def list_projects(
         for project in projects:
             # Calculate team size
             team_result = db.execute(
-                text("SELECT COUNT(*) FROM team_members WHERE project_id = %s"),
-                [project['id']]
+                text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
+                {"project_id": project['id']}
             )
             team_size = team_result.scalar()
             
@@ -199,18 +201,18 @@ async def create_project(
         # Use raw SQL to avoid SQLAlchemy model issues
         query = """
             INSERT INTO projects (name, description, status, start_date, end_date, owner_id, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
+            VALUES (:name, :description, :status, :start_date, :end_date, :owner_id, NOW(), NOW())
             RETURNING id, name, description, status, start_date, end_date, created_at, updated_at, owner_id
         """
         
-        result = db.execute(text(query), [
-            project_data.name,
-            project_data.description,
-            project_data.status,
-            project_data.start_date,
-            project_data.end_date,
-            owner_id
-        ])
+        result = db.execute(text(query), {
+            "name": project_data.name,
+            "description": project_data.description,
+            "status": project_data.status,
+            "start_date": project_data.start_date,
+            "end_date": project_data.end_date,
+            "owner_id": owner_id
+        })
         
         project = dict(result.fetchone())
         db.commit()
@@ -251,8 +253,8 @@ async def get_project(
             SELECT id, name, description, status, start_date, end_date, 
                    created_at, updated_at, owner_id
             FROM projects 
-            WHERE id = %s
-        """), [project_id])
+            WHERE id = :project_id
+        """), {"project_id": project_id})
         
         project_row = result.fetchone()
         if not project_row:
@@ -265,8 +267,8 @@ async def get_project(
         
         # Calculate team size
         team_result = db.execute(
-            text("SELECT COUNT(*) FROM team_members WHERE project_id = %s"),
-            [project_id]
+            text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
+            {"project_id": project_id}
         )
         team_size = team_result.scalar()
         
@@ -322,7 +324,7 @@ async def update_project(
     """Update project by ID."""
     try:
         # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = %s"), [project_id])
+        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
         if not result.fetchone():
             raise HTTPException(
                 status_code=404,
@@ -331,29 +333,28 @@ async def update_project(
         
         # Build update query dynamically
         update_fields = []
-        params = []
+        params = {"project_id": project_id}
         
         if project_data.name is not None:
-            update_fields.append("name = %s")
-            params.append(project_data.name)
+            update_fields.append("name = :name")
+            params['name'] = project_data.name
         if project_data.description is not None:
-            update_fields.append("description = %s")
-            params.append(project_data.description)
+            update_fields.append("description = :description")
+            params['description'] = project_data.description
         if project_data.status is not None:
-            update_fields.append("status = %s")
-            params.append(project_data.status)
+            update_fields.append("status = :status")
+            params['status'] = project_data.status
         if project_data.start_date is not None:
-            update_fields.append("start_date = %s")
-            params.append(project_data.start_date)
+            update_fields.append("start_date = :start_date")
+            params['start_date'] = project_data.start_date
         if project_data.end_date is not None:
-            update_fields.append("end_date = %s")
-            params.append(project_data.end_date)
+            update_fields.append("end_date = :end_date")
+            params['end_date'] = project_data.end_date
         
         if update_fields:
             update_fields.append("updated_at = NOW()")
-            params.append(project_id)
             
-            query = f"UPDATE projects SET {', '.join(update_fields)} WHERE id = %s"
+            query = f"UPDATE projects SET {', '.join(update_fields)} WHERE id = :project_id"
             db.execute(text(query), params)
             db.commit()
         
@@ -362,15 +363,15 @@ async def update_project(
             SELECT id, name, description, status, start_date, end_date, 
                    created_at, updated_at, owner_id
             FROM projects 
-            WHERE id = %s
-        """), [project_id])
+            WHERE id = :project_id
+        """), {"project_id": project_id})
         
         project = dict(result.fetchone())
         
         # Calculate team size
         team_result = db.execute(
-            text("SELECT COUNT(*) FROM team_members WHERE project_id = %s"),
-            [project_id]
+            text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
+            {"project_id": project_id}
         )
         team_size = team_result.scalar()
         
@@ -408,14 +409,14 @@ async def delete_project(
     """Delete project by ID."""
     try:
         # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = %s"), [project_id])
+        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
         if not result.fetchone():
             raise HTTPException(
                 status_code=404,
                 detail=f"Project {project_id} not found"
             )
         
-        db.execute(text("DELETE FROM projects WHERE id = %s"), [project_id])
+        db.execute(text("DELETE FROM projects WHERE id = :project_id"), {"project_id": project_id})
         db.commit()
         
         return {"message": f"Project {project_id} deleted successfully"}
@@ -436,7 +437,7 @@ async def get_project_team(
     """Get team members for a project."""
     try:
         # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = %s"), [project_id])
+        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
         if not result.fetchone():
             raise HTTPException(
                 status_code=404,
@@ -447,8 +448,8 @@ async def get_project_team(
             SELECT tm.id, tm.user_id, tm.role, tm.joined_at, u.email as user_name
             FROM team_members tm
             LEFT JOIN users u ON tm.user_id = u.id
-            WHERE tm.project_id = %s
-        """), [project_id])
+            WHERE tm.project_id = :project_id
+        """), {"project_id": project_id})
         
         team_members = [dict(row) for row in team_result]
         
