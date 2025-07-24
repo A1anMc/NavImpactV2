@@ -3,17 +3,14 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
-from sqlalchemy import text
 
-from app.core.deps import get_db  # Use consistent database dependency
-# Temporarily remove all model imports since we're using raw SQL
-# from app.models.project import Project
-# from app.models.user import User
-# from app.models.team_member import TeamMember
+from app.core.deps import get_db
+from app.models.project import Project
+from app.models.user import User
+from app.models.team_member import TeamMember
 from app.db.session import get_last_connection_error
 
-# Create a separate router to avoid SQLAlchemy model conflicts
-router = APIRouter(prefix="/projects", tags=["projects"])
+router = APIRouter()
 
 # Pydantic models for request/response
 class ProjectCreate(BaseModel):
@@ -22,9 +19,8 @@ class ProjectCreate(BaseModel):
     status: str = "planning"
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    # Temporarily remove budget fields until migration is applied
-    # budget: Optional[float] = None
-    # budget_currency: str = "AUD"
+    budget: Optional[float] = None
+    budget_currency: str = "AUD"
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
@@ -32,9 +28,8 @@ class ProjectUpdate(BaseModel):
     status: Optional[str] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    # Temporarily remove budget fields until migration is applied
-    # budget: Optional[float] = None
-    # budget_currency: Optional[str] = None
+    budget: Optional[float] = None
+    budget_currency: Optional[str] = None
 
 class ProjectResponse(BaseModel):
     id: int
@@ -43,34 +38,14 @@ class ProjectResponse(BaseModel):
     status: str
     start_date: Optional[datetime]
     end_date: Optional[datetime]
-    # Temporarily remove budget fields until migration is applied
-    # budget: Optional[float]
-    # budget_currency: str
+    budget: Optional[float]
+    budget_currency: str
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     owner_id: int
     team_size: int
     progress_percentage: float
     budget_utilised: float
-
-@router.get("/debug")
-async def debug_projects_schema(db: Session = Depends(get_db)):
-    """Debug endpoint to check database schema."""
-    try:
-        # Check if table exists
-        result = db.execute(text("SELECT COUNT(*) as count FROM projects"))
-        count = result.scalar()
-        
-        return {
-            "table_exists": True,
-            "project_count": count,
-            "message": "Projects table exists and is accessible"
-        }
-    except Exception as e:
-        return {
-            "error": str(e),
-            "table_exists": False
-        }
 
 @router.get("/")
 async def list_projects(
@@ -82,33 +57,48 @@ async def list_projects(
 ):
     """List projects endpoint with proper error handling."""
     try:
-        # Use a simple query first to test
-        query = "SELECT id, name, description, status, start_date, end_date, created_at, updated_at, owner_id FROM projects ORDER BY created_at DESC LIMIT :limit OFFSET :skip"
+        query = db.query(Project)
         
-        result = db.execute(text(query), {"limit": limit, "skip": skip})
-        projects = []
-        for row in result:
-            projects.append({
-                "id": row.id,
-                "name": row.name,
-                "description": row.description,
-                "status": row.status,
-                "start_date": row.start_date.isoformat() if row.start_date else None,
-                "end_date": row.end_date.isoformat() if row.end_date else None,
-                "created_at": row.created_at.isoformat() if row.created_at else None,
-                "updated_at": row.updated_at.isoformat() if row.updated_at else None,
-                "owner_id": row.owner_id,
-                "team_size": 0,  # Placeholder
-                "progress_percentage": 0.0,  # Placeholder
-                "budget_utilised": 0.0  # Placeholder
+        if status:
+            query = query.filter(Project.status == status)
+        
+        if owner_id:
+            query = query.filter(Project.owner_id == owner_id)
+        
+        total = query.count()
+        projects = query.offset(skip).limit(limit).all()
+        
+        # Calculate additional metrics for each project
+        project_list = []
+        for project in projects:
+            # Calculate team size
+            team_size = db.query(TeamMember).filter(TeamMember.project_id == project.id).count()
+            
+            # Calculate progress (placeholder - will be enhanced with task completion)
+            progress_percentage = 0.0  # TODO: Calculate based on completed tasks
+            
+            # Calculate budget utilisation (placeholder)
+            budget_utilised = 0.0  # TODO: Calculate based on expenses
+            
+            project_list.append({
+                "id": project.id,
+                "name": project.name,
+                "description": project.description,
+                "status": project.status,
+                "start_date": project.start_date.isoformat() if project.start_date else None,
+                "end_date": project.end_date.isoformat() if project.end_date else None,
+                "budget": project.budget,
+                "budget_currency": project.budget_currency,
+                "created_at": project.created_at.isoformat() if project.created_at else None,
+                "updated_at": project.updated_at.isoformat() if project.updated_at else None,
+                "owner_id": project.owner_id,
+                "team_size": team_size,
+                "progress_percentage": progress_percentage,
+                "budget_utilised": budget_utilised
             })
         
-        # Get total count
-        count_result = db.execute(text("SELECT COUNT(*) FROM projects"))
-        total = count_result.scalar()
-        
         return {
-            "items": projects,
+            "items": project_list,
             "total": total,
             "page": skip // limit + 1,
             "size": limit,
@@ -143,38 +133,33 @@ async def create_project(
         # For now, use a default user ID (will be replaced with proper auth)
         owner_id = 1  # TODO: Get from current_user
         
-        # Use raw SQL to avoid SQLAlchemy model issues
-        query = """
-            INSERT INTO projects (name, description, status, start_date, end_date, owner_id, created_at, updated_at)
-            VALUES (:name, :description, :status, :start_date, :end_date, :owner_id, NOW(), NOW())
-            RETURNING id, name, description, status, start_date, end_date, created_at, updated_at, owner_id
-        """
+        project = Project(
+            name=project_data.name,
+            description=project_data.description,
+            status=project_data.status,
+            start_date=project_data.start_date,
+            end_date=project_data.end_date,
+            budget=project_data.budget,
+            budget_currency=project_data.budget_currency,
+            owner_id=owner_id
+        )
         
-        result = db.execute(text(query), {
-            "name": project_data.name,
-            "description": project_data.description,
-            "status": project_data.status,
-            "start_date": project_data.start_date,
-            "end_date": project_data.end_date,
-            "owner_id": owner_id
-        })
-        
-        project = dict(result.fetchone())
+        db.add(project)
         db.commit()
+        db.refresh(project)
         
         return {
-            "id": project['id'],
-            "name": project['name'],
-            "description": project['description'],
-            "status": project['status'],
-            "start_date": project['start_date'].isoformat() if project['start_date'] else None,
-            "end_date": project['end_date'].isoformat() if project['end_date'] else None,
-            # Temporarily remove budget fields until migration is applied
-            # "budget": project.budget,
-            # "budget_currency": project.budget_currency,
-            "created_at": project['created_at'].isoformat() if project['created_at'] else None,
-            "updated_at": project['updated_at'].isoformat() if project['updated_at'] else None,
-            "owner_id": project['owner_id'],
+            "id": project.id,
+            "name": project.name,
+            "description": project.description,
+            "status": project.status,
+            "start_date": project.start_date.isoformat() if project.start_date else None,
+            "end_date": project.end_date.isoformat() if project.end_date else None,
+            "budget": project.budget,
+            "budget_currency": project.budget_currency,
+            "created_at": project.created_at.isoformat() if project.created_at else None,
+            "updated_at": project.updated_at.isoformat() if project.updated_at else None,
+            "owner_id": project.owner_id,
             "team_size": 0,
             "progress_percentage": 0.0,
             "budget_utilised": 0.0
@@ -193,29 +178,15 @@ async def get_project(
 ):
     """Get project by ID endpoint with proper error handling."""
     try:
-        # Use raw SQL to avoid SQLAlchemy model issues
-        result = db.execute(text("""
-            SELECT id, name, description, status, start_date, end_date, 
-                   created_at, updated_at, owner_id
-            FROM projects 
-            WHERE id = :project_id
-        """), {"project_id": project_id})
-        
-        project_row = result.fetchone()
-        if not project_row:
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
             raise HTTPException(
                 status_code=404,
                 detail=f"Project {project_id} not found"
             )
         
-        project = dict(project_row)
-        
         # Calculate team size
-        team_result = db.execute(
-            text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
-            {"project_id": project_id}
-        )
-        team_size = team_result.scalar()
+        team_size = db.query(TeamMember).filter(TeamMember.project_id == project.id).count()
         
         # Calculate progress (placeholder)
         progress_percentage = 0.0
@@ -224,18 +195,17 @@ async def get_project(
         budget_utilised = 0.0
         
         return {
-            "id": project['id'],
-            "name": project['name'],
-            "description": project['description'],
-            "status": project['status'],
-            "start_date": project['start_date'].isoformat() if project['start_date'] else None,
-            "end_date": project['end_date'].isoformat() if project['end_date'] else None,
-            # Temporarily remove budget fields until migration is applied
-            # "budget": getattr(project, 'budget', None),
-            # "budget_currency": getattr(project, 'budget_currency', 'AUD'),
-            "created_at": project['created_at'].isoformat() if project['created_at'] else None,
-            "updated_at": project['updated_at'].isoformat() if project['updated_at'] else None,
-            "owner_id": project['owner_id'],
+            "id": project.id,
+            "name": project.name,
+            "description": project.description,
+            "status": project.status,
+            "start_date": project.start_date.isoformat() if project.start_date else None,
+            "end_date": project.end_date.isoformat() if project.end_date else None,
+            "budget": project.budget,
+            "budget_currency": project.budget_currency,
+            "created_at": project.created_at.isoformat() if project.created_at else None,
+            "updated_at": project.updated_at.isoformat() if project.updated_at else None,
+            "owner_id": project.owner_id,
             "team_size": team_size,
             "progress_percentage": progress_percentage,
             "budget_utilised": budget_utilised
@@ -268,71 +238,49 @@ async def update_project(
 ):
     """Update project by ID."""
     try:
-        # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
-        if not result.fetchone():
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
             raise HTTPException(
                 status_code=404,
                 detail=f"Project {project_id} not found"
             )
         
-        # Build update query dynamically
-        update_fields = []
-        params = {"project_id": project_id}
-        
+        # Update fields if provided
         if project_data.name is not None:
-            update_fields.append("name = :name")
-            params['name'] = project_data.name
+            project.name = project_data.name
         if project_data.description is not None:
-            update_fields.append("description = :description")
-            params['description'] = project_data.description
+            project.description = project_data.description
         if project_data.status is not None:
-            update_fields.append("status = :status")
-            params['status'] = project_data.status
+            project.status = project_data.status
         if project_data.start_date is not None:
-            update_fields.append("start_date = :start_date")
-            params['start_date'] = project_data.start_date
+            project.start_date = project_data.start_date
         if project_data.end_date is not None:
-            update_fields.append("end_date = :end_date")
-            params['end_date'] = project_data.end_date
+            project.end_date = project_data.end_date
+        if project_data.budget is not None:
+            project.budget = project_data.budget
+        if project_data.budget_currency is not None:
+            project.budget_currency = project_data.budget_currency
         
-        if update_fields:
-            update_fields.append("updated_at = NOW()")
-            
-            query = f"UPDATE projects SET {', '.join(update_fields)} WHERE id = :project_id"
-            db.execute(text(query), params)
-            db.commit()
+        project.updated_at = datetime.utcnow()
         
-        # Get updated project
-        result = db.execute(text("""
-            SELECT id, name, description, status, start_date, end_date, 
-                   created_at, updated_at, owner_id
-            FROM projects 
-            WHERE id = :project_id
-        """), {"project_id": project_id})
-        
-        project = dict(result.fetchone())
+        db.commit()
+        db.refresh(project)
         
         # Calculate team size
-        team_result = db.execute(
-            text("SELECT COUNT(*) FROM team_members WHERE project_id = :project_id"),
-            {"project_id": project_id}
-        )
-        team_size = team_result.scalar()
+        team_size = db.query(TeamMember).filter(TeamMember.project_id == project.id).count()
         
         return {
-            "id": project['id'],
-            "name": project['name'],
-            "description": project['description'],
-            "status": project['status'],
-            "start_date": project['start_date'].isoformat() if project['start_date'] else None,
-            "end_date": project['end_date'].isoformat() if project['end_date'] else None,
-            # Temporarily remove budget fields until migration is applied
-            # "budget": getattr(project, 'budget', None),
-            # "budget_currency": getattr(project, 'budget_currency', 'AUD'),
-            "created_at": project['created_at'].isoformat() if project['created_at'] else None,
-            "updated_at": project['updated_at'].isoformat() if project['updated_at'] else None,
-            "owner_id": project['owner_id'],
+            "id": project.id,
+            "name": project.name,
+            "description": project.description,
+            "status": project.status,
+            "start_date": project.start_date.isoformat() if project.start_date else None,
+            "end_date": project.end_date.isoformat() if project.end_date else None,
+            "budget": project.budget,
+            "budget_currency": project.budget_currency,
+            "created_at": project.created_at.isoformat() if project.created_at else None,
+            "updated_at": project.updated_at.isoformat() if project.updated_at else None,
+            "owner_id": project.owner_id,
             "team_size": team_size,
             "progress_percentage": 0.0,
             "budget_utilised": 0.0
@@ -353,15 +301,14 @@ async def delete_project(
 ):
     """Delete project by ID."""
     try:
-        # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
-        if not result.fetchone():
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
             raise HTTPException(
                 status_code=404,
                 detail=f"Project {project_id} not found"
             )
         
-        db.execute(text("DELETE FROM projects WHERE id = :project_id"), {"project_id": project_id})
+        db.delete(project)
         db.commit()
         
         return {"message": f"Project {project_id} deleted successfully"}
@@ -381,31 +328,24 @@ async def get_project_team(
 ):
     """Get team members for a project."""
     try:
-        # Check if project exists
-        result = db.execute(text("SELECT id FROM projects WHERE id = :project_id"), {"project_id": project_id})
-        if not result.fetchone():
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
             raise HTTPException(
                 status_code=404,
                 detail=f"Project {project_id} not found"
             )
         
-        team_result = db.execute(text("""
-            SELECT tm.id, tm.user_id, tm.role, tm.joined_at, u.email as user_name
-            FROM team_members tm
-            LEFT JOIN users u ON tm.user_id = u.id
-            WHERE tm.project_id = :project_id
-        """), {"project_id": project_id})
-        
-        team_members = [dict(row) for row in team_result]
+        team_members = db.query(TeamMember).filter(TeamMember.project_id == project_id).all()
         
         team_data = []
         for member in team_members:
+            user = db.query(User).filter(User.id == member.user_id).first()
             team_data.append({
-                "id": member['id'],
-                "user_id": member['user_id'],
-                "user_name": member['user_name'] or "Unknown User",
-                "role": member['role'],
-                "joined_at": member['joined_at'].isoformat() if member['joined_at'] else None
+                "id": member.id,
+                "user_id": member.user_id,
+                "user_name": user.email if user else "Unknown User",  # TODO: Add proper user name field
+                "role": member.role,
+                "joined_at": member.joined_at.isoformat() if member.joined_at else None
             })
         
         return {

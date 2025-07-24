@@ -14,8 +14,8 @@ interface Project {
   status: string
   start_date: string | null
   end_date: string | null
-  budget?: number | null  // Optional until migration is applied
-  budget_currency?: string  // Optional until migration is applied
+  budget: number | null
+  budget_currency: string
   created_at: string | null
   updated_at: string | null
   owner_id: number
@@ -66,7 +66,7 @@ export default function ProjectsPage() {
     }
   }
 
-  const formatCurrency = (amount: number | null | undefined, currency: string = 'AUD') => {
+  const formatCurrency = (amount: number | null, currency: string = 'AUD') => {
     if (amount === null || amount === undefined) return 'Not set'
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
@@ -79,7 +79,7 @@ export default function ProjectsPage() {
     return new Date(dateString).toLocaleDateString('en-AU')
   }
 
-  const calculateBudgetUtilisation = (budget: number | null | undefined, utilised: number) => {
+  const calculateBudgetUtilisation = (budget: number | null, utilised: number) => {
     if (budget === null || budget === undefined || budget === 0) return 0
     return (utilised / budget) * 100
   }
@@ -235,27 +235,25 @@ export default function ProjectsPage() {
                   <Progress value={project.progress_percentage} className="h-2" />
                 </div>
 
-                {/* Budget - Only show if budget fields are available */}
-                {project.budget !== undefined && project.budget !== null && (
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">Budget</span>
-                      <span className="font-medium">
-                        {formatCurrency(project.budget, project.budget_currency)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">Utilised</span>
-                      <span className="font-medium">
-                        {formatCurrency(project.budget_utilised, project.budget_currency)}
-                      </span>
-                    </div>
-                    <Progress 
-                      value={calculateBudgetUtilisation(project.budget, project.budget_utilised)} 
-                      className="h-2" 
-                    />
+                {/* Budget */}
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600">Budget</span>
+                    <span className="font-medium">
+                      {formatCurrency(project.budget, project.budget_currency)}
+                    </span>
                   </div>
-                )}
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600">Utilised</span>
+                    <span className="font-medium">
+                      {formatCurrency(project.budget_utilised, project.budget_currency)}
+                    </span>
+                  </div>
+                  <Progress 
+                    value={calculateBudgetUtilisation(project.budget, project.budget_utilised)} 
+                    className="h-2" 
+                  />
+                </div>
 
                 {/* Project Details */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
