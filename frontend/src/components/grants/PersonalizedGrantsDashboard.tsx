@@ -29,13 +29,16 @@ export const PersonalizedGrantsDashboard: React.FC<PersonalizedGrantsDashboardPr
   const [filterPriority, setFilterPriority] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [minScore, setMinScore] = useState(0);
 
-  // Fetch user profile
+  // Fetch user profile - disabled during build time
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['user-profile'],
     queryFn: profileService.getMyProfile,
     retry: 1,
-    // Disable during build time
+    // Disable during build time and SSR
     enabled: typeof window !== 'undefined',
+    // Prevent hydration mismatch
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Temporary mock profile for testing when backend is down

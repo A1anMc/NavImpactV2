@@ -64,6 +64,11 @@ export interface UserProfileUpdate {
 export const profileService = {
   // Get current user's profile
   async getMyProfile(): Promise<UserProfile> {
+    // Prevent API calls during build time
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot fetch profile during build time');
+    }
+    
     const response = await api.get<UserProfile>('/user-profiles/me');
     return response.data;
   },
