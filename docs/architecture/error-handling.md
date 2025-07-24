@@ -1,6 +1,6 @@
 # Error Handling Architecture
 
-This document outlines the error handling architecture for the SGE Dashboard, covering both frontend and backend layers.
+This document outlines the error handling architecture for the NavImpact Dashboard, covering both frontend and backend layers.
 
 ## Overview
 

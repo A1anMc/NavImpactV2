@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Monitor script wrapper for SGE Dashboard
+# Monitor script wrapper for NavImpact Dashboard
 # This script provides a convenient way to run the monitoring system
 
 # Default values
@@ -13,7 +13,7 @@ mkdir -p "$LOG_DIR"
 
 # Help function
 show_help() {
-    echo "SGE Dashboard Monitoring Script"
+    echo "NavImpact Dashboard Monitoring Script"
     echo
     echo "Usage: $0 [options]"
     echo

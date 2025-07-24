@@ -12,8 +12,8 @@ echo -e "${BLUE}🔍 Deployment Validation Script${NC}"
 echo -e "${BLUE}================================${NC}"
 
 # Check if we're validating local or remote
-BACKEND_URL=${1:-"https://sge-dashboard-api.onrender.com"}
-FRONTEND_URL=${2:-"https://sge-dashboard-web.onrender.com"}
+BACKEND_URL=${1:-"https://navimpact-api.onrender.com"}
+FRONTEND_URL=${2:-"https://navimpact-web.onrender.com"}
 
 echo -e "\n${YELLOW}🎯 Target URLs:${NC}"
 echo -e "Backend:  $BACKEND_URL"

@@ -6,7 +6,7 @@ BACKEND_SERVICE_ID="navimpact-api"    # Your backend service name
 BACKEND_URL="https://navimpact-api.onrender.com/health"
 FRONTEND_URL="https://navimpact-web.onrender.com"
 
-echo "🚀 Starting One-Shot Redeploy for SGE Dashboard..."
+echo "🚀 Starting One-Shot Redeploy for NavImpact Dashboard..."
 
 # ====== STEP 1: FRONTEND REDEPLOY ======
 echo "🔄 Redeploying Frontend..."

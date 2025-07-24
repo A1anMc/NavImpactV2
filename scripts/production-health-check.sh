@@ -7,8 +7,8 @@ echo "🔍 SGE Dashboard Production Health Check"
 echo "========================================"
 
 # Configuration
-BACKEND_URL="https://sge-dashboard-api.onrender.com"
-FRONTEND_URL="https://sge-dashboard-web.onrender.com"
+BACKEND_URL="https://navimpact-api.onrender.com"
+FRONTEND_URL="https://navimpact-web.onrender.com"
 
 # Colors for output
 RED='\033[0;31m'

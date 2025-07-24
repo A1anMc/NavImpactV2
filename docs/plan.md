@@ -1,7 +1,7 @@
-# 📋 Project Plan – SGE Dashboard
+# 📋 Project Plan – NavImpact Dashboard
 
 ## Objective
-Create a centralized dashboard for managing Shadow Goose Entertainment's grant applications, project tasks, and team collaboration.
+Create a centralized dashboard for managing NavImpact's grant applications, project tasks, and team collaboration.
 
 ## Core Features
 1. **Grant Management**

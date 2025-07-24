@@ -7,8 +7,8 @@ echo "📡 SGE Dashboard Deployment Monitor"
 echo "===================================="
 
 # Configuration
-BACKEND_URL="https://sge-dashboard-api.onrender.com"
-FRONTEND_URL="https://sge-dashboard-web.onrender.com"
+BACKEND_URL="https://navimpact-api.onrender.com"
+FRONTEND_URL="https://navimpact-web.onrender.com"
 CHECK_INTERVAL=15  # seconds between checks
 MAX_CHECKS=40      # maximum number of checks (10 minutes)
 

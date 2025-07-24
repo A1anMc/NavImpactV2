@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---- Config ----
-BACKEND_URL=${1:-https://sge-dashboard-api.onrender.com}
+BACKEND_URL=${1:-https://navimpact-api.onrender.com}
 HEALTH_PATH="/health"
 
 echo "🔍 Checking health endpoint at: $BACKEND_URL$HEALTH_PATH"
