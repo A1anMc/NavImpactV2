@@ -6,12 +6,14 @@ from pydantic import BaseModel
 from sqlalchemy import text
 
 from app.core.deps import get_db  # Use consistent database dependency
-from app.models.project import Project
-from app.models.user import User
-from app.models.team_member import TeamMember
+# Temporarily remove all model imports since we're using raw SQL
+# from app.models.project import Project
+# from app.models.user import User
+# from app.models.team_member import TeamMember
 from app.db.session import get_last_connection_error
 
-router = APIRouter()
+# Create a separate router to avoid SQLAlchemy model conflicts
+router = APIRouter(prefix="/projects", tags=["projects"])
 
 # Pydantic models for request/response
 class ProjectCreate(BaseModel):
@@ -187,8 +189,7 @@ async def list_projects(
 @router.post("/")
 async def create_project(
     project_data: ProjectCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_db)  # TODO: Add proper auth dependency
+    db: Session = Depends(get_db)
 ):
     """Create a new project."""
     try:
