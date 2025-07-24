@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 from app.models.project_tags import project_tags
@@ -15,6 +15,8 @@ class Project(Base):
     status = Column(String, nullable=False, default="planning")
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
+    budget = Column(Float, nullable=True)  # Project budget amount
+    budget_currency = Column(String(3), nullable=False, default="AUD")  # Currency code
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
