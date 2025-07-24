@@ -149,7 +149,7 @@ export default function ImpactPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Impact Dashboard</h1>
-        <p className="text-gray-600">Track your organization's impact and grant performance</p>
+        <p className="text-gray-600">Track your organisation&rsquo;s impact and grant performance</p>
       </div>
 
       {/* Key Metrics Cards */}
