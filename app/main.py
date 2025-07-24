@@ -2,6 +2,7 @@
 NavImpact API - Production Ready
 Enhanced with comprehensive security measures for production deployment.
 Fixed FastAPI response model validation issues.
+Version: 1.0.1 - Updated for passwordless authentication
 """
 
 from datetime import datetime
