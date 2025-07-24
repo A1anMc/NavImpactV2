@@ -1,0 +1,1 @@
+{"timestamp": "2025-07-10T02:14:57.074117", "level": "INFO", "message": "Logging system initialized", "module": "logging_config", "function": "setup_logging", "line": 134, "request_id": "no_request", "path": "no_path", "method": "no_method", "user_id": "no_user", "ip": "no_ip"}

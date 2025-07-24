@@ -64,7 +64,8 @@ export interface UserProfileUpdate {
 export const profileService = {
   // Get current user's profile
   async getMyProfile(): Promise<UserProfile> {
-    return api.request<UserProfile>('/user-profiles/me');
+    const response = await api.get<UserProfile>('/user-profiles/me');
+    return response.data;
   },
 
   // Get all user profiles (admin only)
@@ -73,42 +74,37 @@ export const profileService = {
       skip: skip.toString(),
       limit: limit.toString()
     };
-    return api.request<UserProfile[]>('/user-profiles/', {}, queryParams);
+    const response = await api.get<UserProfile[]>('/user-profiles/', { params: queryParams });
+    return response.data;
   },
 
   // Get specific user profile by ID
   async getProfile(id: number): Promise<UserProfile> {
-    return api.request<UserProfile>(`/user-profiles/${id}`);
+    const response = await api.get<UserProfile>(`/user-profiles/${id}`);
+    return response.data;
   },
 
   // Create new user profile
   async createProfile(profile: UserProfileCreate): Promise<UserProfile> {
-    return api.request<UserProfile>('/user-profiles/', {
-      method: 'POST',
-      body: JSON.stringify(profile),
-    });
+    const response = await api.post<UserProfile>('/user-profiles/', profile);
+    return response.data;
   },
 
   // Update current user's profile
   async updateMyProfile(profile: UserProfileUpdate): Promise<UserProfile> {
-    return api.request<UserProfile>('/user-profiles/me', {
-      method: 'PUT',
-      body: JSON.stringify(profile),
-    });
+    const response = await api.put<UserProfile>('/user-profiles/me', profile);
+    return response.data;
   },
 
   // Update specific user profile by ID
   async updateProfile(id: number, profile: UserProfileUpdate): Promise<UserProfile> {
-    return api.request<UserProfile>(`/user-profiles/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(profile),
-    });
+    const response = await api.put<UserProfile>(`/user-profiles/${id}`, profile);
+    return response.data;
   },
 
   // Delete user profile
   async deleteProfile(id: number): Promise<{ message: string }> {
-    return api.request<{ message: string }>(`/user-profiles/${id}`, {
-      method: 'DELETE',
-    });
+    const response = await api.delete<{ message: string }>(`/user-profiles/${id}`);
+    return response.data;
   }
 }; 

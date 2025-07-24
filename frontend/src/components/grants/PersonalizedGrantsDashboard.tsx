@@ -66,7 +66,7 @@ export const PersonalizedGrantsDashboard: React.FC<PersonalizedGrantsDashboardPr
   // Fetch grants
   const { data: grantsResponse, isLoading: grantsLoading } = useQuery({
     queryKey: ['grants'],
-    queryFn: () => grantsApi.getGrants({ limit: 100 }),
+    queryFn: () => grantsApi.getGrants({ page: 1, size: 100 }),
   });
 
   // Calculate matches

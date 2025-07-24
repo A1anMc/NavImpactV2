@@ -30,7 +30,7 @@ export default function GrantRecommendations({
     try {
       setLoading(true);
       setError(null);
-      const data = await grantsApi.getRecommendations(limit);
+      const data = await grantsApi.getGrants({ page: 1, size: limit });
       setRecommendations(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load recommendations');

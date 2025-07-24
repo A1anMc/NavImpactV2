@@ -33,7 +33,7 @@ export default function MatchingGrants({ showFilters = true }: MatchingGrantsPro
     try {
       setLoading(true);
       setError(null);
-      const data = await grantsApi.getMatchingGrants(currentPage * limit, limit);
+      const data = await grantsApi.getGrants({ page: currentPage + 1, size: limit });
       setGrants(prev => currentPage === 0 ? data : [...prev, ...data]);
       setHasMore(data.length === limit);
       if (currentPage === 0) {

@@ -24,39 +24,37 @@ export interface UpdateUserRequest {
 export const usersService = {
   // Get all users
   async getAllUsers(skip = 0, limit = 100): Promise<User[]> {
-    return api.getUsers({ skip, limit });
+    const response = await api.get<User[]>('/users/', { params: { skip, limit } });
+    return response.data;
   },
 
   // Get user by ID
   async getUserById(id: string): Promise<User> {
-    return api.getUser(id);
+    const response = await api.get<User>(`/users/${id}`);
+    return response.data;
   },
 
   // Get current user
   async getCurrentUser(): Promise<User> {
-    return api.getCurrentUser();
+    const response = await api.get<User>('/users/me');
+    return response.data;
   },
 
   // Create new user
   async createUser(userData: CreateUserRequest): Promise<User> {
-    return api.makeRequest<User>(`/api/v1/users/`, {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
+    const response = await api.post<User>('/users/', userData);
+    return response.data;
   },
 
   // Update user
   async updateUser(id: string, userData: UpdateUserRequest): Promise<User> {
-    return api.makeRequest<User>(`/api/v1/users/${id}/`, {
-      method: 'PUT',
-      body: JSON.stringify(userData),
-    });
+    const response = await api.put<User>(`/users/${id}`, userData);
+    return response.data;
   },
 
   // Delete user
   async deleteUser(id: string): Promise<{ message: string }> {
-    return api.makeRequest<{ message: string }>(`/api/v1/users/${id}/`, {
-      method: 'DELETE',
-    });
+    const response = await api.delete<{ message: string }>(`/users/${id}`);
+    return response.data;
   }
 }; 

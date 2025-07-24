@@ -8,6 +8,11 @@ const STORAGE_KEYS = {
   COMPARISON_HISTORY: 'navimpact_comparison_history',
 } as const;
 
+// Saved grant interface that extends Grant with saved_at timestamp
+export interface SavedGrant extends Grant {
+  saved_at: string;
+}
+
 // User preferences interface
 export interface UserPreferences {
   industry_preference?: string;
@@ -22,7 +27,7 @@ export interface UserPreferences {
 // Local storage service
 export const localStorageService = {
   // Saved Grants Management
-  getSavedGrants(): Grant[] {
+  getSavedGrants(): SavedGrant[] {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SAVED_GRANTS);
       return saved ? JSON.parse(saved) : [];
@@ -38,10 +43,11 @@ export const localStorageService = {
       const exists = saved.find(g => g.id === grant.id);
       
       if (!exists) {
-        saved.push({
+        const savedGrant: SavedGrant = {
           ...grant,
           saved_at: new Date().toISOString()
-        });
+        };
+        saved.push(savedGrant);
         localStorage.setItem(STORAGE_KEYS.SAVED_GRANTS, JSON.stringify(saved));
       }
     } catch (error) {
