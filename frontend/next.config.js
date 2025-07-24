@@ -5,7 +5,7 @@ const nextConfig = {
   
   // Force dynamic rendering
   experimental: {
-    isrMemoryCacheSize: 0,
+    // Removed invalid isrMemoryCacheSize option
   },
   
   // Disable static generation completely
