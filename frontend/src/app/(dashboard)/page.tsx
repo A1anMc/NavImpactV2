@@ -21,12 +21,12 @@ export default function DashboardPage() {
         {/* Simple Header */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                <CpuChipIcon className="w-8 h-8 text-white" />
-              </div>
+                          <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <CpuChipIcon className="w-8 h-8 text-white" />
+                </div>
               <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-slate-900"></div>
-            </div>
+              </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">
                 NavImpact Command Center
