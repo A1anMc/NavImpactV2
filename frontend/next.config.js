@@ -11,6 +11,8 @@ const nextConfig = {
   // Disable static optimization for problematic pages
   trailingSlash: false,
   
+
+  
   reactStrictMode: true,
   poweredByHeader: false,
   
