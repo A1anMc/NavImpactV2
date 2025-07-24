@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
+from typing import Optional
 
 from app.db.session import get_db
 from app.models.user import User
@@ -17,7 +18,7 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Login endpoint - no password verification required."""
-    # Find user by email
+    # Find user by email (username field contains email)
     user = db.query(User).filter(User.email == form_data.username).first()
     
     # Check if user exists
@@ -48,12 +49,15 @@ async def login(
 
 @router.post("/register", response_model=Token)
 async def register(
-    user_in: UserCreate,
+    username: str = Form(...),  # This will be the email
+    password: str = Form(""),   # Empty default for no password
+    full_name: Optional[str] = Form(None),
+    organisation: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Register endpoint."""
+    """Register endpoint - accepts form data for compatibility."""
     # Check if user with same email exists
-    existing_user = db.query(User).filter(User.email == user_in.email).first()
+    existing_user = db.query(User).filter(User.email == username).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -64,10 +68,10 @@ async def register(
     from datetime import datetime
     
     db_user = User(
-        email=user_in.email,
-        full_name=user_in.full_name,
+        email=username,
+        full_name=full_name or username.split('@')[0],  # Use email prefix if no name
         hashed_password="",  # Empty password for development
-        is_active=user_in.is_active,
+        is_active=True,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
     )
