@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/components/QueryProvider";
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
@@ -35,11 +34,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className} suppressHydrationWarning={true}>
         <ErrorBoundary>
-          <QueryProvider>
-            <div suppressHydrationWarning={true}>
-              {children}
-            </div>
-          </QueryProvider>
+          <div suppressHydrationWarning={true}>
+            {children}
+          </div>
         </ErrorBoundary>
       </body>
     </html>
