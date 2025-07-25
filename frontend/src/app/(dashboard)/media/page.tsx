@@ -204,42 +204,37 @@ export default function MediaPage() {
               <CardContent className="p-6">
                 <div className="flex flex-wrap gap-3">
                   <Button 
-                    variant={selectedFilter === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedFilter('all')}
-                    className={selectedFilter === 'all' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+                    className={selectedFilter === 'all' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300 bg-white hover:bg-gray-50'}
                   >
                     All Media
                   </Button>
                   <Button 
-                    variant={selectedFilter === 'images' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedFilter('images')}
-                    className={selectedFilter === 'images' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+                    className={selectedFilter === 'images' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300 bg-white hover:bg-gray-50'}
                   >
                     Images
                   </Button>
                   <Button 
-                    variant={selectedFilter === 'videos' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedFilter('videos')}
-                    className={selectedFilter === 'videos' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+                    className={selectedFilter === 'videos' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300 bg-white hover:bg-gray-50'}
                   >
                     Videos
                   </Button>
                   <Button 
-                    variant={selectedFilter === 'documents' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedFilter('documents')}
-                    className={selectedFilter === 'documents' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+                    className={selectedFilter === 'documents' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300 bg-white hover:bg-gray-50'}
                   >
                     Documents
                   </Button>
                   <Button 
-                    variant={selectedFilter === 'audio' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedFilter('audio')}
-                    className={selectedFilter === 'audio' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+                    className={selectedFilter === 'audio' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300 bg-white hover:bg-gray-50'}
                   >
                     Audio
                   </Button>
