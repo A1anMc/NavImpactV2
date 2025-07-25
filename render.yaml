@@ -10,15 +10,14 @@ services:
     startCommand: |
       echo "Starting backend deployment..."
       echo "Database URL: $DATABASE_URL"
-      echo "Skipping migrations - database already initialized"
+      echo "Running fresh database migrations..."
+      alembic upgrade head
       gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
       - key: DATABASE_URL
-        fromDatabase:
-          name: NavImpact-dbV2
-          property: connectionString
+        value: postgresql://navimpact_dbv3_user:EY0Vd5QcTEoY7ZM0CrKCWfsFVHcYIZ8V@dpg-d21hvsvfte5s73fkk140-a/navimpact_dbv3
       - key: SECRET_KEY
         generateValue: true
       - key: ENVIRONMENT
