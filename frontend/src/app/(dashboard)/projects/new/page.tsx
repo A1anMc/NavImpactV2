@@ -3,30 +3,37 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
-  IMPACT_TYPES,
+  VICTORIAN_FRAMEWORKS, 
+  IMPACT_TYPES, 
   PROJECT_STATUSES,
-  VICTORIAN_FRAMEWORKS,
-  ImpactType,
-  ProjectStatus,
-  VictorianFramework
+  SDG_OPTIONS 
 } from '@/types/projects';
 
-// SDG options for the form
-const SDG_OPTIONS = [
-  'SDG 1', 'SDG 2', 'SDG 3', 'SDG 4', 'SDG 5', 'SDG 6', 'SDG 7', 'SDG 8', 'SDG 9', 'SDG 10',
-  'SDG 11', 'SDG 12', 'SDG 13', 'SDG 14', 'SDG 15', 'SDG 16', 'SDG 17'
-];
+interface ProjectFormData {
+  name: string;
+  description: string;
+  status: string;
+  impact_types: string[];
+  framework_alignment: string[];
+  sdg_tags: string[];
+  reach_count: string;
+  start_date: string;
+  end_date: string;
+  budget: string;
+  location: string;
+  contact_email: string;
+  website: string;
+}
 
 export default function NewProjectPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProjectFormData>({
     name: '',
     description: '',
-    status: 'planning' as ProjectStatus,
-    impact_types: [] as ImpactType[],
-    framework_alignment: [] as VictorianFramework[],
-    sdg_tags: [] as string[],
+    status: 'planning',
+    impact_types: [],
+    framework_alignment: [],
+    sdg_tags: [],
     reach_count: '',
     start_date: '',
     end_date: '',
@@ -36,12 +43,16 @@ export default function NewProjectPage() {
     website: ''
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleArrayToggle = (field: 'impact_types' | 'framework_alignment' | 'sdg_tags', value: string) => {
@@ -55,8 +66,8 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
 
     try {
       const response = await fetch('https://navimpact-api.onrender.com/api/v1/projects/', {
@@ -72,7 +83,7 @@ export default function NewProjectPage() {
       });
 
       if (response.ok) {
-        setSuccess(true);
+        setSubmitStatus('success');
         // Reset form
         setFormData({
           name: '',
@@ -91,326 +102,348 @@ export default function NewProjectPage() {
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to create project');
+        setErrorMessage(errorData.detail || 'Failed to create project');
+        setSubmitStatus('error');
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
+    } catch (error) {
+      setErrorMessage('Network error. Please try again.');
+      setSubmitStatus('error');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (success) {
+  if (submitStatus === 'success') {
     return (
-      <div className="p-8 space-y-8 bg-neutral-50 min-h-screen">
-        <Card className="bg-white border-neutral-200 max-w-2xl mx-auto">
-          <CardContent className="p-8 text-center">
-            <div className="text-green-600 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-neutral-900 mb-2">Project Created Successfully!</h2>
-            <p className="text-neutral-600 mb-6">
-              Your impact project has been created and is now part of your portfolio.
-            </p>
-            <div className="space-x-4">
-              <a href="/projects">
-                <Button variant="primary" size="md">
-                  View All Projects
+      <div className="min-h-screen bg-gray-50">
+        <div className="p-8 max-w-4xl mx-auto">
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardContent className="p-12 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Project Created Successfully!</h2>
+              <p className="text-gray-600 mb-8">Your new impact project has been added to the portfolio and is ready for implementation.</p>
+              <div className="flex items-center justify-center space-x-4">
+                <a href="/projects">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    View All Projects
+                  </Button>
+                </a>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSubmitStatus('idle')}
+                  className="text-gray-600 border-gray-300"
+                >
+                  Create Another
                 </Button>
-              </a>
-              <Button variant="secondary" size="md" onClick={() => setSuccess(false)}>
-                Create Another Project
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8 space-y-8 bg-neutral-50 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">Create New Impact Project</h1>
-        <p className="text-lg text-neutral-600 mt-2">
-          Define your project's impact, align with Victorian frameworks, and track measurable outcomes
-        </p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-8 max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Project</h1>
+            <p className="text-gray-600">Add a new impact project to your portfolio</p>
+          </div>
+          <a href="/projects">
+            <Button variant="outline" className="text-gray-600 border-gray-300">
+              Cancel
+            </Button>
+          </a>
+        </div>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
-        {/* Basic Project Information */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Project Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Enter project name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Project Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => handleInputChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  {Object.entries(PROJECT_STATUSES).map(([key, config]) => (
-                    <option key={key} value={key}>{config.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Project Description *
-              </label>
-              <textarea
-                required
-                rows={4}
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Describe your project's goals, activities, and expected outcomes..."
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.start_date}
-                  onChange={(e) => handleInputChange('start_date', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.end_date}
-                  onChange={(e) => handleInputChange('end_date', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Melbourne, VIC"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Impact Types */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Impact Types</CardTitle>
-            <p className="text-sm text-neutral-600">Select the primary types of impact your project will create</p>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              {Object.entries(IMPACT_TYPES).map(([key, config]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleArrayToggle('impact_types', key)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    formData.impact_types.includes(key as ImpactType)
-                      ? config.color
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
-                >
-                  {config.label}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Victorian Framework Alignment */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Victorian Framework Alignment</CardTitle>
-            <p className="text-sm text-neutral-600">Align your project with Victorian government priorities and plans</p>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              {Object.entries(VICTORIAN_FRAMEWORKS).map(([key, config]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleArrayToggle('framework_alignment', key)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors text-white ${
-                    formData.framework_alignment.includes(key as VictorianFramework)
-                      ? 'opacity-100'
-                      : 'opacity-60 hover:opacity-80'
-                  }`}
-                  style={{ backgroundColor: config.color }}
-                >
-                  {config.badgeLabel}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* UN Sustainable Development Goals */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">UN Sustainable Development Goals</CardTitle>
-            <p className="text-sm text-neutral-600">Select the SDGs your project contributes to</p>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              {SDG_OPTIONS.map((sdg) => (
-                <button
-                  key={sdg}
-                  type="button"
-                  onClick={() => handleArrayToggle('sdg_tags', sdg)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    formData.sdg_tags.includes(sdg)
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
-                >
-                  {sdg}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Project Metrics */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Project Metrics</CardTitle>
-            <p className="text-sm text-neutral-600">Define key metrics to track your project's impact</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  People Reached
-                </label>
-                <input
-                  type="number"
-                  value={formData.reach_count}
-                  onChange={(e) => handleInputChange('reach_count', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Budget (AUD)
-                </label>
-                <input
-                  type="number"
-                  value={formData.budget}
-                  onChange={(e) => handleInputChange('budget', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="50000"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Contact Information */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Contact Information</CardTitle>
-            <p className="text-sm text-neutral-600">Additional contact details for your project</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Contact Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.contact_email}
-                  onChange={(e) => handleInputChange('contact_email', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="project@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  value={formData.website}
-                  onChange={(e) => handleInputChange('website', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="https://example.com"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Error Display */}
-        {error && (
-          <Card className="bg-red-50 border-red-200">
+        {submitStatus === 'error' && (
+          <Card className="bg-red-50 border border-red-200 shadow-sm mb-8">
             <CardContent className="p-4">
-              <p className="text-red-800 text-sm">{error}</p>
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-red-700 font-medium">{errorMessage}</p>
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Form Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
-          <a href="/projects">
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Basic Information */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-900">Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Project Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="Enter project name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  >
+                    {PROJECT_STATUSES.map(status => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description *
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  required
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  placeholder="Describe your project's goals and approach"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Target Reach
+                  </label>
+                  <input
+                    type="number"
+                    name="reach_count"
+                    value={formData.reach_count}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="Number of people"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Budget (AUD)
+                  </label>
+                  <input
+                    type="number"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleInputChange}
+                    step="0.01"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="Melbourne, VIC"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Timeline */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-900">Timeline</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    name="start_date"
+                    value={formData.start_date}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    name="end_date"
+                    value={formData.end_date}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Impact & Alignment */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-900">Impact & Alignment</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Impact Types */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Impact Types
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {IMPACT_TYPES.map(type => (
+                    <label key={type.value} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.impact_types.includes(type.value)}
+                        onChange={() => handleArrayToggle('impact_types', type.value)}
+                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm text-gray-700">{type.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Victorian Frameworks */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Victorian Framework Alignment
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {VICTORIAN_FRAMEWORKS.map(framework => (
+                    <label key={framework.value} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.framework_alignment.includes(framework.value)}
+                        onChange={() => handleArrayToggle('framework_alignment', framework.value)}
+                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm text-gray-700">{framework.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* SDG Tags */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  UN Sustainable Development Goals
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {SDG_OPTIONS.map(sdg => (
+                    <label key={sdg.value} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.sdg_tags.includes(sdg.value)}
+                        onChange={() => handleArrayToggle('sdg_tags', sdg.value)}
+                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm text-gray-700">{sdg.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact Information */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-900">Contact Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contact Email
+                  </label>
+                  <input
+                    type="email"
+                    name="contact_email"
+                    value={formData.contact_email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="contact@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="https://example.com"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Submit Button */}
+          <div className="flex items-center justify-end space-x-4">
+            <a href="/projects">
+              <Button type="button" variant="outline" className="text-gray-600 border-gray-300">
+                Cancel
+              </Button>
+            </a>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
-              Cancel
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+                </>
+              ) : (
+                'Create Project'
+              )}
             </Button>
-          </a>
-          <Button
-            type="submit"
-            variant="primary"
-            size="md"
-            disabled={loading}
-          >
-            {loading ? 'Creating Project...' : 'Create Project'}
-          </Button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   );
 } 

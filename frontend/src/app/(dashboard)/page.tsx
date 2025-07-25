@@ -1,382 +1,336 @@
 'use client';
 
 import React from 'react';
-import { PageHeader } from '@/components/ui/PageHeader';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { copyKit, impactMetrics } from '@/lib/copy-kit';
-import { VICTORIAN_FRAMEWORKS, VictorianFramework } from '@/types/projects';
 
 export default function DashboardPage() {
-  // Portfolio-level impact metrics
-  const portfolioMetrics = [
-    { 
-      label: 'Portfolio Impact Score', 
-      value: '87', 
-      unit: '/100',
-      change: '+12', 
-      changeType: 'positive',
-      description: 'Aggregated reach, depth & systemic influence'
-    },
-    { 
-      label: 'Communities Reached', 
-      value: '24', 
-      unit: '',
-      change: '+3', 
-      changeType: 'positive',
-      description: 'Direct community impact'
-    },
-    { 
-      label: 'Victorian Frameworks', 
-      value: '6', 
-      unit: '/6',
-      change: '+2', 
-      changeType: 'positive',
-      description: 'Government priorities aligned'
-    },
-    { 
-      label: 'Funding Utilisation', 
-      value: '94', 
-      unit: '%',
-      change: '+5%', 
-      changeType: 'positive',
-      description: 'Efficiency vs outcomes achieved'
-    },
-  ];
-
-  // Impact analytics data
-  const impactAnalytics = {
-    reach: { current: 15420, target: 20000, growth: 15 },
-    depth: { current: 78, target: 85, growth: 8 },
-    systemic: { current: 65, target: 75, growth: 12 },
-    sustainability: { current: 82, target: 90, growth: 6 },
-  };
-
-  // Framework alignment data
-  const frameworkAlignment = {
-    plan_for_victoria: 4,
-    melbourne_2030: 3,
-    activity_centres_program: 2,
-    greenfields_housing_plan: 1,
-    clean_economy_workforce_strategy: 2,
-    victorian_aboriginal_affairs_framework: 1,
-  };
-
-  // Recent impact projects
-  const recentProjects = [
-    {
-      id: 1,
-      name: 'Community Education Initiative',
-      status: 'active',
-      sdgs: ['SDG-4', 'SDG-10'],
-      frameworks: ['plan_for_victoria', 'melbourne_2030'] as VictorianFramework[],
-      reach: 1250,
-      impactScore: 89,
-      outcomes: 'Literacy improved by 23%',
-    },
-    {
-      id: 2,
-      name: 'Environmental Conservation Program',
-      status: 'active',
-      sdgs: ['SDG-13', 'SDG-15'],
-      frameworks: ['melbourne_2030', 'activity_centres_program'] as VictorianFramework[],
-      reach: 890,
-      impactScore: 76,
-      outcomes: 'Emissions reduced by 15%',
-    },
-    {
-      id: 3,
-      name: 'Youth Skills Development',
-      status: 'completed',
-      sdgs: ['SDG-8', 'SDG-4'],
-      frameworks: ['plan_for_victoria', 'clean_economy_workforce_strategy'] as VictorianFramework[],
-      reach: 2100,
-      impactScore: 94,
-      outcomes: 'Employment rate increased by 31%',
-    },
-  ];
-
-  // Recent funding activities
-  const recentFunding = [
-    {
-      id: 1,
-      name: 'Community Foundation Grant',
-      amount: '$50,000',
-      deadline: '2024-02-15',
-      status: 'pending',
-      impactAlignment: 'High',
-    },
-    {
-      id: 2,
-      name: 'Environmental Impact Fund',
-      amount: '$100,000',
-      deadline: '2024-03-01',
-      status: 'draft',
-      impactAlignment: 'Medium',
-    },
-  ];
-
   return (
-    <div className="p-8 space-y-8 bg-neutral-50 min-h-screen">
-      {/* Page Header */}
-      <PageHeader
-        tagline={copyKit.dashboard.tagline}
-        subheading={copyKit.dashboard.subheading}
-        description={copyKit.dashboard.description}
-        actions={
-          <>
-            <Button variant="secondary" size="md">
-              Export Analytics
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-8 max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <p className="text-gray-600">Monitor your impact portfolio and track progress across all initiatives</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Button variant="outline" className="text-gray-600 border-gray-300">
+              Export Report
             </Button>
-            <Button variant="primary" size="md">
-              New Impact Project
-            </Button>
-          </>
-        }
-      />
+            <Link href="/projects/new">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Project
+              </Button>
+            </Link>
+          </div>
+        </div>
 
-      {/* Portfolio-Level Impact Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {portfolioMetrics.map((metric, index) => (
-          <Card key={index} className="bg-white border-neutral-200">
+        {/* Key Metrics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Portfolio Impact Score */}
+          <Card className="bg-green-600 text-white border-0 shadow-lg">
             <CardContent className="p-6">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-neutral-600">{metric.label}</p>
-                  <div className={`text-sm font-semibold ${
-                    metric.changeType === 'positive' ? 'text-impact-600' : 'text-red-600'
-                  }`}>
-                    {metric.change}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm font-medium mb-1">Portfolio Impact Score</p>
+                  <p className="text-4xl font-bold">87<span className="text-2xl text-green-200">/100</span></p>
+                  <div className="flex items-center mt-2">
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm text-green-100">+12 this month</span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-3xl font-bold text-neutral-900">{metric.value}</span>
-                    <span className="text-lg text-neutral-500">{metric.unit}</span>
-                  </div>
-                  <p className="text-xs text-neutral-500">{metric.description}</p>
+                <div className="bg-white/20 rounded-full p-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                 </div>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
 
-      {/* Framework Alignment Snapshot */}
-      <Card className="bg-white border-neutral-200">
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-neutral-900 mb-4">Framework Alignment Snapshot</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
-            {Object.entries(frameworkAlignment).map(([framework, count]) => (
-              <div key={framework} className="text-center">
-                <div className="text-2xl font-bold text-neutral-900">{count}</div>
-                <div className="text-xs text-neutral-600 text-center">
-                  {VICTORIAN_FRAMEWORKS[framework as VictorianFramework].badgeLabel}
+          {/* Communities Reached */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium mb-1">Communities Reached</p>
+                  <p className="text-4xl font-bold text-gray-900">24</p>
+                  <div className="flex items-center mt-2">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm text-gray-500">+3 new communities</span>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded-full p-3">
+                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="pt-4 border-t border-neutral-200">
-            <p className="text-sm text-neutral-600">
-              4 projects aligned with Plan for Victoria, 3 with Melbourne 2030, 2 with Victorian Aboriginal Affairs Framework, 6 linked to UN SDGs
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Impact Analytics Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Impact Metrics Overview */}
-        <Card className="lg:col-span-2 bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">Impact Analytics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-6">
-              {Object.entries(impactAnalytics).map(([key, data]) => (
-                <div key={key} className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-medium text-neutral-700 capitalize">{key}</h4>
-                    <span className="text-sm text-impact-600 font-medium">+{data.growth}%</span>
+          {/* Victorian Frameworks */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium mb-1">Victorian Frameworks</p>
+                  <p className="text-4xl font-bold text-gray-900">6<span className="text-2xl text-gray-500">/6</span></p>
+                  <div className="flex items-center mt-2">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm text-gray-500">All aligned</span>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-baseline space-x-2">
-                      <span className="text-2xl font-bold text-neutral-900">{data.current}</span>
-                      <span className="text-sm text-neutral-500">/ {data.target}</span>
+                </div>
+                <div className="bg-purple-50 rounded-full p-3">
+                  <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Funding Utilisation */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium mb-1">Funding Utilisation</p>
+                  <p className="text-4xl font-bold text-gray-900">94<span className="text-2xl text-gray-500">%</span></p>
+                  <div className="flex items-center mt-2">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm text-gray-500">+5% efficiency</span>
+                  </div>
+                </div>
+                <div className="bg-orange-50 rounded-full p-3">
+                  <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Impact Analytics & Recent Activity */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Impact Analytics */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Impact Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600 mb-2">15.4K</div>
+                    <div className="text-sm text-gray-600 mb-2">People Reached</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{width: '77%'}}></div>
                     </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div 
-                        className="bg-impact-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(data.current / data.target) * 100}%` }}
+                    <div className="text-xs text-gray-500 mt-1">77% of 20K target</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 mb-2">8.2</div>
+                    <div className="text-sm text-gray-600 mb-2">Avg. Impact Depth</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: '82%'}}></div>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">82% engagement quality</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600 mb-2">12</div>
+                    <div className="text-sm text-gray-600 mb-2">Systemic Changes</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-500 h-2 rounded-full" style={{width: '60%'}}></div>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">60% policy influence</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold text-gray-900">Recent Activity</CardTitle>
+                  <Button variant="outline" size="sm" className="text-gray-600">
+                    View All
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">Greenfields Housing project milestone completed</h4>
+                      <p className="text-sm text-gray-600">500 residents engaged in community planning session</p>
+                      <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">New framework alignment identified</h4>
+                      <p className="text-sm text-gray-600">Melbourne 2030 strategic goals now 100% aligned</p>
+                      <p className="text-xs text-gray-500 mt-1">5 hours ago</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg">
+                    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-12a1 1 0 011-2h0a1 1 0 011 2v12z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">Impact report generated</h4>
+                      <p className="text-sm text-gray-600">Q4 2024 portfolio summary ready for stakeholders</p>
+                      <p className="text-xs text-gray-500 mt-1">1 day ago</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Quick Actions & Overview */}
+          <div className="space-y-8">
+            {/* Quick Actions */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Link href="/projects/new">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white justify-start">
+                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Create New Project
+                    </Button>
+                  </Link>
+                  <Link href="/grants">
+                    <Button variant="outline" className="w-full justify-start">
+                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Browse Grants
+                    </Button>
+                  </Link>
+                  <Link href="/tasks">
+                    <Button variant="outline" className="w-full justify-start">
+                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                      Manage Tasks
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Portfolio Health */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Portfolio Health</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center mb-6">
+                  <div className="relative w-32 h-32 mx-auto">
+                    <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#e5e7eb"
+                        strokeWidth="2"
                       />
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#10b981"
+                        strokeWidth="2"
+                        strokeDasharray="87, 100"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-gray-900">87%</span>
                     </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">Overall Health Score</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                      <span className="text-sm text-gray-700">On Track</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">65%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                      <span className="text-sm text-gray-700">At Risk</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">22%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                      <span className="text-sm text-gray-700">Behind</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">13%</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* SDG Alignment Summary */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-neutral-900">SDG Alignment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600">8</div>
-                <div className="text-sm text-neutral-600">Goals Addressed</div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {['SDG-4', 'SDG-8', 'SDG-10', 'SDG-13', 'SDG-15', 'SDG-16'].map((sdg) => (
-                  <Badge key={sdg} variant="sdg" sdgCode={sdg} size="sm" className="text-xs">
-                    {sdg}
-                  </Badge>
-                ))}
-              </div>
-              <div className="text-xs text-neutral-500 text-center">
-                Top alignment areas: Education, Economic Growth, Reduced Inequalities
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Projects and Funding Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Impact Projects */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold text-neutral-900">Recent Impact Projects</CardTitle>
-              <Button variant="ghost" size="sm">
-                View All →
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentProjects.map((project) => (
-                <div key={project.id} className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-neutral-900 mb-1">{project.name}</h4>
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Badge variant="neutral" size="sm">
-                          {project.status}
-                        </Badge>
-                        {project.frameworks?.slice(0, 1).map((framework) => (
-                          <Badge
-                            key={framework}
-                            variant="victorian"
-                            victorianFramework={framework}
-                            size="sm"
-                            className="text-xs"
-                          >
-                            {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
-                          </Badge>
-                        ))}
-                        {project.sdgs.slice(0, 1).map((sdg) => (
-                          <Badge key={sdg} variant="sdg" sdgCode={sdg} size="sm">
-                            {sdg}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-neutral-900">{project.impactScore}</div>
-                      <div className="text-xs text-neutral-500">Impact Score</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-600">Reach:</span>
-                      <span className="font-medium">{project.reach.toLocaleString()} people</span>
-                    </div>
-                    <div className="text-sm text-neutral-600">
-                      <span className="font-medium">Outcomes:</span> {project.outcomes}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Funding Activities */}
-        <Card className="bg-white border-neutral-200">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold text-neutral-900">Funding Activities</CardTitle>
-              <Button variant="ghost" size="sm">
-                View All →
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentFunding.map((funding) => (
-                <div key={funding.id} className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-neutral-900 mb-1">{funding.name}</h4>
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Badge variant="neutral" size="sm">
-                          {funding.status}
-                        </Badge>
-                        <Badge 
-                          variant={funding.impactAlignment === 'High' ? 'impact' : 'neutral'} 
-                          size="sm"
-                        >
-                          {funding.impactAlignment} Impact
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-neutral-900">{funding.amount}</div>
-                      <div className="text-xs text-neutral-500">Amount</div>
-                    </div>
-                  </div>
-                  <div className="text-sm text-neutral-600">
-                    <span className="font-medium">Deadline:</span> {funding.deadline}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions - Impact Focused */}
-      <Card className="bg-white border-neutral-200">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-neutral-900">Impact Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="primary" size="lg" className="h-16">
-              <div className="text-center">
-                <div className="text-lg font-semibold">New Impact Project</div>
-                <div className="text-sm opacity-90">Create measurable outcomes</div>
-              </div>
-            </Button>
-            <Button variant="impact" size="lg" className="h-16">
-              <div className="text-center">
-                <div className="text-lg font-semibold">Generate Impact Report</div>
-                <div className="text-sm opacity-90">Demonstrate value to stakeholders</div>
-              </div>
-            </Button>
-            <Button variant="secondary" size="lg" className="h-16">
-              <div className="text-center">
-                <div className="text-lg font-semibold">Discover Funding</div>
-                <div className="text-sm opacity-90">Find aligned opportunities</div>
-              </div>
-            </Button>
+            {/* Upcoming Deadlines */}
+            <Card className="bg-blue-50 border border-blue-200 shadow-sm">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Upcoming Deadline</h3>
+                <p className="text-gray-700 mb-1">Framework Review Meeting</p>
+                <p className="text-sm text-gray-600 mb-4">Tomorrow at 2:00 PM</p>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Prepare Materials
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 } 
