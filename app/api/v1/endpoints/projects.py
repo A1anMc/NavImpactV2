@@ -25,7 +25,7 @@ class ProjectCreate(BaseModel):
     sdg_tags: Optional[List[str]] = []
     framework_alignment: Optional[List[str]] = []
     evidence_sources: Optional[str] = None
-    owner_id: int
+    owner_id: Optional[int] = None
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
@@ -59,6 +59,22 @@ async def create_project(
 ):
     """Create a new project with framework alignment support."""
     try:
+        # Auto-create demo user if no owner_id provided
+        if not hasattr(project_data, 'owner_id') or project_data.owner_id is None:
+            from app.models.user import User
+            demo_user = db.query(User).filter(User.username == "demo_user").first()
+            
+            if not demo_user:
+                demo_user = User(
+                    username="demo_user",
+                    email="demo@navimpact.com",
+                    full_name="Demo User"
+                )
+                db.add(demo_user)
+                db.flush()  # Get the ID without committing
+            
+            project_data.owner_id = demo_user.id
+        
         project = Project(
             name=project_data.name,
             description=project_data.description,
