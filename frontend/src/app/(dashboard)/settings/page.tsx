@@ -61,12 +61,12 @@ export default function SettingsPage() {
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Victorian Government Priorities</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(VICTORIAN_FRAMEWORKS).map(([key, config]) => (
-                  <div key={key} className="p-4 border border-gray-200 rounded-lg bg-white">
+                {VICTORIAN_FRAMEWORKS.map((config) => (
+                  <div key={config.value} className="p-4 border border-gray-200 rounded-lg bg-white">
                     <div className="flex items-center space-x-2 mb-2">
                       <Badge
                         variant="victorian"
-                        victorianFramework={key as keyof typeof VICTORIAN_FRAMEWORKS}
+                        victorianFramework={config.value}
                         size="sm"
                       >
                         {config.badgeLabel}
