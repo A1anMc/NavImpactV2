@@ -19,10 +19,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Add framework_alignment column to projects table
-    op.add_column('projects', sa.Column('framework_alignment', sa.JSON(), nullable=True))
+    # Column already exists in database - NOOP
+    pass
 
 
 def downgrade() -> None:
-    # Remove framework_alignment column from projects table
-    op.drop_column('projects', 'framework_alignment')
+    # Don't drop the column - NOOP
+    pass
