@@ -13,8 +13,10 @@ import {
   PortfolioSummary,
   IMPACT_TYPES,
   PROJECT_STATUSES,
+  VICTORIAN_FRAMEWORKS,
   ImpactType,
-  ProjectStatus
+  ProjectStatus,
+  VictorianFramework
 } from '@/types/projects';
 import { 
   getProjects, 
@@ -32,6 +34,8 @@ export default function ProjectsPage() {
   // Filter states
   const [selectedImpactTypes, setSelectedImpactTypes] = useState<ImpactType[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<ProjectStatus | undefined>();
+  const [selectedFrameworks, setSelectedFrameworks] = useState<VictorianFramework[]>([]);
+  const [selectedSDGs, setSelectedSDGs] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Load projects and portfolio summary
@@ -67,6 +71,8 @@ export default function ProjectsPage() {
       ...filters,
       impact_types: selectedImpactTypes.length > 0 ? selectedImpactTypes : undefined,
       status: selectedStatus,
+      framework_alignment: selectedFrameworks.length > 0 ? selectedFrameworks : undefined,
+      sdg_tags: selectedSDGs.length > 0 ? selectedSDGs : undefined,
       search: searchQuery || undefined,
     };
     setFilters(newFilters);
@@ -76,6 +82,8 @@ export default function ProjectsPage() {
   const clearFilters = () => {
     setSelectedImpactTypes([]);
     setSelectedStatus(undefined);
+    setSelectedFrameworks([]);
+    setSelectedSDGs([]);
     setSearchQuery('');
     setFilters({ limit: 12 });
   };
@@ -91,6 +99,7 @@ export default function ProjectsPage() {
       impact_statement: 'Improved digital inclusion for vulnerable populations, reducing social isolation',
       impact_types: ['social', 'community'],
       sdg_tags: ['SDG-4', 'SDG-10'],
+      framework_alignment: ['plan_for_victoria', 'melbourne_2030'],
       reach_count: 82,
       impact_score: 89,
       team_size: 5,
@@ -107,6 +116,7 @@ export default function ProjectsPage() {
       impact_statement: 'Enhanced environmental sustainability and community wellbeing through urban greening',
       impact_types: ['environmental', 'community'],
       sdg_tags: ['SDG-11', 'SDG-13', 'SDG-15'],
+      framework_alignment: ['melbourne_2030', 'activity_centres_program'],
       reach_count: 500,
       impact_score: 76,
       team_size: 8,
@@ -123,6 +133,7 @@ export default function ProjectsPage() {
       impact_statement: 'Reduced youth unemployment and improved economic opportunities in the community',
       impact_types: ['social', 'community'],
       sdg_tags: ['SDG-8', 'SDG-4'],
+      framework_alignment: ['plan_for_victoria', 'clean_economy_workforce_strategy'],
       reach_count: 150,
       impact_score: 94,
       team_size: 6,
@@ -139,11 +150,29 @@ export default function ProjectsPage() {
       impact_statement: 'Transitioning to sustainable energy sources while reducing costs for community facilities',
       impact_types: ['environmental', 'community'],
       sdg_tags: ['SDG-7', 'SDG-13'],
+      framework_alignment: ['clean_economy_workforce_strategy', 'greenfields_housing_plan'],
       reach_count: 1200,
       impact_score: 65,
       team_size: 4,
       created_at: '2024-01-25T11:00:00Z',
       updated_at: '2024-01-25T11:00:00Z',
+      owner_id: 1,
+    },
+    {
+      id: 5,
+      name: 'Indigenous Cultural Heritage Preservation',
+      description: 'Documenting and preserving local Indigenous cultural heritage',
+      status: 'active',
+      outcome_text: '15 cultural sites documented and preserved for future generations',
+      impact_statement: 'Strengthened cultural identity and connection to country for local Indigenous communities',
+      impact_types: ['social', 'community'],
+      sdg_tags: ['SDG-11', 'SDG-16'],
+      framework_alignment: ['victorian_aboriginal_affairs_framework'],
+      reach_count: 250,
+      impact_score: 88,
+      team_size: 7,
+      created_at: '2024-01-05T14:00:00Z',
+      updated_at: '2024-01-22T10:15:00Z',
       owner_id: 1,
     },
   ];
@@ -152,6 +181,7 @@ export default function ProjectsPage() {
     total_projects: 12,
     total_reach: 3245,
     sdg_alignment_count: 8,
+    framework_alignment_count: 6,
     top_impact_project: mockProjects[2],
     impact_type_breakdown: {
       social: 6,
@@ -164,6 +194,14 @@ export default function ProjectsPage() {
       completed: 3,
       paused: 0,
       cancelled: 0,
+    },
+    framework_breakdown: {
+      plan_for_victoria: 4,
+      melbourne_2030: 3,
+      activity_centres_program: 2,
+      greenfields_housing_plan: 1,
+      clean_economy_workforce_strategy: 2,
+      victorian_aboriginal_affairs_framework: 1,
     },
   };
 
@@ -214,8 +252,8 @@ export default function ProjectsPage() {
           <Card className="bg-white border-neutral-200">
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-neutral-900">{displaySummary.sdg_alignment_count}</div>
-                <div className="text-sm text-neutral-600">SDG Goals Addressed</div>
+                <div className="text-3xl font-bold text-neutral-900">{displaySummary.framework_alignment_count}</div>
+                <div className="text-sm text-neutral-600">Victorian Frameworks</div>
               </div>
             </CardContent>
           </Card>
@@ -229,6 +267,30 @@ export default function ProjectsPage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Framework Alignment Snapshot */}
+      {displaySummary && (
+        <Card className="bg-white border-neutral-200">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-neutral-900 mb-4">Framework Alignment Snapshot</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {Object.entries(displaySummary.framework_breakdown).map(([framework, count]) => (
+                <div key={framework} className="text-center">
+                  <div className="text-2xl font-bold text-neutral-900">{count}</div>
+                  <div className="text-xs text-neutral-600 text-center">
+                    {VICTORIAN_FRAMEWORKS[framework as VictorianFramework].badgeLabel}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-neutral-200">
+              <p className="text-sm text-neutral-600">
+                {displaySummary.sdg_alignment_count} projects linked to UN SDGs • {displaySummary.framework_alignment_count} projects aligned with Victorian priorities
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Filters Section */}
@@ -271,6 +333,33 @@ export default function ProjectsPage() {
                     }`}
                   >
                     {config.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Victorian Framework Filters */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-3">Victorian Framework Alignment</label>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(VICTORIAN_FRAMEWORKS).map(([key, config]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setSelectedFrameworks(prev => 
+                        prev.includes(key as VictorianFramework)
+                          ? prev.filter(f => f !== key)
+                          : [...prev, key as VictorianFramework]
+                      );
+                    }}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors text-white ${
+                      selectedFrameworks.includes(key as VictorianFramework)
+                        ? 'opacity-100'
+                        : 'opacity-60 hover:opacity-80'
+                    }`}
+                    style={{ backgroundColor: config.color }}
+                  >
+                    {config.badgeLabel}
                   </button>
                 ))}
               </div>

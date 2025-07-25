@@ -6,14 +6,14 @@ export const copyKit = {
   dashboard: {
     tagline: "Impact Intelligence Dashboard",
     subheading: "Measure, understand, and amplify your organisation's social and environmental impact",
-    description: "Comprehensive analytics platform for tracking outcomes, measuring reach, and demonstrating value to stakeholders. Align with SDGs, track systemic influence, and showcase sustainable impact.",
+    description: "Comprehensive analytics platform for tracking outcomes, measuring reach, and demonstrating value to stakeholders. Align with Victorian priorities, SDGs, track systemic influence, and showcase sustainable impact.",
   },
 
   // Projects Section
   projects: {
-    tagline: "Impact Portfolio",
-    subheading: "Manage and track projects with measurable outcomes and stakeholder engagement",
-    description: "Create, monitor, and report on impact projects with detailed outcome frameworks. Demonstrate value to funders, align with global goals, and track systemic change.",
+    tagline: "Every project tells a story of measurable change",
+    subheading: "Explore social, environmental, and community outcomes aligned with Victorian priorities",
+    description: "Create, monitor, and report on impact projects with detailed outcome frameworks. Demonstrate value to funders, align with Victorian plans and global goals, and track systemic change.",
   },
 
   // Grants Section
@@ -34,7 +34,7 @@ export const copyKit = {
   impact: {
     tagline: "Impact Analytics",
     subheading: "Comprehensive measurement and reporting of your organisation's social and environmental outcomes",
-    description: "Advanced impact measurement tools with SDG alignment, outcome frameworks, and stakeholder reporting. Demonstrate measurable value and attract sustainable funding.",
+    description: "Advanced impact measurement tools with Victorian framework alignment, SDG alignment, outcome frameworks, and stakeholder reporting. Demonstrate measurable value and attract sustainable funding.",
   },
 
   // Media Section
@@ -151,6 +151,11 @@ export const impactMetrics = {
     description: "Number of UN Sustainable Development Goals addressed",
     unit: "goals",
   },
+  victorianAlignment: {
+    label: "Victorian Framework Alignment",
+    description: "Number of Victorian government priorities and plans supported",
+    unit: "frameworks",
+  },
 };
 
 // SDG descriptions for tooltips and help text
@@ -172,6 +177,16 @@ export const sdgDescriptions = {
   'SDG-15': 'Life on Land - Protect, restore and promote sustainable use of terrestrial ecosystems',
   'SDG-16': 'Peace Justice - Promote peaceful and inclusive societies for sustainable development',
   'SDG-17': 'Partnerships - Strengthen the means of implementation and revitalise global partnerships',
+};
+
+// Victorian Framework descriptions
+export const victorianFrameworkDescriptions = {
+  plan_for_victoria: 'Plan for Victoria - Victoria\'s long-term vision for a fairer, more prosperous state',
+  melbourne_2030: 'Melbourne 2030 - Melbourne\'s strategic plan for sustainable urban development',
+  activity_centres_program: 'Activity Centres Program - Supporting vibrant, accessible activity centres across Victoria',
+  greenfields_housing_plan: 'Greenfields Housing Plan - Sustainable housing development in growth areas',
+  clean_economy_workforce_strategy: 'Clean Economy Workforce Strategy - Building Victoria\'s clean energy workforce and capabilities',
+  victorian_aboriginal_affairs_framework: 'Victorian Aboriginal Affairs Framework - Supporting Aboriginal self-determination and cultural safety',
 };
 
 // Impact area descriptions
@@ -197,11 +212,26 @@ export const statusDescriptions = {
   cancelled: 'Project has been discontinued or redirected',
 };
 
+// Framework alignment messaging
+export const frameworkAlignment = {
+  tagline: "Connecting local outcomes to Victorian priorities",
+  description: "NavImpact connects local project outcomes to Victorian priorities like Plan for Victoria and Melbourne 2030, national frameworks like the Clean Economy Workforce Strategy, and global efforts like the UN Sustainable Development Goals. This ensures community outcomes are visible, relevant, and aligned with systemic change.",
+  benefits: [
+    "Demonstrate alignment with Victorian government priorities",
+    "Show relevance to local and national frameworks",
+    "Connect community outcomes to global goals",
+    "Enhance funding applications with policy context",
+    "Build stakeholder confidence through strategic alignment",
+  ],
+};
+
 export default {
   copyKit,
   pageContent,
   impactMetrics,
   sdgDescriptions,
+  victorianFrameworkDescriptions,
   impactAreas,
   statusDescriptions,
+  frameworkAlignment,
 }; 

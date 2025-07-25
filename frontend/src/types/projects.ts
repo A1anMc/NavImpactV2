@@ -4,6 +4,15 @@
 export type ImpactType = 'social' | 'environmental' | 'community';
 export type ProjectStatus = 'planning' | 'active' | 'completed' | 'paused' | 'cancelled';
 
+// Victorian Framework Types
+export type VictorianFramework = 
+  | 'plan_for_victoria'
+  | 'melbourne_2030'
+  | 'activity_centres_program'
+  | 'greenfields_housing_plan'
+  | 'clean_economy_workforce_strategy'
+  | 'victorian_aboriginal_affairs_framework';
+
 // Base Project Interface
 export interface BaseProject {
   id: number;
@@ -24,6 +33,7 @@ export interface Project extends BaseProject {
   impact_statement?: string;    // Why this matters (e.g., "Improved digital inclusion for vulnerable populations")
   impact_types: ImpactType[];   // Multi-select: social, environmental, community
   sdg_tags?: string[];          // SDG codes (e.g., ["SDG-4", "SDG-10"])
+  framework_alignment?: VictorianFramework[]; // Victorian framework alignment
   evidence_sources?: string;    // Optional evidence sources
   
   // Metrics (for future enhancement)
@@ -48,6 +58,7 @@ export interface ProjectFormData {
   impact_statement?: string;
   impact_types: ImpactType[];
   sdg_tags?: string[];
+  framework_alignment?: VictorianFramework[];
   evidence_sources?: string;
 }
 
@@ -67,6 +78,7 @@ export interface ProjectFilters {
   status?: ProjectStatus;
   impact_types?: ImpactType[];
   sdg_tags?: string[];
+  framework_alignment?: VictorianFramework[];
   skip?: number;
   limit?: number;
 }
@@ -95,6 +107,51 @@ export const IMPACT_TYPES: Record<ImpactType, { label: string; description: stri
     label: 'Community Impact',
     description: 'Strengthening local communities and fostering civic engagement',
     color: 'bg-purple-100 text-purple-800',
+  },
+};
+
+// Victorian Framework Configuration
+export const VICTORIAN_FRAMEWORKS: Record<VictorianFramework, { 
+  label: string; 
+  description: string; 
+  color: string;
+  badgeLabel: string;
+}> = {
+  plan_for_victoria: {
+    label: 'Plan for Victoria',
+    description: 'Victoria\'s long-term vision for a fairer, more prosperous state',
+    color: '#4F46E5',
+    badgeLabel: 'Plan for Victoria',
+  },
+  melbourne_2030: {
+    label: 'Melbourne 2030',
+    description: 'Melbourne\'s strategic plan for sustainable urban development',
+    color: '#0EA5E9',
+    badgeLabel: 'Melbourne 2030',
+  },
+  activity_centres_program: {
+    label: 'Activity Centres Program',
+    description: 'Supporting vibrant, accessible activity centres across Victoria',
+    color: '#6366F1',
+    badgeLabel: 'Activity Centres',
+  },
+  greenfields_housing_plan: {
+    label: 'Greenfields Housing Plan',
+    description: 'Sustainable housing development in growth areas',
+    color: '#16A34A',
+    badgeLabel: 'Greenfields Plan',
+  },
+  clean_economy_workforce_strategy: {
+    label: 'Clean Economy Workforce Strategy',
+    description: 'Building Victoria\'s clean energy workforce and capabilities',
+    color: '#10B981',
+    badgeLabel: 'Clean Economy Workforce',
+  },
+  victorian_aboriginal_affairs_framework: {
+    label: 'Victorian Aboriginal Affairs Framework',
+    description: 'Supporting Aboriginal self-determination and cultural safety',
+    color: '#DC2626',
+    badgeLabel: 'Reconciliation (VAAF)',
   },
 };
 
@@ -132,7 +189,20 @@ export interface PortfolioSummary {
   total_projects: number;
   total_reach: number;
   sdg_alignment_count: number;
+  framework_alignment_count: number;
   top_impact_project?: Project;
   impact_type_breakdown: Record<ImpactType, number>;
   status_breakdown: Record<ProjectStatus, number>;
+  framework_breakdown: Record<VictorianFramework, number>;
+}
+
+// Framework Alignment Summary
+export interface FrameworkAlignmentSummary {
+  plan_for_victoria: number;
+  melbourne_2030: number;
+  activity_centres_program: number;
+  greenfields_housing_plan: number;
+  clean_economy_workforce_strategy: number;
+  victorian_aboriginal_affairs_framework: number;
+  total_sdg_projects: number;
 } 

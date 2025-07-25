@@ -9,7 +9,8 @@ import {
   ProjectFilters, 
   PortfolioSummary,
   ImpactType,
-  ProjectStatus 
+  ProjectStatus,
+  VictorianFramework
 } from '@/types/projects';
 
 class ProjectsService {
@@ -21,6 +22,7 @@ class ProjectsService {
     if (filters?.status) queryParams.status = filters.status;
     if (filters?.impact_types) queryParams.impact_types = filters.impact_types.join(',');
     if (filters?.sdg_tags) queryParams.sdg_tags = filters.sdg_tags.join(',');
+    if (filters?.framework_alignment) queryParams.framework_alignment = filters.framework_alignment.join(',');
     if (filters?.skip) queryParams.skip = filters.skip.toString();
     if (filters?.limit) queryParams.limit = filters.limit.toString();
     
@@ -64,6 +66,7 @@ class ProjectsService {
     if (filters?.search) queryParams.search = filters.search;
     if (filters?.status) queryParams.status = filters.status;
     if (filters?.sdg_tags) queryParams.sdg_tags = filters.sdg_tags.join(',');
+    if (filters?.framework_alignment) queryParams.framework_alignment = filters.framework_alignment.join(',');
     if (filters?.skip) queryParams.skip = filters.skip.toString();
     if (filters?.limit) queryParams.limit = filters.limit.toString();
     
@@ -79,6 +82,7 @@ class ProjectsService {
     if (filters?.search) queryParams.search = filters.search;
     if (filters?.impact_types) queryParams.impact_types = filters.impact_types.join(',');
     if (filters?.sdg_tags) queryParams.sdg_tags = filters.sdg_tags.join(',');
+    if (filters?.framework_alignment) queryParams.framework_alignment = filters.framework_alignment.join(',');
     if (filters?.skip) queryParams.skip = filters.skip.toString();
     if (filters?.limit) queryParams.limit = filters.limit.toString();
     
@@ -94,6 +98,23 @@ class ProjectsService {
     if (filters?.search) queryParams.search = filters.search;
     if (filters?.status) queryParams.status = filters.status;
     if (filters?.impact_types) queryParams.impact_types = filters.impact_types.join(',');
+    if (filters?.framework_alignment) queryParams.framework_alignment = filters.framework_alignment.join(',');
+    if (filters?.skip) queryParams.skip = filters.skip.toString();
+    if (filters?.limit) queryParams.limit = filters.limit.toString();
+    
+    return apiClient.request<ProjectListResponse>('/api/v1/projects/', {}, queryParams);
+  }
+
+  // Get projects by Victorian framework
+  async getProjectsByFramework(framework: VictorianFramework, filters?: Omit<ProjectFilters, 'framework_alignment'>): Promise<ProjectListResponse> {
+    const queryParams: Record<string, string> = {
+      framework_alignment: framework,
+    };
+    
+    if (filters?.search) queryParams.search = filters.search;
+    if (filters?.status) queryParams.status = filters.status;
+    if (filters?.impact_types) queryParams.impact_types = filters.impact_types.join(',');
+    if (filters?.sdg_tags) queryParams.sdg_tags = filters.sdg_tags.join(',');
     if (filters?.skip) queryParams.skip = filters.skip.toString();
     if (filters?.limit) queryParams.limit = filters.limit.toString();
     
@@ -109,6 +130,7 @@ class ProjectsService {
     if (filters?.status) queryParams.status = filters.status;
     if (filters?.impact_types) queryParams.impact_types = filters.impact_types.join(',');
     if (filters?.sdg_tags) queryParams.sdg_tags = filters.sdg_tags.join(',');
+    if (filters?.framework_alignment) queryParams.framework_alignment = filters.framework_alignment.join(',');
     if (filters?.skip) queryParams.skip = filters.skip.toString();
     if (filters?.limit) queryParams.limit = filters.limit.toString();
     
@@ -139,6 +161,17 @@ class ProjectsService {
     });
     return response.items;
   }
+
+  // Get framework-aligned projects
+  async getFrameworkAlignedProjects(framework: VictorianFramework, limit: number = 10): Promise<Project[]> {
+    const response = await apiClient.request<ProjectListResponse>('/api/v1/projects/', {}, {
+      framework_alignment: framework,
+      limit: limit.toString(),
+      sort: 'impact_score',
+      order: 'desc',
+    });
+    return response.items;
+  }
 }
 
 // Export singleton instance
@@ -154,8 +187,10 @@ export const {
   getProjectsByImpactType,
   getProjectsByStatus,
   getProjectsBySDG,
+  getProjectsByFramework,
   searchProjects,
   getPortfolioSummary,
   getRecentProjects,
   getHighImpactProjects,
+  getFrameworkAlignedProjects,
 } = projectsService; 

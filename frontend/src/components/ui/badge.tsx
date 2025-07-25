@@ -1,87 +1,143 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { sdgColors } from '@/lib/design-system';
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+import { VICTORIAN_FRAMEWORKS } from "@/types/projects"
+import { sdgColors } from "@/lib/design-system"
 
-interface BadgeProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' | 'sdg' | 'impact';
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  sdgCode?: string; // For SDG-specific styling
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        outline: "text-foreground",
+        neutral: "border-transparent bg-neutral-100 text-neutral-800",
+        impact: "border-transparent bg-impact-100 text-impact-800",
+        success: "border-transparent bg-success-100 text-success-800",
+        warning: "border-transparent bg-yellow-100 text-yellow-800",
+        danger: "border-transparent bg-red-100 text-red-800",
+        primary: "border-transparent bg-primary-100 text-primary-800",
+        sdg: "border-transparent text-white font-medium",
+        victorian: "border-transparent text-white font-medium",
+      },
+      size: {
+        default: "h-6 px-2.5 py-0.5 text-xs",
+        sm: "h-5 px-2 py-0.5 text-xs",
+        md: "h-6 px-2.5 py-0.5 text-xs",
+        lg: "h-7 px-3 py-1 text-sm",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {
+  sdgCode?: string;
+  victorianFramework?: keyof typeof VICTORIAN_FRAMEWORKS;
 }
 
-export const Badge: React.FC<BadgeProps> = ({
+function Badge({ 
+  className, 
+  variant, 
+  size, 
+  sdgCode, 
+  victorianFramework,
   children,
-  variant = 'neutral',
-  size = 'md',
-  className,
-  sdgCode,
-}) => {
-  const baseClasses = 'inline-flex items-center font-medium rounded-full';
-  
-  const sizeClasses = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-0.5 text-xs',
-    lg: 'px-3 py-1 text-sm',
-  };
+  ...props 
+}: BadgeProps) {
+  // Handle SDG badge styling
+  if (variant === "sdg" && sdgCode) {
+    const sdgColor = sdgColors[sdgCode as keyof typeof sdgColors];
+    return (
+      <div
+        className={cn(badgeVariants({ variant, size }), className)}
+        style={{ backgroundColor: sdgColor }}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
 
-  const variantClasses = {
-    primary: 'bg-primary-100 text-primary-800',
-    success: 'bg-success-100 text-success-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
-    neutral: 'bg-neutral-100 text-neutral-800',
-    impact: 'bg-impact-100 text-impact-800',
-    sdg: sdgCode && sdgColors[sdgCode as keyof typeof sdgColors] 
-      ? `text-white` 
-      : 'bg-neutral-100 text-neutral-800',
-  };
-
-  const sdgStyle = variant === 'sdg' && sdgCode && sdgColors[sdgCode as keyof typeof sdgColors]
-    ? { backgroundColor: sdgColors[sdgCode as keyof typeof sdgColors] }
-    : {};
+  // Handle Victorian framework badge styling
+  if (variant === "victorian" && victorianFramework) {
+    const framework = VICTORIAN_FRAMEWORKS[victorianFramework];
+    return (
+      <div
+        className={cn(badgeVariants({ variant, size }), className)}
+        style={{ backgroundColor: framework.color }}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
-    <span
-      className={cn(
-        baseClasses,
-        sizeClasses[size],
-        variantClasses[variant],
-        className
-      )}
-      style={sdgStyle}
-    >
+    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
       {children}
-    </span>
-  );
-};
+    </div>
+  )
+}
+
+export { Badge, badgeVariants }
 
 // SDG Badge component
-interface SDGBadgeProps {
+export const SDGBadge: React.FC<{
   sdgCode: string;
-  children?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
   className?: string;
-}
+  size?: "sm" | "md" | "lg";
+}> = ({ sdgCode, children, className, size = "md" }) => {
+  const config = {
+    variant: "sdg" as const,
+    size,
+  };
 
-export const SDGBadge: React.FC<SDGBadgeProps> = ({
-  sdgCode,
-  children,
-  size = 'md',
-  className,
-}) => {
-  const sdgName = children || `SDG ${sdgCode.split('-')[1]}`;
-  
   return (
     <Badge
-      variant="sdg"
+      variant={config.variant}
       size={size}
       sdgCode={sdgCode}
       className={className}
     >
-      {sdgName}
+      {children}
+    </Badge>
+  );
+};
+
+// Victorian Framework Badge component
+export const VictorianFrameworkBadge: React.FC<{
+  framework: keyof typeof VICTORIAN_FRAMEWORKS;
+  children: React.ReactNode;
+  className?: string;
+  size?: "sm" | "md" | "lg";
+}> = ({ framework, children, className, size = "md" }) => {
+  const config = {
+    variant: "victorian" as const,
+    size,
+  };
+
+  return (
+    <Badge
+      variant={config.variant}
+      victorianFramework={framework}
+      size={size}
+      className={className}
+    >
+      {children}
     </Badge>
   );
 };

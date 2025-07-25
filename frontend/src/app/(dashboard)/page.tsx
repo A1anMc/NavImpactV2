@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { copyKit, impactMetrics } from '@/lib/copy-kit';
+import { VICTORIAN_FRAMEWORKS, VictorianFramework } from '@/types/projects';
 
 export default function DashboardPage() {
   // Portfolio-level impact metrics
@@ -27,12 +28,12 @@ export default function DashboardPage() {
       description: 'Direct community impact'
     },
     { 
-      label: 'SDG Goals Addressed', 
-      value: '8', 
-      unit: '/17',
-      change: '+1', 
+      label: 'Victorian Frameworks', 
+      value: '6', 
+      unit: '/6',
+      change: '+2', 
       changeType: 'positive',
-      description: 'UN Sustainable Development Goals'
+      description: 'Government priorities aligned'
     },
     { 
       label: 'Funding Utilisation', 
@@ -52,6 +53,16 @@ export default function DashboardPage() {
     sustainability: { current: 82, target: 90, growth: 6 },
   };
 
+  // Framework alignment data
+  const frameworkAlignment = {
+    plan_for_victoria: 4,
+    melbourne_2030: 3,
+    activity_centres_program: 2,
+    greenfields_housing_plan: 1,
+    clean_economy_workforce_strategy: 2,
+    victorian_aboriginal_affairs_framework: 1,
+  };
+
   // Recent impact projects
   const recentProjects = [
     {
@@ -59,6 +70,7 @@ export default function DashboardPage() {
       name: 'Community Education Initiative',
       status: 'active',
       sdgs: ['SDG-4', 'SDG-10'],
+      frameworks: ['plan_for_victoria', 'melbourne_2030'] as VictorianFramework[],
       reach: 1250,
       impactScore: 89,
       outcomes: 'Literacy improved by 23%',
@@ -68,6 +80,7 @@ export default function DashboardPage() {
       name: 'Environmental Conservation Program',
       status: 'active',
       sdgs: ['SDG-13', 'SDG-15'],
+      frameworks: ['melbourne_2030', 'activity_centres_program'] as VictorianFramework[],
       reach: 890,
       impactScore: 76,
       outcomes: 'Emissions reduced by 15%',
@@ -77,6 +90,7 @@ export default function DashboardPage() {
       name: 'Youth Skills Development',
       status: 'completed',
       sdgs: ['SDG-8', 'SDG-4'],
+      frameworks: ['plan_for_victoria', 'clean_economy_workforce_strategy'] as VictorianFramework[],
       reach: 2100,
       impactScore: 94,
       outcomes: 'Employment rate increased by 31%',
@@ -148,6 +162,28 @@ export default function DashboardPage() {
           </Card>
         ))}
       </div>
+
+      {/* Framework Alignment Snapshot */}
+      <Card className="bg-white border-neutral-200">
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold text-neutral-900 mb-4">Framework Alignment Snapshot</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+            {Object.entries(frameworkAlignment).map(([framework, count]) => (
+              <div key={framework} className="text-center">
+                <div className="text-2xl font-bold text-neutral-900">{count}</div>
+                <div className="text-xs text-neutral-600 text-center">
+                  {VICTORIAN_FRAMEWORKS[framework as VictorianFramework].badgeLabel}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="pt-4 border-t border-neutral-200">
+            <p className="text-sm text-neutral-600">
+              4 projects aligned with Plan for Victoria, 3 with Melbourne 2030, 2 with Victorian Aboriginal Affairs Framework, 6 linked to UN SDGs
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Impact Analytics Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -231,7 +267,18 @@ export default function DashboardPage() {
                         <Badge variant="neutral" size="sm">
                           {project.status}
                         </Badge>
-                        {project.sdgs.map((sdg) => (
+                        {project.frameworks?.slice(0, 1).map((framework) => (
+                          <Badge
+                            key={framework}
+                            variant="victorian"
+                            victorianFramework={framework}
+                            size="sm"
+                            className="text-xs"
+                          >
+                            {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
+                          </Badge>
+                        ))}
+                        {project.sdgs.slice(0, 1).map((sdg) => (
                           <Badge key={sdg} variant="sdg" sdgCode={sdg} size="sm">
                             {sdg}
                           </Badge>

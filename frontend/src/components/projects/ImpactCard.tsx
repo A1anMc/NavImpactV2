@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Project, IMPACT_TYPES, PROJECT_STATUSES } from '@/types/projects';
+import { Project, IMPACT_TYPES, PROJECT_STATUSES, VICTORIAN_FRAMEWORKS } from '@/types/projects';
 import { cn } from '@/lib/utils';
 
 interface ImpactCardProps {
@@ -61,6 +61,28 @@ export const ImpactCard: React.FC<ImpactCardProps> = ({
                 {IMPACT_TYPES[impactType].label}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {/* Victorian Framework Alignment */}
+        {project.framework_alignment && project.framework_alignment.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-4">
+            {project.framework_alignment.slice(0, 3).map((framework) => (
+              <Badge
+                key={framework}
+                variant="victorian"
+                victorianFramework={framework}
+                size="sm"
+                className="text-xs"
+              >
+                {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
+              </Badge>
+            ))}
+            {project.framework_alignment.length > 3 && (
+              <Badge variant="neutral" size="sm" className="text-xs">
+                +{project.framework_alignment.length - 3} more
+              </Badge>
+            )}
           </div>
         )}
 
@@ -176,7 +198,7 @@ export const ImpactCardCompact: React.FC<ImpactCardProps> = ({
           </Badge>
         </div>
 
-        {/* Impact Types + SDGs */}
+        {/* Impact Types + Frameworks + SDGs */}
         <div className="flex flex-wrap gap-1 mb-3">
           {project.impact_types?.slice(0, 2).map((impactType) => (
             <Badge
@@ -188,7 +210,18 @@ export const ImpactCardCompact: React.FC<ImpactCardProps> = ({
               {IMPACT_TYPES[impactType].label}
             </Badge>
           ))}
-          {project.sdg_tags?.slice(0, 2).map((sdg) => (
+          {project.framework_alignment?.slice(0, 1).map((framework) => (
+            <Badge
+              key={framework}
+              variant="victorian"
+              victorianFramework={framework}
+              size="sm"
+              className="text-xs"
+            >
+              {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
+            </Badge>
+          ))}
+          {project.sdg_tags?.slice(0, 1).map((sdg) => (
             <Badge
               key={sdg}
               variant="sdg"
