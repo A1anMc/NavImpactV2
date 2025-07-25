@@ -231,8 +231,8 @@ const TagManagerComponent = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-2">
-                      <Badge variant="default">{tag.grant_count || 0} Grants</Badge>
-                      <Badge variant="default">{tag.project_count || 0} Projects</Badge>
+                      <Badge variant="neutral">{tag.grant_count || 0} Grants</Badge>
+                      <Badge variant="neutral">{tag.project_count || 0} Projects</Badge>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -243,7 +243,7 @@ const TagManagerComponent = () => {
                         Edit
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="danger"
                         size="sm"
                         onClick={() => handleDelete(tag)}
                       >
