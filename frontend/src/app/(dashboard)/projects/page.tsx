@@ -160,14 +160,17 @@ export default function ProjectsPage() {
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold text-neutral-900 mb-4">Framework Alignment Snapshot</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {Object.entries(displaySummary.framework_breakdown).map(([framework, count]) => (
-                <div key={framework} className="text-center">
-                  <div className="text-2xl font-bold text-neutral-900">{count}</div>
-                  <div className="text-xs text-neutral-600 text-center">
-                    {VICTORIAN_FRAMEWORKS[framework as VictorianFramework].badgeLabel}
+              {Object.entries(displaySummary.framework_breakdown).map(([framework, count]) => {
+                const frameworkConfig = VICTORIAN_FRAMEWORKS[framework as VictorianFramework];
+                return (
+                  <div key={framework} className="text-center">
+                    <div className="text-2xl font-bold text-neutral-900">{count}</div>
+                    <div className="text-xs text-neutral-600 text-center">
+                      {frameworkConfig ? frameworkConfig.badgeLabel : framework}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="mt-4 pt-4 border-t border-neutral-200">
               <p className="text-sm text-neutral-600">

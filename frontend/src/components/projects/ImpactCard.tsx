@@ -67,17 +67,20 @@ export const ImpactCard: React.FC<ImpactCardProps> = ({
         {/* Victorian Framework Alignment */}
         {project.framework_alignment && project.framework_alignment.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
-            {project.framework_alignment.slice(0, 3).map((framework) => (
-              <Badge
-                key={framework}
-                variant="victorian"
-                victorianFramework={framework}
-                size="sm"
-                className="text-xs"
-              >
-                {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
-              </Badge>
-            ))}
+            {project.framework_alignment.slice(0, 3).map((framework) => {
+              const frameworkConfig = VICTORIAN_FRAMEWORKS[framework];
+              return (
+                <Badge
+                  key={framework}
+                  variant="victorian"
+                  victorianFramework={framework}
+                  size="sm"
+                  className="text-xs"
+                >
+                  {frameworkConfig ? frameworkConfig.badgeLabel : framework}
+                </Badge>
+              );
+            })}
             {project.framework_alignment.length > 3 && (
               <Badge variant="neutral" size="sm" className="text-xs">
                 +{project.framework_alignment.length - 3} more
@@ -210,17 +213,20 @@ export const ImpactCardCompact: React.FC<ImpactCardProps> = ({
               {IMPACT_TYPES[impactType].label}
             </Badge>
           ))}
-          {project.framework_alignment?.slice(0, 1).map((framework) => (
-            <Badge
-              key={framework}
-              variant="victorian"
-              victorianFramework={framework}
-              size="sm"
-              className="text-xs"
-            >
-              {VICTORIAN_FRAMEWORKS[framework].badgeLabel}
-            </Badge>
-          ))}
+          {project.framework_alignment?.slice(0, 1).map((framework) => {
+            const frameworkConfig = VICTORIAN_FRAMEWORKS[framework];
+            return (
+              <Badge
+                key={framework}
+                variant="victorian"
+                victorianFramework={framework}
+                size="sm"
+                className="text-xs"
+              >
+                {frameworkConfig ? frameworkConfig.badgeLabel : framework}
+              </Badge>
+            );
+          })}
           {project.sdg_tags?.slice(0, 1).map((sdg) => (
             <Badge
               key={sdg}
