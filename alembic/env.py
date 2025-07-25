@@ -29,7 +29,24 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url():
-    """Get database URL."""
+    """
+    Get database URL, prioritizing alembic config over environment settings.
+    This allows command-line overrides like -x db_url=...
+    """
+    # First, try to get the URL from the -x command-line argument
+    cmd_line_url = context.get_x_argument(as_dictionary=True).get('db_url')
+    if cmd_line_url:
+        print(f"Using database URL from command line (-x): {cmd_line_url}")
+        return cmd_line_url
+
+    # Second, try the sqlalchemy.url from the .ini file
+    ini_url = config.get_main_option("sqlalchemy.url")
+    if ini_url:
+        print(f"Using database URL from alembic.ini: {ini_url}")
+        return ini_url
+    
+    # Finally, fall back to the application settings
+    print(f"Using database URL from environment settings: {settings.DATABASE_URL}")
     return settings.DATABASE_URL
 
 def run_migrations_offline() -> None:

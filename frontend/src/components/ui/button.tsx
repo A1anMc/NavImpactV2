@@ -8,6 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline' | 'impact';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
+  asChild?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -17,6 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   disabled = false,
   loading = false,
+  asChild = false,
   ...props
 }) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
@@ -39,16 +41,26 @@ export const Button: React.FC<ButtonProps> = ({
 
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
+  const buttonClasses = cn(
+    baseClasses,
+    sizeClasses[size],
+    variantClasses[variant],
+    disabledClasses,
+    className
+  );
+
+  if (asChild) {
+    return React.cloneElement(children as React.ReactElement, {
+      className: cn(buttonClasses, (children as React.ReactElement).props.className),
+      disabled: disabled || loading,
+      ...props,
+    });
+  }
+
   return (
     <button
       type={props.type || 'button'}
-      className={cn(
-        baseClasses,
-        sizeClasses[size],
-        variantClasses[variant],
-        disabledClasses,
-        className
-      )}
+      className={buttonClasses}
       disabled={disabled || loading}
       {...props}
     >

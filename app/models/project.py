@@ -1,6 +1,8 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+
 from app.db.base_class import Base
 from app.models.project_tags import project_tags
 
@@ -18,6 +20,13 @@ class Project(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Impact Context Fields
+    outcome_text = Column(Text, nullable=True)
+    impact_statement = Column(Text, nullable=True)
+    impact_types = Column(JSONB, nullable=True)  # Using JSONB for lists
+    sdg_tags = Column(JSONB, nullable=True)      # Using JSONB for lists
+    evidence_sources = Column(Text, nullable=True)
     
     # Relationships
     owner = relationship("User", back_populates="owned_projects")

@@ -9,6 +9,18 @@ from app.db.session import get_last_connection_error
 
 router = APIRouter()
 
+@router.get("/test")
+async def test_db_connection(db: Session = Depends(get_db)):
+    """Test database connection."""
+    try:
+        # Simple test query
+        from sqlalchemy import text
+        result = db.execute(text("SELECT COUNT(*) FROM projects"))
+        count = result.scalar()
+        return {"message": "Database connection successful", "project_count": count}
+    except Exception as e:
+        return {"message": "Database connection failed", "error": str(e)}
+
 @router.get("/")
 async def list_projects(
     db: Session = Depends(get_db),
@@ -36,6 +48,12 @@ async def list_projects(
                     "updated_at": project.updated_at.isoformat() if project.updated_at else None,
                     "status": getattr(project, 'status', 'active'),
                     "team_size": getattr(project, 'team_size', 0),
+                    # Impact fields
+                    "outcome_text": getattr(project, 'outcome_text', None),
+                    "impact_statement": getattr(project, 'impact_statement', None),
+                    "impact_types": getattr(project, 'impact_types', []),
+                    "sdg_tags": getattr(project, 'sdg_tags', []),
+                    "evidence_sources": getattr(project, 'evidence_sources', None),
                 }
                 for project in projects
             ],
@@ -85,6 +103,12 @@ async def get_project(
             "updated_at": project.updated_at.isoformat() if project.updated_at else None,
             "status": getattr(project, 'status', 'active'),
             "team_size": getattr(project, 'team_size', 0),
+            # Impact fields
+            "outcome_text": getattr(project, 'outcome_text', None),
+            "impact_statement": getattr(project, 'impact_statement', None),
+            "impact_types": getattr(project, 'impact_types', []),
+            "sdg_tags": getattr(project, 'sdg_tags', []),
+            "evidence_sources": getattr(project, 'evidence_sources', None),
         }
     except HTTPException:
         raise
