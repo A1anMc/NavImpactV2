@@ -18,7 +18,8 @@ def test_create_project_with_framework():
         "description": "Testing framework alignment functionality",
         "status": "active",
         "impact_types": ["social", "environmental"],
-        "framework_alignment": ["Plan for Victoria", "Melbourne 2030", "SDG 4"]
+        "framework_alignment": ["Plan for Victoria", "Melbourne 2030", "SDG 4"],
+        "owner_id": 1
     }
     
     print("🔍 Testing Project Creation with Framework Alignment")
