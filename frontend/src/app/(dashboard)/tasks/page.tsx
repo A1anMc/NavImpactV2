@@ -153,44 +153,40 @@ export default function TasksPage() {
 
         {/* Task Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card 
-            className={`cursor-pointer transition-all ${selectedFilter === 'all' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}
-            onClick={() => setSelectedFilter('all')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-2">{taskCounts.all}</div>
-              <div className="text-sm text-gray-600">All Tasks</div>
-            </CardContent>
+          <Card className={`cursor-pointer transition-all ${selectedFilter === 'all' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}>
+            <div onClick={() => setSelectedFilter('all')} className="w-full h-full">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">{taskCounts.all}</div>
+                <div className="text-sm text-gray-600">All Tasks</div>
+              </CardContent>
+            </div>
           </Card>
 
-          <Card 
-            className={`cursor-pointer transition-all ${selectedFilter === 'todo' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}
-            onClick={() => setSelectedFilter('todo')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-gray-600 mb-2">{taskCounts.todo}</div>
-              <div className="text-sm text-gray-600">To Do</div>
-            </CardContent>
+          <Card className={`cursor-pointer transition-all ${selectedFilter === 'todo' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}>
+            <div onClick={() => setSelectedFilter('todo')} className="w-full h-full">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-gray-600 mb-2">{taskCounts.todo}</div>
+                <div className="text-sm text-gray-600">To Do</div>
+              </CardContent>
+            </div>
           </Card>
 
-          <Card 
-            className={`cursor-pointer transition-all ${selectedFilter === 'in_progress' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}
-            onClick={() => setSelectedFilter('in_progress')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">{taskCounts.in_progress}</div>
-              <div className="text-sm text-gray-600">In Progress</div>
-            </CardContent>
+          <Card className={`cursor-pointer transition-all ${selectedFilter === 'in_progress' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}>
+            <div onClick={() => setSelectedFilter('in_progress')} className="w-full h-full">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">{taskCounts.in_progress}</div>
+                <div className="text-sm text-gray-600">In Progress</div>
+              </CardContent>
+            </div>
           </Card>
 
-          <Card 
-            className={`cursor-pointer transition-all ${selectedFilter === 'completed' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}
-            onClick={() => setSelectedFilter('completed')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">{taskCounts.completed}</div>
-              <div className="text-sm text-gray-600">Completed</div>
-            </CardContent>
+          <Card className={`cursor-pointer transition-all ${selectedFilter === 'completed' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-white hover:shadow-md'} border border-gray-200 shadow-sm`}>
+            <div onClick={() => setSelectedFilter('completed')} className="w-full h-full">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-green-600 mb-2">{taskCounts.completed}</div>
+                <div className="text-sm text-gray-600">Completed</div>
+              </CardContent>
+            </div>
           </Card>
         </div>
 
