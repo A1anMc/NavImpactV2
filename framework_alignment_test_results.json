@@ -1,64 +1,64 @@
 {
-  "timestamp": 1753419078.33466,
+  "timestamp": 1753419778.070156,
   "summary": {
     "total_tests": 9,
-    "passed_tests": 9,
-    "failed_tests": 0
+    "passed_tests": 0,
+    "failed_tests": 9
   },
   "results": [
     {
       "test": "Homepage Load",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419066.958567
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aaf3d10>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419773.523475
     },
     {
       "test": "Projects Page Load",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419073.0972521
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /projects (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aaf9310>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419774.027313
     },
     {
       "test": "Dashboard Page Load",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419073.682389
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aae3d90>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419774.5344481
     },
     {
       "test": "Settings Page Load",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419074.66188
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aaf84d0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419775.039395
     },
     {
       "test": "Framework Content Present",
-      "success": true,
-      "details": "Found frameworks: ['plan for victoria', 'melbourne 2030', 'activity centres', 'greenfields', 'clean economy']",
-      "timestamp": 1753419075.238069
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /projects (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aafabd0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419775.5424042
     },
     {
       "test": "SDG Content Present",
-      "success": true,
-      "details": "Found SDG indicators: ['un sdg']",
-      "timestamp": 1753419075.778687
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /projects (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10aafbe10>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419776.046239
     },
     {
       "test": "API Health Check",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419076.651548
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /api/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10ab01350>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419776.551293
     },
     {
       "test": "Responsive Design (Mobile)",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": 1753419077.2869198
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /projects (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10ab024d0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419777.056797
     },
     {
       "test": "Performance Test",
-      "success": true,
-      "details": "Load time: 0.04s",
-      "timestamp": 1753419077.829612
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='localhost', port=3000): Max retries exceeded with url: /projects (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10ab03710>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "timestamp": 1753419777.5646029
     }
   ]
 }

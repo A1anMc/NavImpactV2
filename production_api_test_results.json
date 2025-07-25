@@ -1,0 +1,58 @@
+{
+  "timestamp": 1753420517.3654258,
+  "summary": {
+    "total_tests": 8,
+    "passed_tests": 3,
+    "failed_tests": 5
+  },
+  "results": [
+    {
+      "test": "Health Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753420507.391217
+    },
+    {
+      "test": "Projects List Endpoint",
+      "success": false,
+      "details": "Status: 503",
+      "timestamp": 1753420508.638197
+    },
+    {
+      "test": "Framework Filter Endpoint",
+      "success": false,
+      "details": "Status: 503",
+      "timestamp": 1753420510.273217
+    },
+    {
+      "test": "SDG Filter Endpoint",
+      "success": false,
+      "details": "Status: 503",
+      "timestamp": 1753420511.473334
+    },
+    {
+      "test": "Portfolio Summary Endpoint",
+      "success": false,
+      "details": "Status: 503",
+      "timestamp": 1753420512.6876411
+    },
+    {
+      "test": "Create Project Endpoint",
+      "success": false,
+      "details": "Status: 503",
+      "timestamp": 1753420513.915731
+    },
+    {
+      "test": "API Documentation",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753420515.137541
+    },
+    {
+      "test": "Frontend Connectivity",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753420516.362987
+    }
+  ]
+}
