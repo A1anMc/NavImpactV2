@@ -62,13 +62,13 @@ async def create_project(
         # Auto-create demo user if no owner_id provided
         if not hasattr(project_data, 'owner_id') or project_data.owner_id is None:
             from app.models.user import User
-            demo_user = db.query(User).filter(User.username == "demo_user").first()
+            demo_user = db.query(User).filter(User.email == "demo@navimpact.com").first()
             
             if not demo_user:
                 demo_user = User(
-                    username="demo_user",
                     email="demo@navimpact.com",
-                    full_name="Demo User"
+                    full_name="Demo User",
+                    hashed_password="demo_password_hash"  # Simple hash for demo
                 )
                 db.add(demo_user)
                 db.flush()  # Get the ID without committing
@@ -461,13 +461,13 @@ async def seed_demo_projects(db: Session = Depends(get_db)):
         
         # Create demo user if it doesn't exist
         from app.models.user import User
-        demo_user = db.query(User).filter(User.username == "demo_user").first()
+        demo_user = db.query(User).filter(User.email == "demo@navimpact.com").first()
         
         if not demo_user:
             demo_user = User(
-                username="demo_user",
                 email="demo@navimpact.com",
-                full_name="Demo User"
+                full_name="Demo User",
+                hashed_password="demo_password_hash"  # Simple hash for demo
             )
             db.add(demo_user)
             db.flush()  # Get the ID without committing
