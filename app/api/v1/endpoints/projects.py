@@ -387,3 +387,114 @@ async def get_portfolio_summary(db: Session = Depends(get_db)):
             status_code=500,
             detail=f"Error fetching portfolio summary: {str(e)}"
         ) 
+
+@router.post("/seed-demo")
+async def seed_demo_projects(db: Session = Depends(get_db)):
+    """Seed demo projects for testing (no authentication required)."""
+    try:
+        # Demo projects with realistic Victorian + SDG alignment
+        demo_projects = [
+            {
+                "name": "Greenfields Housing Renewal",
+                "description": "Pilot housing renewal project aligned with Melbourne 2030",
+                "status": "active",
+                "impact_types": ["social", "environmental"],
+                "framework_alignment": [
+                    "greenfields_housing_plan",
+                    "melbourne_2030",
+                    "SDG 11"
+                ],
+                "sdg_tags": ["SDG 11", "SDG 3"],
+                "outcome_text": "Improved housing sustainability & community resilience",
+                "impact_statement": "This project reduces housing stress while enhancing local green spaces",
+                "evidence_sources": "Victorian Housing Authority reports"
+            },
+            {
+                "name": "Digital Literacy for Underserved Communities",
+                "description": "Comprehensive digital skills program for disadvantaged communities",
+                "status": "active",
+                "impact_types": ["social", "community"],
+                "framework_alignment": [
+                    "plan_for_victoria",
+                    "clean_economy_workforce_strategy",
+                    "SDG 4"
+                ],
+                "sdg_tags": ["SDG 4", "SDG 10"],
+                "outcome_text": "500+ participants gained digital literacy skills",
+                "impact_statement": "Empowering communities through digital skills development",
+                "evidence_sources": "Participant surveys, skills assessments, employment outcomes"
+            },
+            {
+                "name": "Indigenous Cultural Heritage Preservation",
+                "description": "Preservation and celebration of Victorian Aboriginal cultural heritage",
+                "status": "active",
+                "impact_types": ["social", "community"],
+                "framework_alignment": [
+                    "victorian_aboriginal_affairs_framework",
+                    "plan_for_victoria",
+                    "SDG 11"
+                ],
+                "sdg_tags": ["SDG 11", "SDG 10"],
+                "outcome_text": "Enhanced cultural awareness and heritage preservation",
+                "impact_statement": "Strengthening community connections through cultural heritage",
+                "evidence_sources": "Community feedback, cultural impact assessments"
+            }
+        ]
+        
+        created_projects = []
+        
+        # Create demo user if it doesn't exist
+        from app.models.user import User
+        demo_user = db.query(User).filter(User.username == "demo_user").first()
+        
+        if not demo_user:
+            demo_user = User(
+                username="demo_user",
+                email="demo@navimpact.com",
+                full_name="Demo User"
+            )
+            db.add(demo_user)
+            db.flush()  # Get the ID without committing
+        
+        # Create demo projects
+        for project_data in demo_projects:
+            project = Project(
+                name=project_data["name"],
+                description=project_data["description"],
+                status=project_data["status"],
+                impact_types=project_data["impact_types"],
+                framework_alignment=project_data["framework_alignment"],
+                sdg_tags=project_data["sdg_tags"],
+                outcome_text=project_data["outcome_text"],
+                impact_statement=project_data["impact_statement"],
+                evidence_sources=project_data["evidence_sources"],
+                owner_id=demo_user.id
+            )
+            
+            db.add(project)
+            created_projects.append(project)
+        
+        db.commit()
+        
+        # Return summary
+        return {
+            "message": "Demo projects seeded successfully",
+            "projects_created": len(created_projects),
+            "demo_user_id": demo_user.id,
+            "projects": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "framework_alignment": p.framework_alignment,
+                    "sdg_tags": p.sdg_tags
+                }
+                for p in created_projects
+            ]
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error seeding demo projects: {str(e)}"
+        ) 
