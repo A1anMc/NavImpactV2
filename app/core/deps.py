@@ -15,21 +15,28 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login
 
 def get_db() -> Generator:
     """Get SQLAlchemy database session with enhanced error handling."""
+    db = None
     try:
         SessionLocal = get_session_local()
         db = SessionLocal()
         yield db
     except Exception as e:
         logger.error(f"Error creating database session: {str(e)}")
-        raise HTTPException(
-            status_code=503,
-            detail="Database service unavailable"
-        )
+        # Only return 503 for actual database connection errors
+        if "database" in str(e).lower() or "connection" in str(e).lower() or "sql" in str(e).lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Database service unavailable"
+            )
+        else:
+            # Re-raise other exceptions (like Pydantic validation errors)
+            raise
     finally:
-        try:
-            db.close()
-        except Exception as e:
-            logger.warning(f"Error closing database session: {str(e)}")
+        if db:
+            try:
+                db.close()
+            except Exception as e:
+                logger.warning(f"Error closing database session: {str(e)}")
 
 async def get_current_user(
     db: Session = Depends(get_db),
