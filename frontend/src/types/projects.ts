@@ -75,6 +75,16 @@ export interface ProjectFilters {
   framework_alignment?: VictorianFramework[];
   sdg_tags?: string[];
   search?: string;
+  skip?: number;
+  limit?: number;
+}
+
+// Project List Response Interface
+export interface ProjectListResponse {
+  items: Project[];
+  total: number;
+  skip: number;
+  limit: number;
 }
 
 // Impact Type Configuration
