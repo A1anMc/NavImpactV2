@@ -29,8 +29,12 @@ const Sidebar: FC = () => {
   return (
     <div className="flex h-full w-64 flex-col bg-gray-900">
       <div className="flex h-16 items-center px-4">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-white">NavImpact</span>
+        <Link href="/" className="flex items-center space-x-3">
+          <img src="/logo.svg" alt="NavImpact" className="h-8 w-8" />
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-white">NavImpact</span>
+            <span className="text-xs text-gray-400">Impact & Intelligence</span>
+          </div>
         </Link>
       </div>
       

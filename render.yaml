@@ -24,7 +24,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: "https://navimpact.onrender.com,https://navimpact-web.onrender.com"
+        value: "https://navimpact-web.onrender.com"
       - key: ALLOWED_HOSTS
         value: "navimpact-api.onrender.com,localhost,127.0.0.1"
       - key: LOG_LEVEL
@@ -36,9 +36,9 @@ services:
       - key: MAX_REQUESTS_PER_MINUTE
         value: "60"
       - key: DATABASE_POOL_SIZE
-        value: "1"
+        value: "5"
       - key: DATABASE_MAX_OVERFLOW
-        value: "2"
+        value: "10"
       - key: DATABASE_POOL_TIMEOUT
         value: "30"
       - key: DATABASE_POOL_RECYCLE
@@ -51,7 +51,7 @@ services:
     nodeVersion: "20.x"
     buildCommand: |
       cd frontend
-      npm ci --only=production
+      npm ci
       npm run build
     startCommand: |
       cd frontend
@@ -63,6 +63,8 @@ services:
         value: production
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
+      - key: PORT
+        value: "3000"
 
 databases:
   - name: navimpact-db
