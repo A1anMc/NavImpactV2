@@ -8,10 +8,23 @@ export default function ProjectsPage() {
     <div className="p-8 space-y-8 bg-neutral-50 min-h-screen">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">Impact Projects</h1>
-        <p className="text-lg text-neutral-600 mt-2">
-          Track and manage your impact projects with Victorian framework alignment
-        </p>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-neutral-900">Impact Projects</h1>
+            <p className="text-lg text-neutral-600 mt-2">
+              Track and manage your impact projects with Victorian framework alignment
+            </p>
+          </div>
+          <div className="flex items-center space-x-3 ml-6">
+            <Button 
+              variant="secondary" 
+              size="md"
+              onClick={() => window.location.href = '/projects/new'}
+            >
+              New Impact Project
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Portfolio Summary */}
