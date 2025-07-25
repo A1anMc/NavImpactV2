@@ -49,6 +49,7 @@ export function CollapsibleCard({
     preferences.focusMode ? 'focus-mode-card' : '',
     preferences.lowStimMode || lowStim ? 'low-stim-card' : '',
     dense ? 'dense-card' : '',
+    'mb-4', // Add margin bottom instead of inline style
     className
   ].filter(Boolean).join(' ');
 
@@ -73,17 +74,14 @@ export function CollapsibleCard({
     return `${baseClasses} ${variants[variant as keyof typeof variants] || variants.neutral}`;
   };
 
-  const spacing = {
-    padding: dense ? getSpacing('sm') : getSpacing('md'),
-    margin: dense ? getSpacing('xs') : getSpacing('sm'),
-  };
+  const headerPadding = dense ? 'p-2' : 'p-4';
+  const contentPadding = dense ? 'p-2' : 'p-4';
 
   return (
-    <Card className={cardClasses} style={{ margin: spacing.margin }}>
+    <Card className={cardClasses}>
       <CardHeader 
-        className="cursor-pointer hover:bg-neutral-50 transition-colors rounded-t-lg"
+        className={`cursor-pointer hover:bg-neutral-50 transition-colors rounded-t-lg ${headerPadding}`}
         onClick={handleToggle}
-        style={{ padding: spacing.padding }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -105,7 +103,7 @@ export function CollapsibleCard({
               aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
             >
               <svg
-                className={`h-4 w-4 transition-transform ${getMotionDuration('normal')} ${
+                className={`h-4 w-4 transition-transform duration-200 ${
                   isCollapsed ? 'rotate-0' : 'rotate-180'
                 }`}
                 fill="none"
@@ -126,14 +124,11 @@ export function CollapsibleCard({
       
       {/* Collapsible content */}
       <div
-        className={`overflow-hidden transition-all ${getMotionDuration('normal')} ${
+        className={`overflow-hidden transition-all duration-200 ${
           isCollapsed ? 'max-h-0' : 'max-h-none'
         }`}
-        style={{
-          maxHeight: isCollapsed ? '0' : 'none',
-        }}
       >
-        <CardContent style={{ padding: spacing.padding }}>
+        <CardContent className={contentPadding}>
           {children}
         </CardContent>
       </div>
