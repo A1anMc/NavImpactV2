@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-import { VICTORIAN_FRAMEWORKS } from "@/types/projects"
+import { VICTORIAN_FRAMEWORKS, VictorianFramework } from "@/types/projects"
 import { sdgColors } from "@/lib/design-system"
 
 const badgeVariants = cva(
@@ -45,7 +45,7 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   sdgCode?: string;
-  victorianFramework?: keyof typeof VICTORIAN_FRAMEWORKS;
+  victorianFramework?: VictorianFramework;
 }
 
 function Badge({ 
@@ -73,11 +73,11 @@ function Badge({
 
   // Handle Victorian framework badge styling
   if (variant === "victorian" && victorianFramework) {
-    const framework = VICTORIAN_FRAMEWORKS[victorianFramework];
+    const framework = VICTORIAN_FRAMEWORKS.find(f => f.value === victorianFramework);
     return (
       <div
         className={cn(badgeVariants({ variant, size }), className)}
-        style={{ backgroundColor: framework.color }}
+        style={{ backgroundColor: framework?.color || '#6B7280' }}
         {...props}
       >
         {children}
@@ -101,44 +101,32 @@ export const SDGBadge: React.FC<{
   className?: string;
   size?: "sm" | "md" | "lg";
 }> = ({ sdgCode, children, className, size = "md" }) => {
-  const config = {
-    variant: "sdg" as const,
-    size,
-  };
-
+  const sdgColor = sdgColors[sdgCode as keyof typeof sdgColors];
   return (
-    <Badge
-      variant={config.variant}
-      size={size}
-      sdgCode={sdgCode}
-      className={className}
+    <div
+      className={cn(badgeVariants({ variant: "sdg", size }), className)}
+      style={{ backgroundColor: sdgColor }}
     >
       {children}
-    </Badge>
+    </div>
   );
 };
 
 // Victorian Framework Badge component
 export const VictorianFrameworkBadge: React.FC<{
-  framework: keyof typeof VICTORIAN_FRAMEWORKS;
+  framework: VictorianFramework;
   children: React.ReactNode;
   className?: string;
   size?: "sm" | "md" | "lg";
 }> = ({ framework, children, className, size = "md" }) => {
-  const config = {
-    variant: "victorian" as const,
-    size,
-  };
-
+  const frameworkConfig = VICTORIAN_FRAMEWORKS.find(f => f.value === framework);
   return (
-    <Badge
-      variant={config.variant}
-      victorianFramework={framework}
-      size={size}
-      className={className}
+    <div
+      className={cn(badgeVariants({ variant: "victorian", size }), className)}
+      style={{ backgroundColor: frameworkConfig?.color || '#6B7280' }}
     >
       {children}
-    </Badge>
+    </div>
   );
 };
 
@@ -165,15 +153,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   };
 
   const config = statusConfig[status];
-  const displayText = children || config.text;
-
+  
   return (
-    <Badge
-      variant={config.variant}
-      size={size}
-      className={className}
-    >
-      {displayText}
+    <Badge variant={config.variant} size={size} className={className}>
+      {children || config.text}
     </Badge>
   );
 }; 
