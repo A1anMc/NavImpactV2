@@ -206,12 +206,12 @@ async def list_projects(
             for sdg in sdg_list:
                 query = query.filter(Project.sdg_tags.contains([sdg]))
         
-        # Framework alignment filter
-        if framework_alignment:
-            framework_list = [f.strip() for f in framework_alignment.split(',')]
-            # Filter projects that have any of the specified frameworks
-            for framework in framework_list:
-                query = query.filter(Project.framework_alignment.contains([framework]))
+        # Framework alignment filter - temporarily disabled due to column issues
+        # if framework_alignment:
+        #     framework_list = [f.strip() for f in framework_alignment.split(',')]
+        #     # Filter projects that have any of the specified frameworks
+        #     for framework in framework_list:
+        #         query = query.filter(Project.framework_alignment.contains([framework]))
         
         total = query.count()
         projects = query.offset(skip).limit(limit).all()
@@ -231,7 +231,7 @@ async def list_projects(
                     "impact_statement": getattr(project, 'impact_statement', None),
                     "impact_types": getattr(project, 'impact_types', []),
                     "sdg_tags": getattr(project, 'sdg_tags', []),
-                    "framework_alignment": getattr(project, 'framework_alignment', []),
+                    "framework_alignment": [],  # Temporarily disabled due to column issues
                     "evidence_sources": getattr(project, 'evidence_sources', None),
                 }
                 for project in projects
@@ -287,7 +287,7 @@ async def get_project(
             "impact_statement": getattr(project, 'impact_statement', None),
             "impact_types": getattr(project, 'impact_types', []),
             "sdg_tags": getattr(project, 'sdg_tags', []),
-            "framework_alignment": getattr(project, 'framework_alignment', []),
+            "framework_alignment": [],  # Temporarily disabled due to column issues
             "evidence_sources": getattr(project, 'evidence_sources', None),
         }
     except HTTPException:
@@ -317,10 +317,8 @@ async def get_portfolio_summary(db: Session = Depends(get_db)):
         # Get basic counts
         total_projects = db.query(Project).count()
         
-        # Get projects with framework alignment
-        projects_with_frameworks = db.query(Project).filter(
-            Project.framework_alignment.isnot(None)
-        ).filter(Project.framework_alignment != []).count()
+        # Get projects with framework alignment - temporarily disabled
+        projects_with_frameworks = 0  # Temporarily disabled due to column issues
         
         # Get projects with SDG alignment
         projects_with_sdgs = db.query(Project).filter(
@@ -337,16 +335,16 @@ async def get_portfolio_summary(db: Session = Depends(get_db)):
             "victorian_aboriginal_affairs_framework": 0,
         }
         
-        # Get all projects with framework alignment
-        projects = db.query(Project).filter(
-            Project.framework_alignment.isnot(None)
-        ).filter(Project.framework_alignment != []).all()
+        # Get all projects with framework alignment - temporarily disabled
+        # projects = db.query(Project).filter(
+        #     Project.framework_alignment.isnot(None)
+        # ).filter(Project.framework_alignment != []).all()
         
-        for project in projects:
-            if project.framework_alignment:
-                for framework in project.framework_alignment:
-                    if framework in framework_breakdown:
-                        framework_breakdown[framework] += 1
+        # for project in projects:
+        #     if project.framework_alignment:
+        #         for framework in project.framework_alignment:
+        #             if framework in framework_breakdown:
+        #                 framework_breakdown[framework] += 1
         
         # Calculate impact type breakdown
         impact_type_breakdown = {"social": 0, "environmental": 0, "community": 0}
