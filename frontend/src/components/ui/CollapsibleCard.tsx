@@ -79,45 +79,47 @@ export function CollapsibleCard({
 
   return (
     <Card className={cardClasses}>
-      <CardHeader 
-        className={`cursor-pointer hover:bg-neutral-50 transition-colors rounded-t-lg ${headerPadding}`}
-        onClick={handleToggle}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <CardTitle className="text-lg font-semibold text-neutral-900">
-              {title}
-            </CardTitle>
-            {badge && (
-              <span className={getBadgeClasses(badge.variant)}>
-                {badge.text}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Collapse/Expand button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-neutral-100 focus:ring-2 focus:ring-primary-500"
-              aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
-            >
-              <svg
-                className={`h-4 w-4 transition-transform duration-200 ${
-                  isCollapsed ? 'rotate-0' : 'rotate-180'
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      <CardHeader className={headerPadding}>
+        <div 
+          className="cursor-pointer hover:bg-neutral-50 transition-colors rounded-lg -m-2 p-2"
+          onClick={handleToggle}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-lg font-semibold text-neutral-900">
+                {title}
+              </CardTitle>
+              {badge && (
+                <span className={getBadgeClasses(badge.variant)}>
+                  {badge.text}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Collapse/Expand button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-neutral-100 focus:ring-2 focus:ring-primary-500"
+                aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </Button>
+                <svg
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isCollapsed ? 'rotate-0' : 'rotate-180'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </Button>
+            </div>
           </div>
         </div>
       </CardHeader>
