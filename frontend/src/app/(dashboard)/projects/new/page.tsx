@@ -47,9 +47,9 @@ export default function NewProjectPage() {
   const handleArrayToggle = (field: 'impact_types' | 'framework_alignment' | 'sdg_tags', value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].includes(value as any)
-        ? prev[field].filter(item => item !== value)
-        : [...prev[field], value as any]
+      [field]: (prev[field] as string[]).includes(value)
+        ? (prev[field] as string[]).filter(item => item !== value)
+        : [...(prev[field] as string[]), value]
     }));
   };
 
@@ -59,7 +59,7 @@ export default function NewProjectPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/projects/', {
+      const response = await fetch('https://navimpact-api.onrender.com/api/v1/projects/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
