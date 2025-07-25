@@ -50,102 +50,153 @@ export interface ProjectFormData {
   name: string;
   description?: string;
   status: ProjectStatus;
-  start_date?: string;
-  end_date?: string;
-  
-  // Impact Fields
-  outcome_text?: string;
-  impact_statement?: string;
   impact_types: ImpactType[];
   sdg_tags?: string[];
   framework_alignment?: VictorianFramework[];
+  outcome_text?: string;
+  impact_statement?: string;
   evidence_sources?: string;
+  reach_count?: number;
+  start_date?: string;
+  end_date?: string;
 }
 
-// Project List Response
-export interface ProjectListResponse {
-  items: Project[];
-  total: number;
-  page: number;
-  size: number;
-  has_next: boolean;
-  has_prev: boolean;
-}
-
-// Project Filters
-export interface ProjectFilters {
-  search?: string;
-  status?: ProjectStatus;
-  impact_types?: ImpactType[];
-  sdg_tags?: string[];
-  framework_alignment?: VictorianFramework[];
-  skip?: number;
-  limit?: number;
-}
-
-// Tag Interface (for project tags)
+// Tag Interface
 export interface Tag {
   id: number;
   name: string;
   color?: string;
-  project_count?: number;
+}
+
+// Project Filters Interface
+export interface ProjectFilters {
+  status?: ProjectStatus;
+  impact_types?: ImpactType[];
+  framework_alignment?: VictorianFramework[];
+  sdg_tags?: string[];
+  search?: string;
 }
 
 // Impact Type Configuration
-export const IMPACT_TYPES: Record<ImpactType, { label: string; description: string; color: string }> = {
-  social: {
+export const IMPACT_TYPES: Array<{ value: ImpactType; label: string; description: string; color: string }> = [
+  {
+    value: 'social',
     label: 'Social Impact',
-    description: 'Improving human wellbeing, equality, and social inclusion',
+    description: 'Improving people\'s lives and social outcomes',
     color: 'bg-blue-100 text-blue-800',
   },
-  environmental: {
+  {
+    value: 'environmental',
     label: 'Environmental Impact',
-    description: 'Protecting ecosystems, reducing emissions, and promoting sustainability',
+    description: 'Protecting and improving environmental outcomes',
     color: 'bg-green-100 text-green-800',
   },
-  community: {
+  {
+    value: 'community',
     label: 'Community Impact',
-    description: 'Strengthening local communities and fostering civic engagement',
+    description: 'Strengthening communities and local connections',
     color: 'bg-purple-100 text-purple-800',
   },
-};
+];
+
+// SDG Options for forms
+export const SDG_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: 'SDG 1', label: 'SDG 1 - No Poverty' },
+  { value: 'SDG 2', label: 'SDG 2 - Zero Hunger' },
+  { value: 'SDG 3', label: 'SDG 3 - Good Health and Well-being' },
+  { value: 'SDG 4', label: 'SDG 4 - Quality Education' },
+  { value: 'SDG 5', label: 'SDG 5 - Gender Equality' },
+  { value: 'SDG 6', label: 'SDG 6 - Clean Water and Sanitation' },
+  { value: 'SDG 7', label: 'SDG 7 - Affordable and Clean Energy' },
+  { value: 'SDG 8', label: 'SDG 8 - Decent Work and Economic Growth' },
+  { value: 'SDG 9', label: 'SDG 9 - Industry, Innovation and Infrastructure' },
+  { value: 'SDG 10', label: 'SDG 10 - Reduced Inequalities' },
+  { value: 'SDG 11', label: 'SDG 11 - Sustainable Cities and Communities' },
+  { value: 'SDG 12', label: 'SDG 12 - Responsible Consumption and Production' },
+  { value: 'SDG 13', label: 'SDG 13 - Climate Action' },
+  { value: 'SDG 14', label: 'SDG 14 - Life Below Water' },
+  { value: 'SDG 15', label: 'SDG 15 - Life on Land' },
+  { value: 'SDG 16', label: 'SDG 16 - Peace, Justice and Strong Institutions' },
+  { value: 'SDG 17', label: 'SDG 17 - Partnerships for the Goals' },
+];
 
 // Victorian Framework Configuration
-export const VICTORIAN_FRAMEWORKS: Record<VictorianFramework, { 
-  label: string; 
-  description: string; 
-  color: string;
-  badgeLabel: string;
-}> = {
+export const VICTORIAN_FRAMEWORKS: Array<{ value: VictorianFramework; label: string; description: string; color: string; badgeLabel: string }> = [
+  {
+    value: 'plan_for_victoria',
+    label: 'Plan for Victoria',
+    description: 'Victoria\'s long-term strategic plan for sustainable growth',
+    color: '#1F2937',
+    badgeLabel: 'Plan for Victoria',
+  },
+  {
+    value: 'melbourne_2030',
+    label: 'Melbourne 2030',
+    description: 'Melbourne\'s strategic planning framework for sustainable development',
+    color: '#3B82F6',
+    badgeLabel: 'Melbourne 2030',
+  },
+  {
+    value: 'activity_centres_program',
+    label: 'Activity Centres Program',
+    description: 'Framework for developing vibrant, mixed-use activity centres',
+    color: '#10B981',
+    badgeLabel: 'Activity Centres',
+  },
+  {
+    value: 'greenfields_housing_plan',
+    label: 'Greenfields Housing Plan',
+    description: 'Strategic approach to new housing development in growth areas',
+    color: '#059669',
+    badgeLabel: 'Greenfields Plan',
+  },
+  {
+    value: 'clean_economy_workforce_strategy',
+    label: 'Clean Economy Workforce Strategy',
+    description: 'Building workforce capacity for Victoria\'s clean economy transition',
+    color: '#0D9488',
+    badgeLabel: 'Clean Economy',
+  },
+  {
+    value: 'victorian_aboriginal_affairs_framework',
+    label: 'Victorian Aboriginal Affairs Framework',
+    description: 'Supporting Aboriginal self-determination and cultural safety',
+    color: '#DC2626',
+    badgeLabel: 'Reconciliation (VAAF)',
+  },
+];
+
+// Legacy VICTORIAN_FRAMEWORKS object format for backward compatibility
+export const VICTORIAN_FRAMEWORKS_LEGACY: Record<VictorianFramework, { label: string; description: string; color: string; badgeLabel: string }> = {
   plan_for_victoria: {
     label: 'Plan for Victoria',
-    description: 'Victoria\'s long-term vision for a fairer, more prosperous state',
-    color: '#4F46E5',
+    description: 'Victoria\'s long-term strategic plan for sustainable growth',
+    color: '#1F2937',
     badgeLabel: 'Plan for Victoria',
   },
   melbourne_2030: {
     label: 'Melbourne 2030',
-    description: 'Melbourne\'s strategic plan for sustainable urban development',
-    color: '#0EA5E9',
+    description: 'Melbourne\'s strategic planning framework for sustainable development',
+    color: '#3B82F6',
     badgeLabel: 'Melbourne 2030',
   },
   activity_centres_program: {
     label: 'Activity Centres Program',
-    description: 'Supporting vibrant, accessible activity centres across Victoria',
-    color: '#6366F1',
+    description: 'Framework for developing vibrant, mixed-use activity centres',
+    color: '#10B981',
     badgeLabel: 'Activity Centres',
   },
   greenfields_housing_plan: {
     label: 'Greenfields Housing Plan',
-    description: 'Sustainable housing development in growth areas',
-    color: '#16A34A',
+    description: 'Strategic approach to new housing development in growth areas',
+    color: '#059669',
     badgeLabel: 'Greenfields Plan',
   },
   clean_economy_workforce_strategy: {
     label: 'Clean Economy Workforce Strategy',
-    description: 'Building Victoria\'s clean energy workforce and capabilities',
-    color: '#10B981',
-    badgeLabel: 'Clean Economy Workforce',
+    description: 'Building workforce capacity for Victoria\'s clean economy transition',
+    color: '#0D9488',
+    badgeLabel: 'Clean Economy',
   },
   victorian_aboriginal_affairs_framework: {
     label: 'Victorian Aboriginal Affairs Framework',
@@ -156,33 +207,38 @@ export const VICTORIAN_FRAMEWORKS: Record<VictorianFramework, {
 };
 
 // Project Status Configuration
-export const PROJECT_STATUSES: Record<ProjectStatus, { label: string; description: string; color: string }> = {
-  planning: {
+export const PROJECT_STATUSES: Array<{ value: ProjectStatus; label: string; description: string; color: string }> = [
+  {
+    value: 'planning',
     label: 'Planning',
     description: 'Project is in development or planning phase',
     color: 'bg-neutral-100 text-neutral-800',
   },
-  active: {
+  {
+    value: 'active',
     label: 'Active',
     description: 'Project is currently running and delivering outcomes',
     color: 'bg-impact-100 text-impact-800',
   },
-  completed: {
+  {
+    value: 'completed',
     label: 'Completed',
     description: 'Project has finished with measurable outcomes',
     color: 'bg-success-100 text-success-800',
   },
-  paused: {
+  {
+    value: 'paused',
     label: 'Paused',
     description: 'Project is temporarily on hold',
     color: 'bg-yellow-100 text-yellow-800',
   },
-  cancelled: {
+  {
+    value: 'cancelled',
     label: 'Cancelled',
     description: 'Project has been discontinued',
     color: 'bg-red-100 text-red-800',
   },
-};
+];
 
 // Portfolio Summary Interface
 export interface PortfolioSummary {
