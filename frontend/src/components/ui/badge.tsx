@@ -6,7 +6,7 @@ import { sdgColors } from '@/lib/design-system';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' | 'sdg';
+  variant?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' | 'sdg' | 'impact';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   sdgCode?: string; // For SDG-specific styling
@@ -33,6 +33,7 @@ export const Badge: React.FC<BadgeProps> = ({
     warning: 'bg-yellow-100 text-yellow-800',
     danger: 'bg-red-100 text-red-800',
     neutral: 'bg-neutral-100 text-neutral-800',
+    impact: 'bg-impact-100 text-impact-800',
     sdg: sdgCode && sdgColors[sdgCode as keyof typeof sdgColors] 
       ? `text-white` 
       : 'bg-neutral-100 text-neutral-800',

@@ -1,87 +1,103 @@
 // NavImpact Design System
-// Professional Impact & Intelligence Platform
+// Enterprise-Grade Impact & Intelligence Platform
 
 export const colors = {
-  // Primary Brand Colors
+  // Primary Brand Colors - More sophisticated
   primary: {
-    50: '#faf5ff',
-    100: '#f3e8ff',
-    200: '#e9d5ff',
-    300: '#d8b4fe',
-    400: '#c084fc',
-    500: '#a855f7', // Main purple
-    600: '#9333ea',
+    50: '#f8f7ff',
+    100: '#f0eeff',
+    200: '#e6e2ff',
+    300: '#d4ccff',
+    400: '#b8a9ff',
+    500: '#9c7cff', // Main purple - more sophisticated
+    600: '#8b5cf6',
     700: '#7c3aed',
     800: '#6b21a8',
     900: '#581c87',
   },
   
-  // Success/Progress Colors (Donezo-inspired)
+  // Impact Greens - More muted, trustworthy
+  impact: {
+    50: '#f0fdfa',
+    100: '#ccfbf1',
+    200: '#99f6e4',
+    300: '#5eead4',
+    400: '#2dd4bf',
+    500: '#14b8a6', // Main impact green - more teal
+    600: '#0d9488',
+    700: '#0f766e',
+    800: '#115e59',
+    900: '#134e4a',
+  },
+  
+  // Enterprise Neutrals - Deep slate tones
+  neutral: {
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#475569',
+    700: '#334155',
+    800: '#1e293b',
+    900: '#0f172a', // Deep slate
+  },
+  
+  // Success/Progress - More muted
   success: {
     50: '#f0fdf4',
     100: '#dcfce7',
     200: '#bbf7d0',
     300: '#86efac',
     400: '#4ade80',
-    500: '#22c55e', // Main green
+    500: '#22c55e',
     600: '#16a34a',
     700: '#15803d',
     800: '#166534',
     900: '#14532d',
   },
   
-  // Accent Colors
+  // Accent Colors - More professional
   accent: {
     blue: '#3b82f6',
     orange: '#f97316',
     red: '#ef4444',
     yellow: '#eab308',
+    teal: '#14b8a6',
   },
   
-  // Neutral Colors
-  neutral: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    800: '#1f2937',
-    900: '#111827',
-  },
-  
-  // Background Colors
+  // Background Colors - Enterprise grade
   background: {
     primary: '#ffffff',
-    secondary: '#f9fafb',
-    dark: '#111827',
-    sidebar: '#1f2937',
+    secondary: '#f8fafc',
+    tertiary: '#f1f5f9',
+    dark: '#0f172a',
+    sidebar: '#1e293b',
   },
 };
 
 export const typography = {
-  // Font Families
+  // Font Families - Keep Inter for readability
   fontFamily: {
     sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
     mono: ['JetBrains Mono', 'monospace'],
   },
   
-  // Font Sizes
+  // Font Sizes - More structured hierarchy
   fontSize: {
-    xs: '0.75rem',    // 12px
-    sm: '0.875rem',   // 14px
-    base: '1rem',     // 16px
-    lg: '1.125rem',   // 18px
-    xl: '1.25rem',    // 20px
-    '2xl': '1.5rem',  // 24px
-    '3xl': '1.875rem', // 30px
-    '4xl': '2.25rem',  // 36px
-    '5xl': '3rem',     // 48px
+    xs: '0.75rem',    // 12px - Captions, metadata
+    sm: '0.875rem',   // 14px - Supporting text
+    base: '1rem',     // 16px - Body text
+    lg: '1.125rem',   // 18px - Subheadings
+    xl: '1.25rem',    // 20px - Section headers
+    '2xl': '1.5rem',  // 24px - Card titles
+    '3xl': '1.875rem', // 30px - Page titles
+    '4xl': '2.25rem',  // 36px - Impact numbers
+    '5xl': '3rem',     // 48px - Hero headlines
   },
   
-  // Font Weights
+  // Font Weights - More structured
   fontWeight: {
     normal: '400',
     medium: '500',
@@ -90,7 +106,7 @@ export const typography = {
     extrabold: '800',
   },
   
-  // Line Heights
+  // Line Heights - Better readability
   lineHeight: {
     tight: '1.25',
     normal: '1.5',
@@ -99,7 +115,7 @@ export const typography = {
 };
 
 export const spacing = {
-  // Spacing Scale
+  // Spacing Scale - More generous for enterprise feel
   0: '0',
   1: '0.25rem',   // 4px
   2: '0.5rem',    // 8px
@@ -128,6 +144,7 @@ export const borderRadius = {
 };
 
 export const shadows = {
+  // More subtle, enterprise-grade shadows
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   base: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
   md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
@@ -142,42 +159,44 @@ export const transitions = {
   slow: '350ms ease-in-out',
 };
 
-// Component-specific styles
+// Component-specific styles - Enterprise focused
 export const components = {
-  // Card styles (Donezo-inspired)
+  // Card styles - More structured, data-focused
   card: {
     base: 'bg-white rounded-lg border border-neutral-200 shadow-sm',
     hover: 'hover:shadow-md transition-shadow duration-200',
     interactive: 'cursor-pointer hover:shadow-lg transition-all duration-200',
+    data: 'bg-white rounded-lg border border-neutral-200 shadow-sm p-6',
   },
   
-  // Button styles
+  // Button styles - More professional
   button: {
     primary: 'bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200',
     secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-medium px-4 py-2 rounded-lg transition-colors duration-200',
-    success: 'bg-success-600 hover:bg-success-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200',
-    danger: 'bg-accent-red hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200',
+    impact: 'bg-impact-600 hover:bg-impact-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200',
+    danger: 'bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200',
     ghost: 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 font-medium px-4 py-2 rounded-lg transition-colors duration-200',
   },
   
-  // Badge styles
+  // Badge styles - More structured
   badge: {
     base: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
     primary: 'bg-primary-100 text-primary-800',
+    impact: 'bg-impact-100 text-impact-800',
     success: 'bg-success-100 text-success-800',
     warning: 'bg-yellow-100 text-yellow-800',
     danger: 'bg-red-100 text-red-800',
     neutral: 'bg-neutral-100 text-neutral-800',
   },
   
-  // Input styles
+  // Input styles - More professional
   input: {
     base: 'block w-full rounded-lg border-neutral-300 shadow-sm focus:border-primary-500 focus:ring-primary-500',
     error: 'border-red-300 focus:border-red-500 focus:ring-red-500',
   },
 };
 
-// SDG Colors for tags
+// SDG Colors for tags - Official UN colors
 export const sdgColors = {
   'SDG-1': '#E5243B', // No Poverty
   'SDG-2': '#DDA63A', // Zero Hunger

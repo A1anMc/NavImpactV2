@@ -1,82 +1,82 @@
 // NavImpact Copy Kit
-// Professional Impact & Intelligence Platform Content
+// Enterprise-Grade Impact & Intelligence Platform Content
 
 export const copyKit = {
   // Dashboard Overview
   dashboard: {
-    tagline: "Impact Dashboard",
-    subheading: "Track your projects, grants, and funding flows with measurable outcomes and SDG alignment",
-    description: "Monitor your organisation's impact across all projects and funding sources. Visualise outcomes, track progress, and demonstrate value to stakeholders.",
+    tagline: "Impact Intelligence Dashboard",
+    subheading: "Measure, understand, and amplify your organisation's social and environmental impact",
+    description: "Comprehensive analytics platform for tracking outcomes, measuring reach, and demonstrating value to stakeholders. Align with SDGs, track systemic influence, and showcase sustainable impact.",
   },
 
   // Projects Section
   projects: {
-    tagline: "Project Portfolio",
-    subheading: "Manage your impact projects with comprehensive outcome tracking and stakeholder engagement",
-    description: "Create, track, and manage projects with detailed outcome frameworks. Align with SDGs, measure impact, and demonstrate value to funders and stakeholders.",
+    tagline: "Impact Portfolio",
+    subheading: "Manage and track projects with measurable outcomes and stakeholder engagement",
+    description: "Create, monitor, and report on impact projects with detailed outcome frameworks. Demonstrate value to funders, align with global goals, and track systemic change.",
   },
 
   // Grants Section
   grants: {
-    tagline: "Grant Intelligence",
-    subheading: "Discover, track, and manage funding opportunities with AI-powered matching and impact alignment",
-    description: "Access comprehensive grant databases with intelligent matching based on your project profile. Track applications, manage deadlines, and align with impact goals.",
+    tagline: "Funding Intelligence",
+    subheading: "Discover and manage funding opportunities aligned with your impact objectives",
+    description: "Access comprehensive grant databases with intelligent matching based on your impact profile. Track applications, manage compliance, and align funding with outcomes.",
   },
 
   // Grant Matching
   grantsMatching: {
-    tagline: "Smart Grant Matching",
-    subheading: "AI-powered funding discovery that aligns with your impact goals and project requirements",
-    description: "Our intelligent matching system analyses your project profile and finds the most relevant funding opportunities. Save time and increase your success rate.",
+    tagline: "Intelligent Funding Discovery",
+    subheading: "AI-powered grant matching that aligns with your impact goals and project requirements",
+    description: "Our intelligent matching system analyses your impact profile and finds the most relevant funding opportunities. Increase success rates and reduce application time.",
   },
 
   // Impact Section
   impact: {
-    tagline: "Impact Intelligence",
-    subheading: "Measure, track, and communicate your organisation's social and environmental impact",
-    description: "Comprehensive impact measurement tools with SDG alignment, outcome frameworks, and stakeholder reporting. Demonstrate your value and attract more funding.",
+    tagline: "Impact Analytics",
+    subheading: "Comprehensive measurement and reporting of your organisation's social and environmental outcomes",
+    description: "Advanced impact measurement tools with SDG alignment, outcome frameworks, and stakeholder reporting. Demonstrate measurable value and attract sustainable funding.",
   },
 
   // Media Section
   media: {
-    tagline: "Media & Communications",
+    tagline: "Stakeholder Communications",
     subheading: "Track media coverage, manage communications, and amplify your impact stories",
     description: "Monitor media mentions, track communication campaigns, and showcase your impact through compelling storytelling and stakeholder engagement.",
   },
 
   // News Section
   news: {
-    tagline: "Industry Intelligence",
-    subheading: "Stay informed with curated industry news, funding updates, and impact sector insights",
-    description: "Access real-time industry news, funding announcements, and sector insights. Stay ahead of trends and opportunities in the impact space.",
+    tagline: "Sector Intelligence",
+    subheading: "Stay informed with curated industry insights, funding updates, and impact sector trends",
+    description: "Access real-time sector intelligence, funding announcements, and impact insights. Stay ahead of trends and opportunities in the social impact space.",
   },
 
   // Tasks Section
   tasks: {
-    tagline: "Task Management",
-    subheading: "Organise project tasks, track progress, and ensure timely delivery of impact outcomes",
-    description: "Streamlined task management with project integration, deadline tracking, and team collaboration. Keep your impact projects on track and on time.",
+    tagline: "Impact Delivery",
+    subheading: "Organise project activities, track progress, and ensure timely delivery of outcomes",
+    description: "Streamlined project management with impact integration, milestone tracking, and team collaboration. Keep your impact projects on track and measurable.",
   },
 
   // Time Logs Section
   timeLogs: {
-    tagline: "Time Tracking",
-    subheading: "Track time spent on projects and activities for accurate impact measurement and reporting",
-    description: "Comprehensive time tracking with project integration, activity categorisation, and reporting tools. Demonstrate resource allocation and project efficiency.",
+    tagline: "Resource Analytics",
+    subheading: "Track time allocation across projects and activities for impact measurement and reporting",
+    description: "Comprehensive resource tracking with project integration, activity categorisation, and impact reporting. Demonstrate efficient resource allocation and project effectiveness.",
   },
 
   // Settings Section
   settings: {
-    tagline: "Platform Settings",
-    subheading: "Configure your NavImpact platform, manage user profiles, and customise your experience",
-    description: "Personalise your platform experience, manage team access, and configure impact measurement frameworks to match your organisation's needs.",
+    tagline: "Platform Configuration",
+    subheading: "Configure your NavImpact platform, manage user profiles, and customise your impact measurement framework",
+    description: "Personalise your platform experience, manage team access, and configure impact measurement frameworks to match your organisation's strategic objectives.",
   },
 
   // Profile Section
   profile: {
     tagline: "Profile Management",
     subheading: "Update your profile, manage preferences, and configure your impact measurement settings",
-    description: "Customise your profile, set impact preferences, and configure notification settings to optimise your NavImpact experience.",
+    description: "Customise your profile, set impact preferences, and configure notification settings to optimise your NavImpact experience and impact tracking.",
   },
 };
 
@@ -86,8 +86,8 @@ export const pageContent = {
   projects: {
     ...copyKit.projects,
     actions: {
-      primary: "New Project",
-      secondary: "Import Projects",
+      primary: "New Impact Project",
+      secondary: "Import Portfolio",
     },
   },
 
@@ -95,7 +95,7 @@ export const pageContent = {
   grants: {
     ...copyKit.grants,
     actions: {
-      primary: "Find Grants",
+      primary: "Discover Funding",
       secondary: "Track Applications",
     },
   },
@@ -104,8 +104,8 @@ export const pageContent = {
   impact: {
     ...copyKit.impact,
     actions: {
-      primary: "Generate Report",
-      secondary: "Export Data",
+      primary: "Generate Impact Report",
+      secondary: "Export Analytics",
     },
   },
 
@@ -113,9 +113,43 @@ export const pageContent = {
   tasks: {
     ...copyKit.tasks,
     actions: {
-      primary: "New Task",
+      primary: "New Activity",
       secondary: "Bulk Actions",
     },
+  },
+};
+
+// Impact metrics and KPIs
+export const impactMetrics = {
+  reach: {
+    label: "Total Reach",
+    description: "Number of individuals or communities directly impacted",
+    unit: "people",
+  },
+  depth: {
+    label: "Impact Depth",
+    description: "Intensity and quality of impact delivered",
+    unit: "score",
+  },
+  systemic: {
+    label: "Systemic Influence",
+    description: "Extent of systemic change and policy influence",
+    unit: "score",
+  },
+  sustainability: {
+    label: "Sustainability",
+    description: "Long-term viability and lasting impact",
+    unit: "score",
+  },
+  funding: {
+    label: "Funding Utilisation",
+    description: "Efficiency of funding deployment vs outcomes achieved",
+    unit: "%",
+  },
+  sdgAlignment: {
+    label: "SDG Alignment",
+    description: "Number of UN Sustainable Development Goals addressed",
+    unit: "goals",
   },
 };
 
@@ -156,16 +190,17 @@ export const impactAreas = {
 
 // Status descriptions
 export const statusDescriptions = {
-  active: 'Project is currently active and progressing',
-  completed: 'Project has been successfully completed',
-  pending: 'Project is waiting to begin or for approval',
-  draft: 'Project is in planning or draft stage',
-  cancelled: 'Project has been cancelled or discontinued',
+  active: 'Project is currently active and delivering outcomes',
+  completed: 'Project has been successfully completed with measurable impact',
+  pending: 'Project is awaiting approval or resources to begin',
+  draft: 'Project is in planning or development stage',
+  cancelled: 'Project has been discontinued or redirected',
 };
 
 export default {
   copyKit,
   pageContent,
+  impactMetrics,
   sdgDescriptions,
   impactAreas,
   statusDescriptions,

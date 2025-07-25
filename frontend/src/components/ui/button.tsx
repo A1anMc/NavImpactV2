@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline';
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline' | 'impact';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
 }
@@ -34,6 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
     ghost: 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
     outline: 'border border-neutral-300 hover:bg-neutral-50 text-neutral-700 focus:ring-neutral-500',
+    impact: 'bg-impact-600 hover:bg-impact-700 text-white focus:ring-impact-500',
   };
 
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
@@ -81,7 +82,7 @@ export const Button: React.FC<ButtonProps> = ({
 // Icon Button component
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline';
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline' | 'impact';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -108,6 +109,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
     ghost: 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
     outline: 'border border-neutral-300 hover:bg-neutral-50 text-neutral-700 focus:ring-neutral-500',
+    impact: 'bg-impact-600 hover:bg-impact-700 text-white focus:ring-impact-500',
   };
 
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
