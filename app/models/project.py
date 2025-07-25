@@ -26,6 +26,7 @@ class Project(Base):
     impact_statement = Column(Text, nullable=True)
     impact_types = Column(JSONB, nullable=True)  # Using JSONB for lists
     sdg_tags = Column(JSONB, nullable=True)      # Using JSONB for lists
+    framework_alignment = Column(JSONB, nullable=True)  # Victorian framework alignment
     evidence_sources = Column(Text, nullable=True)
     
     # Relationships

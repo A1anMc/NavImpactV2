@@ -1,0 +1,64 @@
+{
+  "timestamp": 1753419078.33466,
+  "summary": {
+    "total_tests": 9,
+    "passed_tests": 9,
+    "failed_tests": 0
+  },
+  "results": [
+    {
+      "test": "Homepage Load",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419066.958567
+    },
+    {
+      "test": "Projects Page Load",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419073.0972521
+    },
+    {
+      "test": "Dashboard Page Load",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419073.682389
+    },
+    {
+      "test": "Settings Page Load",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419074.66188
+    },
+    {
+      "test": "Framework Content Present",
+      "success": true,
+      "details": "Found frameworks: ['plan for victoria', 'melbourne 2030', 'activity centres', 'greenfields', 'clean economy']",
+      "timestamp": 1753419075.238069
+    },
+    {
+      "test": "SDG Content Present",
+      "success": true,
+      "details": "Found SDG indicators: ['un sdg']",
+      "timestamp": 1753419075.778687
+    },
+    {
+      "test": "API Health Check",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419076.651548
+    },
+    {
+      "test": "Responsive Design (Mobile)",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753419077.2869198
+    },
+    {
+      "test": "Performance Test",
+      "success": true,
+      "details": "Load time: 0.04s",
+      "timestamp": 1753419077.829612
+    }
+  ]
+}
