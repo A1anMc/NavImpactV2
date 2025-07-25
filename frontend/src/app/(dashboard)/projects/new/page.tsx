@@ -115,9 +115,11 @@ export default function NewProjectPage() {
               Your impact project has been created and is now part of your portfolio.
             </p>
             <div className="space-x-4">
-              <Button variant="primary" size="md" onClick={() => window.location.href = '/projects'}>
-                View All Projects
-              </Button>
+              <a href="/projects">
+                <Button variant="primary" size="md">
+                  View All Projects
+                </Button>
+              </a>
               <Button variant="secondary" size="md" onClick={() => setSuccess(false)}>
                 Create Another Project
               </Button>
@@ -390,14 +392,15 @@ export default function NewProjectPage() {
 
         {/* Form Actions */}
         <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
-          <Button
-            type="button"
-            variant="secondary"
-            size="md"
-            onClick={() => window.location.href = '/projects'}
-          >
-            Cancel
-          </Button>
+          <a href="/projects">
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+            >
+              Cancel
+            </Button>
+          </a>
           <Button
             type="submit"
             variant="primary"

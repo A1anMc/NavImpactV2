@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -16,13 +17,11 @@ export default function ProjectsPage() {
             </p>
           </div>
           <div className="flex items-center space-x-3 ml-6">
-            <Button 
-              variant="secondary" 
-              size="md"
-              onClick={() => window.location.href = '/projects/new'}
-            >
-              New Impact Project
-            </Button>
+            <Link href="/projects/new">
+              <Button variant="secondary" size="md">
+                New Impact Project
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
