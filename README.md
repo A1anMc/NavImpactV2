@@ -1,4 +1,4 @@
-# SGE Dashboard
+# NavImpact Dashboard
 
 Strategic Grant Evaluation Dashboard - A comprehensive platform for managing grants, tasks, and impact metrics.
 
@@ -14,8 +14,8 @@ Strategic Grant Evaluation Dashboard - A comprehensive platform for managing gra
 
 ```bash
 # Clone the repository
-git clone https://github.com/A1anMc/SGEDashboardJuly.git
-cd SGEDashboardJuly
+git clone https://github.com/A1anMc/NavImpactV2.git
+cd NavImpactV2
 
 # Backend Setup
 pip install -r requirements.txt
@@ -31,13 +31,13 @@ npm run dev
 
 The application is deployed on Render with the following services:
 
-- **Backend API**: `https://sge-dashboard-api.onrender.com`
-- **Frontend**: `https://sge-dashboard-web-new.onrender.com` (to be deployed)
+- **Backend API**: `https://navimpact-api.onrender.com`
+- **Frontend**: `https://navimpact-web.onrender.com`
 
 ## 📁 Project Structure
 
 ```
-SGEDashboardJuly/
+NavImpactV2/
 ├── app/                    # FastAPI backend
 │   ├── api/               # API endpoints
 │   ├── core/              # Core configuration
@@ -92,10 +92,10 @@ SGEDashboardJuly/
 
 ### Backend
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/sge_dashboard
+DATABASE_URL=postgresql://user:password@localhost:5432/navimpact
 SECRET_KEY=your-secret-key
 JWT_SECRET_KEY=your-jwt-secret
-FRONTEND_URL=https://sge-dashboard-web-new.onrender.com
+FRONTEND_URL=https://navimpact-web.onrender.com
 ENV=production
 DEBUG=false
 ```

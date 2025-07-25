@@ -6,7 +6,7 @@ import { QueryProvider } from "@/components/QueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SGE Dashboard",
+  title: "NavImpact Dashboard",
   description: "Strategic Grant Evaluation Dashboard",
 };
 

@@ -24,7 +24,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: "https://navimpact.onrender.com,https://navimpact-frontend.onrender.com"
+        value: "https://navimpact.onrender.com,https://navimpact-web.onrender.com"
       - key: ALLOWED_HOSTS
         value: "navimpact-api.onrender.com,localhost,127.0.0.1"
       - key: LOG_LEVEL
@@ -46,7 +46,7 @@ services:
 
   # Frontend Service
   - type: web
-    name: navimpact-frontend
+    name: navimpact-web
     env: node
     nodeVersion: "20.x"
     buildCommand: |

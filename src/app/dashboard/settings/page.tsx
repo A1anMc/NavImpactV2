@@ -9,7 +9,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">API Configuration</h3>
-            <p className="text-sm text-gray-600">Backend URL: {process.env.NEXT_PUBLIC_API_URL || 'https://sge-dashboard-api.onrender.com'}</p>
+            <p className="text-sm text-gray-600">Backend URL: {process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com'}</p>
           </div>
           
           <div>
