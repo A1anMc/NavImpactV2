@@ -34,6 +34,7 @@ const navigationGroups = [
     items: [
       { name: 'Team Members', href: '/team', icon: UsersIcon },
       { name: 'Collaboration', href: '/collaboration', icon: UserGroupIcon },
+      { name: 'Profile', href: '/profile', icon: UserCircleIcon },
     ]
   },
   {
