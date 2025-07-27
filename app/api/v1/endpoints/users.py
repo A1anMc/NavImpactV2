@@ -303,7 +303,7 @@ async def user_profile_health_check(db: Session = Depends(get_db)):
                 "columns": ["bio", "avatar_url", "job_title", "organisation", "phone", "location", "timezone", "current_status", "skills", "interests", "social_links", "is_intern", "mentor_id", "preferences"]
             }
         else:
-            # Create missing columns
+            # Create missing columns (simplified - no foreign key constraint for now)
             db.execute(text("""
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500);
@@ -321,22 +321,11 @@ async def user_profile_health_check(db: Session = Depends(get_db)):
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}';
             """))
             
-                               # Add foreign key constraint for mentor_id (PostgreSQL compatible)
-                   try:
-                       db.execute(text("""
-                           ALTER TABLE users
-                           ADD CONSTRAINT fk_users_mentor_id_users
-                           FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE SET NULL;
-                       """))
-                   except Exception as constraint_error:
-                       # Constraint might already exist, that's okay
-                       logger.info(f"Foreign key constraint may already exist: {str(constraint_error)}")
-            
             db.commit()
             
             return {
                 "status": "created",
-                "message": "User profile columns created successfully",
+                "message": "User profile columns created successfully (without foreign key constraint)",
                 "columns": ["bio", "avatar_url", "job_title", "organisation", "phone", "location", "timezone", "current_status", "skills", "interests", "social_links", "is_intern", "mentor_id", "preferences"]
             }
             
