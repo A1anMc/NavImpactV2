@@ -1,32 +1,24 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from alembic import command
+from alembic.config import Config
 import os
 
 from app.core.deps import get_db
 
 router = APIRouter()
 
-@router.post("/debug/create-sge-tables")
-async def create_sge_tables(db: Session = Depends(get_db)):
-    """Manually create SGE Media tables using SQL."""
+@router.post("/debug/apply-migration")
+async def apply_migration(db: Session = Depends(get_db)):
+    """Manually apply the SGE Media migration."""
     try:
-        # Read the SQL script
-        with open("scripts/create_sge_tables.sql", "r") as f:
-            sql_script = f.read()
+        # Configure Alembic with the correct database URL
+        alembic_cfg = Config("alembic.ini")
         
-        # Split into individual statements
-        statements = [stmt.strip() for stmt in sql_script.split(";") if stmt.strip()]
+        # Apply migration
+        command.upgrade(alembic_cfg, "head")
         
-        # Execute each statement
-        for statement in statements:
-            if statement:
-                db.execute(text(statement))
-        
-        db.commit()
-        
-        return {"status": "success", "message": "SGE Media tables created successfully"}
+        return {"status": "success", "message": "Migration applied successfully"}
     except Exception as e:
-        db.rollback()
-        return {"error": f"Failed to create tables: {str(e)}"}
+        return {"error": f"Migration failed: {str(e)}"}
 
