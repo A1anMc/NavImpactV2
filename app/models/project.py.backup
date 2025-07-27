@@ -35,7 +35,4 @@ class Project(Base):
     team_members = relationship("TeamMember", back_populates="project", cascade="all, delete-orphan")
     metrics = relationship("Metric", back_populates="project", cascade="all, delete-orphan")
     program_logic = relationship("ProgramLogic", back_populates="project", cascade="all, delete-orphan")
-    tags = relationship("Tag", secondary=project_tags, back_populates="projects")
-    
-    # SGE Media Module Relationship
-    sge_media_projects = relationship("SgeMediaProject", back_populates="project", cascade="all, delete-orphan")
+    tags = relationship("Tag", secondary=project_tags, back_populates="projects") 

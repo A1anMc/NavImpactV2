@@ -9,4 +9,7 @@ from app.models.tag import Tag
 from app.models.task_comment import TaskComment
 from app.models.time_entry import TimeEntry
 from app.models.team_member import TeamMember
-from app.models.reaction import Reaction 
+from app.models.reaction import Reaction
+
+# SGE Media Module Models
+from app.models.sge_media import SgeMediaProject, SgeDistributionLog, SgePerformanceMetrics, SgeImpactStory, SgeClientAccess
