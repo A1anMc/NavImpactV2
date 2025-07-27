@@ -1,310 +1,190 @@
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  ChartBarIcon,
+  CalendarIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
 
-// Clean professional dashboard like Donezo
+// Mock data
+const projects = [
+  {
+    id: 1,
+    title: 'Digital Inclusion Initiative',
+    description: 'Bridging the digital divide in rural communities',
+    status: 'active',
+    impact_score: 87,
+    framework_alignment: ['E4', 'S1'],
+    start_date: '2024-01-15',
+    team_size: 8,
+  },
+  {
+    id: 2,
+    title: 'Community Tech Hub',
+    description: 'Creating accessible technology spaces for underserved populations',
+    status: 'planning',
+    impact_score: 92,
+    framework_alignment: ['S1', 'S3'],
+    start_date: '2024-02-01',
+    team_size: 12,
+  },
+  {
+    id: 3,
+    title: 'Youth Mentoring Program',
+    description: 'Empowering young people through technology education',
+    status: 'active',
+    impact_score: 78,
+    framework_alignment: ['S1', 'S4'],
+    start_date: '2023-11-01',
+    team_size: 15,
+  },
+  {
+    id: 4,
+    title: 'Sustainability Report',
+    description: 'Comprehensive environmental impact assessment',
+    status: 'completed',
+    impact_score: 95,
+    framework_alignment: ['E1', 'E2', 'G2'],
+    start_date: '2023-09-01',
+    team_size: 6,
+  },
+];
+
+const statusColors = {
+  active: 'bg-green-100 text-green-800',
+  planning: 'bg-yellow-100 text-yellow-800',
+  completed: 'bg-blue-100 text-blue-800',
+  paused: 'bg-gray-100 text-gray-800',
+};
+
 export default function ProjectsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="p-8 max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Impact Projects</h1>
-            <p className="text-gray-600">Track and manage your impact projects with Victorian framework alignment</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Button variant="outline" className="text-gray-600 border-gray-300">
-              Import Data
-            </Button>
+        {/* Simplified Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Projects</h1>
+              <p className="text-gray-600">Manage and track your impact projects</p>
+            </div>
             <Link href="/projects/new">
               <Button className="bg-green-600 hover:bg-green-700 text-white">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Project
+                <PlusIcon className="h-4 w-4 mr-2" />
+                New Project
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* Metrics Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Total Projects */}
-          <Card className="bg-green-600 text-white border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100 text-sm font-medium mb-1">Total Projects</p>
-                  <p className="text-4xl font-bold">2</p>
-                  <div className="flex items-center mt-2">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-green-100">Active this month</span>
+        {/* Simplified Filters */}
+        <div className="mb-8">
+          <Card className="bg-white border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search projects..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
                   </div>
                 </div>
-                <div className="bg-white/20 rounded-full p-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Completed Projects */}
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium mb-1">Completed Projects</p>
-                  <p className="text-4xl font-bold text-gray-900">0</p>
-                  <div className="flex items-center mt-2">
-                    <svg className="w-4 h-4 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-500">Ready to complete</span>
-                  </div>
-                </div>
-                <div className="bg-gray-50 rounded-full p-3">
-                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Running Projects */}
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium mb-1">Running Projects</p>
-                  <p className="text-4xl font-bold text-gray-900">2</p>
-                  <div className="flex items-center mt-2">
-                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-500">In progress now</span>
-                  </div>
-                </div>
-                <div className="bg-blue-50 rounded-full p-3">
-                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* People Reached */}
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium mb-1">People Reached</p>
-                  <p className="text-4xl font-bold text-gray-900">1.25K</p>
-                  <div className="flex items-center mt-2">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full mr-2"></div>
-                    <span className="text-sm text-gray-500">Target engagement</span>
-                  </div>
-                </div>
-                <div className="bg-orange-50 rounded-full p-3">
-                  <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <FunnelIcon className="h-4 w-4 mr-2" />
+                  Filter
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Project Analytics & Framework Alignment */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Framework Alignment */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Victorian Framework Alignment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {[
-                    { name: 'Plan for Victoria', count: 0, color: 'bg-indigo-100 text-indigo-700' },
-                    { name: 'Melbourne 2030', count: 2, color: 'bg-blue-100 text-blue-700' },
-                    { name: 'Activity Centres', count: 0, color: 'bg-cyan-100 text-cyan-700' },
-                    { name: 'Greenfields Plan', count: 1, color: 'bg-green-100 text-green-700' },
-                    { name: 'Clean Economy', count: 0, color: 'bg-emerald-100 text-emerald-700' },
-                    { name: 'Reconciliation', count: 0, color: 'bg-purple-100 text-purple-700' },
-                  ].map((framework, index) => (
-                    <div key={index} className="text-center p-4 rounded-lg border border-gray-100">
-                      <div className={`w-12 h-12 mx-auto mb-3 rounded-full ${framework.color} flex items-center justify-center text-lg font-bold`}>
-                        {framework.count}
-                      </div>
-                      <div className="text-sm text-gray-600 font-medium">
-                        {framework.name}
-                      </div>
-                    </div>
-                  ))}
+        {/* Projects Grid - Simplified */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <Card key={project.id} className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
+                      {project.title}
+                    </CardTitle>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {project.description}
+                    </p>
+                  </div>
+                  <Badge className={`text-xs font-medium ${statusColors[project.status as keyof typeof statusColors]}`}>
+                    {project.status}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-lg font-bold text-gray-900">{project.impact_score}%</div>
+                    <div className="text-xs text-gray-600">Impact Score</div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-lg font-bold text-gray-900">{project.team_size}</div>
+                    <div className="text-xs text-gray-600">Team Size</div>
+                  </div>
+                </div>
 
-            {/* Active Projects */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold text-gray-900">Active Projects</CardTitle>
-                  <Button variant="outline" size="sm" className="text-gray-600">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    New
+                {/* Framework Alignment */}
+                <div className="mb-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <ChartBarIcon className="h-4 w-4 text-gray-400" />
+                    <span className="text-xs font-medium text-gray-600">Framework Alignment</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {project.framework_alignment.map((framework) => (
+                      <Badge key={framework} variant="outline" className="text-xs border-gray-200 text-gray-700">
+                        {framework}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Project Details */}
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <div className="flex items-center space-x-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    <span>Started {new Date(project.start_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <UserGroupIcon className="h-3 w-3" />
+                    <span>{project.team_size} members</span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-2">
+                  <Button variant="outline" className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">
+                    View Details
+                  </Button>
+                  <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">
+                    Edit
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Project 1 */}
-                  <div className="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">Greenfields Housing Renewal</h4>
-                      <p className="text-sm text-gray-600">Due date: Dec 15, 2024</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Melbourne 2030</span>
-                        <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Greenfields Plan</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">500 people</div>
-                      <div className="text-xs text-gray-500">Target reach</div>
-                    </div>
-                  </div>
-
-                  {/* Project 2 */}
-                  <div className="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">Frontend Integration Test</h4>
-                      <p className="text-sm text-gray-600">Due date: Dec 20, 2024</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Melbourne 2030</span>
-                        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded-full">SDG 4</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">750 people</div>
-                      <div className="text-xs text-gray-500">Target reach</div>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
-          </div>
+          ))}
+        </div>
 
-          {/* Right Column - Reminders & Progress */}
-          <div className="space-y-8">
-            {/* Reminders */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Reminders</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                    <h4 className="font-medium text-gray-900 mb-1">Framework Review</h4>
-                    <p className="text-sm text-gray-600 mb-3">Time: 02:00 pm - 04:00 pm</p>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-5-9V3m0 0V1m0 2H9m3 0h3" />
-                      </svg>
-                      Start Review
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Project Progress */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Project Progress</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center mb-6">
-                  <div className="relative w-32 h-32 mx-auto">
-                    <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                      <path
-                        d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="#10b981"
-                        strokeWidth="2"
-                        strokeDasharray="65, 100"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-gray-900">65%</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">Overall Progress</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                      <span className="text-sm text-gray-700">Completed</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">65%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-sm text-gray-700">In Progress</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">25%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-gray-300 rounded-full mr-3"></div>
-                      <span className="text-sm text-gray-700">Pending</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">10%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="bg-gray-900 text-white border-0 shadow-lg">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-lg font-semibold mb-2">Ready to Scale?</h3>
-                <p className="text-gray-300 text-sm mb-4">Export your impact data and share with stakeholders</p>
-                <Button className="bg-green-600 hover:bg-green-700 text-white w-full">
-                  Export Data
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Load More */}
+        <div className="mt-8 text-center">
+          <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+            Load More Projects
+          </Button>
         </div>
       </div>
     </div>
