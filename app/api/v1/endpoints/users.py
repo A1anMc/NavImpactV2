@@ -321,12 +321,16 @@ async def user_profile_health_check(db: Session = Depends(get_db)):
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}';
             """))
             
-            # Add foreign key constraint for mentor_id
-            db.execute(text("""
-                ALTER TABLE users 
-                ADD CONSTRAINT IF NOT EXISTS fk_users_mentor_id_users 
-                FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE SET NULL;
-            """))
+                               # Add foreign key constraint for mentor_id (PostgreSQL compatible)
+                   try:
+                       db.execute(text("""
+                           ALTER TABLE users
+                           ADD CONSTRAINT fk_users_mentor_id_users
+                           FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE SET NULL;
+                       """))
+                   except Exception as constraint_error:
+                       # Constraint might already exist, that's okay
+                       logger.info(f"Foreign key constraint may already exist: {str(constraint_error)}")
             
             db.commit()
             
