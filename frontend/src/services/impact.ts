@@ -1,7 +1,6 @@
 // Impact Measurement Service for NavImpact
 // Enterprise-Grade Impact & Intelligence Platform
 
-import { apiClient } from '@/lib/api-client';
 import {
   ImpactMetrics,
   ImpactScore,
@@ -275,23 +274,13 @@ class ImpactService {
 
   // Advanced Analytics with Predictive Modeling
   async getProjectAnalytics(projectId: string): Promise<ImpactAnalytics> {
-    try {
-      const response = await apiClient.get(`/impact/analytics/project/${projectId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching project analytics:', error);
-      return this.generateMockAnalytics();
-    }
+    // Return mock data for now
+    return this.generateMockAnalytics();
   }
 
   async getPortfolioAnalytics(): Promise<ImpactAnalytics> {
-    try {
-      const response = await apiClient.get('/impact/analytics/portfolio');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching portfolio analytics:', error);
-      return this.generateMockAnalytics();
-    }
+    // Return mock data for now
+    return this.generateMockAnalytics();
   }
 
   private generateMockAnalytics(): ImpactAnalytics {
@@ -479,24 +468,19 @@ class ImpactService {
 
   // Enhanced Story Management
   async getImpactStories(projectId?: string): Promise<ImpactStory[]> {
-    try {
-      const url = projectId ? `/impact/stories?project_id=${projectId}` : '/impact/stories';
-      const response = await apiClient.get(url);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching impact stories:', error);
-      return this.generateMockStories();
-    }
+    // Return mock data for now
+    return this.generateMockStories();
   }
 
   async createImpactStory(story: Omit<ImpactStory, 'id' | 'created_date' | 'last_updated'>): Promise<ImpactStory> {
-    try {
-      const response = await apiClient.post('/impact/stories', story);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating impact story:', error);
-      throw error;
-    }
+    // Mock implementation
+    const newStory: ImpactStory = {
+      ...story,
+      id: `story-${Date.now()}`,
+      created_date: new Date().toISOString(),
+      last_updated: new Date().toISOString(),
+    };
+    return newStory;
   }
 
   private generateMockStories(): ImpactStory[] {
@@ -528,35 +512,20 @@ class ImpactService {
 
   // Enhanced Evidence Collection
   async getEvidenceCollection(projectId: string): Promise<EvidenceCollection[]> {
-    try {
-      const response = await apiClient.get(`/impact/evidence?project_id=${projectId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching evidence collection:', error);
-      return [];
-    }
+    // Return mock data for now
+    return [];
   }
 
   // Enhanced Assessment Workflows
   async getAssessmentWorkflows(projectId: string): Promise<AssessmentWorkflow[]> {
-    try {
-      const response = await apiClient.get(`/impact/assessments?project_id=${projectId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching assessment workflows:', error);
-      return [];
-    }
+    // Return mock data for now
+    return [];
   }
 
   // Enhanced Report Generation
   async generateImpactReport(config: any): Promise<ImpactReport> {
-    try {
-      const response = await apiClient.post('/impact/reports/generate', config);
-      return response.data;
-    } catch (error) {
-      console.error('Error generating impact report:', error);
-      return this.generateMockReport();
-    }
+    // Mock implementation
+    return this.generateMockReport();
   }
 
   private generateMockReport(): ImpactReport {
@@ -598,24 +567,14 @@ class ImpactService {
 
   // Advanced Benchmarking
   async getBenchmarks(sector: string): Promise<ImpactBenchmark[]> {
-    try {
-      const response = await apiClient.get(`/impact/benchmarks?sector=${sector}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching benchmarks:', error);
-      return [];
-    }
+    // Return mock data for now
+    return [];
   }
 
   // Predictive Analytics
   async getPredictions(projectId: string): Promise<ImpactPrediction> {
-    try {
-      const response = await apiClient.get(`/impact/predictions/${projectId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching predictions:', error);
-      return this.generateMockPrediction();
-    }
+    // Return mock data for now
+    return this.generateMockPrediction();
   }
 
   private generateMockPrediction(): ImpactPrediction {
@@ -636,13 +595,8 @@ class ImpactService {
 
   // Stakeholder Analysis
   async getStakeholderAnalysis(projectId: string): Promise<StakeholderAnalysis> {
-    try {
-      const response = await apiClient.get(`/impact/stakeholders/${projectId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching stakeholder analysis:', error);
-      return this.generateMockStakeholderAnalysis();
-    }
+    // Return mock data for now
+    return this.generateMockStakeholderAnalysis();
   }
 
   private generateMockStakeholderAnalysis(): StakeholderAnalysis {
