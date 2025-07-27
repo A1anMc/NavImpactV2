@@ -15,6 +15,153 @@ from app.core.security import get_password_hash
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+# Temporary endpoint for creating SGE team members (placed first to avoid route conflicts)
+@router.post("/create-sge-team")
+async def create_sge_team(
+    db: Session = Depends(get_db)
+):
+    """Create SGE team members (temporary endpoint for setup)."""
+    try:
+        # SGE Team Members Data
+        sge_team = [
+            {
+                "email": "ursula@shadowgoose.com",
+                "full_name": "Ursula Searle",
+                "job_title": "Managing Director",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Strategic leader focused on sustainable media impact and organisational growth",
+                "skills": ["Strategic Planning", "Leadership", "Project Management", "Business Development"],
+                "current_status": "available",
+                "is_intern": False,
+                "password": "SGE2024!"
+            },
+            {
+                "email": "ash@shadowgoose.com",
+                "full_name": "Ash Dorman",
+                "job_title": "Managing Director",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Business development and strategic partnerships specialist",
+                "skills": ["Strategic Planning", "Leadership", "Business Development", "Partnerships"],
+                "current_status": "available",
+                "is_intern": False,
+                "password": "SGE2024!"
+            },
+            {
+                "email": "shamita@shadowgoose.com",
+                "full_name": "Shamita Siva",
+                "job_title": "Creative Director",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Creative visionary driving storytelling and media production excellence",
+                "skills": ["Creative Direction", "Storytelling", "Media Production", "Content Strategy"],
+                "current_status": "available",
+                "is_intern": False,
+                "password": "SGE2024!"
+            },
+            {
+                "email": "alan@navimpact.org",
+                "full_name": "Alan McCarthy",
+                "job_title": "Impact Director",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Impact measurement and stakeholder engagement specialist",
+                "skills": ["Impact Measurement", "Data Analysis", "Stakeholder Engagement", "Sustainability"],
+                "current_status": "available",
+                "is_intern": False,
+                "password": "SGE2024!"
+            },
+            {
+                "email": "mish@shadowgoose.com",
+                "full_name": "Mish Rep",
+                "job_title": "Operations Officer",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Operations management and process optimization expert",
+                "skills": ["Operations Management", "Coordination", "Process Improvement", "Project Coordination"],
+                "current_status": "available",
+                "is_intern": False,
+                "password": "SGE2024!"
+            },
+            {
+                "email": "kiara@shadowgoose.com",
+                "full_name": "Kiara Holt",
+                "job_title": "Intern",
+                "organisation": "Shadow Goose Entertainment",
+                "bio": "Learning media production and impact measurement",
+                "skills": ["Research", "Content Creation", "Social Media", "Learning"],
+                "current_status": "learning",
+                "is_intern": True,
+                "password": "SGE2024!"
+            }
+        ]
+        
+        created_users = []
+        
+        for member_data in sge_team:
+            # Check if user already exists
+            existing_user = db.query(User).filter(User.email == member_data["email"]).first()
+            
+            if existing_user:
+                logger.info(f"User {member_data['email']} already exists, skipping...")
+                created_users.append(existing_user)
+                continue
+            
+            # Create new user
+            user = User(
+                email=member_data["email"],
+                hashed_password=get_password_hash(member_data["password"]),
+                full_name=member_data["full_name"],
+                job_title=member_data["job_title"],
+                organisation=member_data["organisation"],
+                bio=member_data["bio"],
+                skills=member_data["skills"],
+                current_status=member_data["current_status"],
+                is_intern=member_data["is_intern"],
+                is_active=True
+            )
+            
+            db.add(user)
+            created_users.append(user)
+            logger.info(f"Created: {member_data['full_name']} ({member_data['job_title']})")
+        
+        # Set up mentorship relationship (Shamita mentors Kiara)
+        shamita = next((u for u in created_users if u.email == "shamita@shadowgoose.com"), None)
+        kiara = next((u for u in created_users if u.email == "kiara@shadowgoose.com"), None)
+        
+        if shamita and kiara:
+            kiara.mentor_id = shamita.id
+            logger.info(f"Set up mentorship: {shamita.full_name} → {kiara.full_name}")
+        
+        # Commit all changes
+        db.commit()
+        
+        return {
+            "message": "SGE team created successfully",
+            "created_count": len(created_users),
+            "users": [
+                {
+                    "id": user.id,
+                    "email": user.email,
+                    "full_name": user.full_name,
+                    "job_title": user.job_title,
+                    "is_intern": user.is_intern,
+                    "mentor_id": user.mentor_id
+                }
+                for user in created_users
+            ]
+        }
+        
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error creating SGE team: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error creating SGE team"
+        )
+    except Exception as e:
+        logger.error(f"Error creating SGE team: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating SGE team"
+        )
+
 @router.get("/profile", response_model=UserProfile)
 async def get_current_user_profile(
     current_user: User = Depends(get_current_user),
@@ -228,151 +375,4 @@ async def update_user_mentor(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error updating mentor"
-        )
-
-# Temporary endpoint for creating SGE team members
-@router.post("/create-sge-team")
-async def create_sge_team(
-    db: Session = Depends(get_db)
-):
-    """Create SGE team members (temporary endpoint for setup)."""
-    try:
-        # SGE Team Members Data
-        sge_team = [
-            {
-                "email": "ursula@shadowgoose.com",
-                "full_name": "Ursula Searle",
-                "job_title": "Managing Director",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Strategic leader focused on sustainable media impact and organisational growth",
-                "skills": ["Strategic Planning", "Leadership", "Project Management", "Business Development"],
-                "current_status": "available",
-                "is_intern": False,
-                "password": "SGE2024!"
-            },
-            {
-                "email": "ash@shadowgoose.com",
-                "full_name": "Ash Dorman",
-                "job_title": "Managing Director",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Business development and strategic partnerships specialist",
-                "skills": ["Strategic Planning", "Leadership", "Business Development", "Partnerships"],
-                "current_status": "available",
-                "is_intern": False,
-                "password": "SGE2024!"
-            },
-            {
-                "email": "shamita@shadowgoose.com",
-                "full_name": "Shamita Siva",
-                "job_title": "Creative Director",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Creative visionary driving storytelling and media production excellence",
-                "skills": ["Creative Direction", "Storytelling", "Media Production", "Content Strategy"],
-                "current_status": "available",
-                "is_intern": False,
-                "password": "SGE2024!"
-            },
-            {
-                "email": "alan@navimpact.org",
-                "full_name": "Alan McCarthy",
-                "job_title": "Impact Director",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Impact measurement and stakeholder engagement specialist",
-                "skills": ["Impact Measurement", "Data Analysis", "Stakeholder Engagement", "Sustainability"],
-                "current_status": "available",
-                "is_intern": False,
-                "password": "SGE2024!"
-            },
-            {
-                "email": "mish@shadowgoose.com",
-                "full_name": "Mish Rep",
-                "job_title": "Operations Officer",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Operations management and process optimization expert",
-                "skills": ["Operations Management", "Coordination", "Process Improvement", "Project Coordination"],
-                "current_status": "available",
-                "is_intern": False,
-                "password": "SGE2024!"
-            },
-            {
-                "email": "kiara@shadowgoose.com",
-                "full_name": "Kiara Holt",
-                "job_title": "Intern",
-                "organisation": "Shadow Goose Entertainment",
-                "bio": "Learning media production and impact measurement",
-                "skills": ["Research", "Content Creation", "Social Media", "Learning"],
-                "current_status": "learning",
-                "is_intern": True,
-                "password": "SGE2024!"
-            }
-        ]
-        
-        created_users = []
-        
-        for member_data in sge_team:
-            # Check if user already exists
-            existing_user = db.query(User).filter(User.email == member_data["email"]).first()
-            
-            if existing_user:
-                logger.info(f"User {member_data['email']} already exists, skipping...")
-                created_users.append(existing_user)
-                continue
-            
-            # Create new user
-            user = User(
-                email=member_data["email"],
-                hashed_password=get_password_hash(member_data["password"]),
-                full_name=member_data["full_name"],
-                job_title=member_data["job_title"],
-                organisation=member_data["organisation"],
-                bio=member_data["bio"],
-                skills=member_data["skills"],
-                current_status=member_data["current_status"],
-                is_intern=member_data["is_intern"],
-                is_active=True
-            )
-            
-            db.add(user)
-            created_users.append(user)
-            logger.info(f"Created: {member_data['full_name']} ({member_data['job_title']})")
-        
-        # Set up mentorship relationship (Shamita mentors Kiara)
-        shamita = next((u for u in created_users if u.email == "shamita@shadowgoose.com"), None)
-        kiara = next((u for u in created_users if u.email == "kiara@shadowgoose.com"), None)
-        
-        if shamita and kiara:
-            kiara.mentor_id = shamita.id
-            logger.info(f"Set up mentorship: {shamita.full_name} → {kiara.full_name}")
-        
-        # Commit all changes
-        db.commit()
-        
-        return {
-            "message": "SGE team created successfully",
-            "created_count": len(created_users),
-            "users": [
-                {
-                    "id": user.id,
-                    "email": user.email,
-                    "full_name": user.full_name,
-                    "job_title": user.job_title,
-                    "is_intern": user.is_intern,
-                    "mentor_id": user.mentor_id
-                }
-                for user in created_users
-            ]
-        }
-        
-    except SQLAlchemyError as e:
-        db.rollback()
-        logger.error(f"Database error creating SGE team: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error creating SGE team"
-        )
-    except Exception as e:
-        logger.error(f"Error creating SGE team: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating SGE team"
         ) 
