@@ -8,6 +8,45 @@ export interface User {
   is_superuser: boolean;
   created_at: Date;
   updated_at: Date;
+  // New profile fields (all optional for backward compatibility)
+  bio?: string;
+  avatar_url?: string;
+  job_title?: string;
+  organisation?: string;
+  phone?: string;
+  location?: string;
+  timezone?: string;
+  current_status?: string;
+  skills?: string[];
+  interests?: string[];
+  social_links?: Record<string, any>;
+  is_intern?: boolean;
+  mentor_id?: number;
+  preferences?: Record<string, any>;
+}
+
+// Extended interfaces for SGE team collaboration
+export interface SGETeamMember extends User {
+  projects_assigned: string[];
+}
+
+export interface InternProfile extends SGETeamMember {
+  mentor_name?: string;
+  learning_goals: string[];
+  skills_learning: string[];
+  projects_involved: string[];
+}
+
+export interface UserProfile extends User {
+  // Additional profile-specific fields can be added here
+}
+
+export interface UserStatusUpdate {
+  current_status: string;
+}
+
+export interface UserMentorUpdate {
+  mentor_id?: number;
 }
 
 export interface Tag {

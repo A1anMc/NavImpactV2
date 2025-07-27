@@ -1,8 +1,7 @@
 """SQLAlchemy models."""
 from app.db.base_class import Base
 
-# Import models in dependency order
-from app.models.user import User
+# Import models in dependency order (User moved to end to avoid circular import)
 from app.models.project import Project
 from app.models.team_member import TeamMember
 from app.models.task import Task
@@ -16,5 +15,6 @@ from app.models.scraper_log import ScraperLog
 from app.models.time_entry import TimeEntry
 from app.models.metric import Metric
 from app.models.program_logic import ProgramLogic
+from app.models.user import User  # Moved to end to avoid circular import
 
 # All models should be imported here to ensure they are registered with SQLAlchemy 
