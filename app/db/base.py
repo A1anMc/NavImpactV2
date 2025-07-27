@@ -15,6 +15,7 @@ from app.models.scraper_log import ScraperLog
 from app.models.time_entry import TimeEntry
 from app.models.metric import Metric
 from app.models.program_logic import ProgramLogic
+from app.models.sge_media import SgeMediaProject, SgeDistributionLog, SgePerformanceMetrics, SgeImpactStory, SgeClientAccess
 from app.models.user import User  # Moved to end to avoid circular import
 
 # All models should be imported here to ensure they are registered with SQLAlchemy 
