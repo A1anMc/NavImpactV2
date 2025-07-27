@@ -29,8 +29,10 @@ export default function TeamPage() {
   const mockTeamMembers: SGETeamMember[] = [
     {
       id: 1,
-      name: 'Ursula Searle',
+      full_name: 'Ursula Searle',
       email: 'ursula@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Managing Director',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -51,8 +53,10 @@ export default function TeamPage() {
     },
     {
       id: 2,
-      name: 'Ash Dorman',
+      full_name: 'Ash Dorman',
       email: 'ash@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Managing Director',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -73,8 +77,10 @@ export default function TeamPage() {
     },
     {
       id: 3,
-      name: 'Shamita Siva',
+      full_name: 'Shamita Siva',
       email: 'shamita@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Creative Director',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -95,8 +101,10 @@ export default function TeamPage() {
     },
     {
       id: 4,
-      name: 'Alan McCarthy',
+      full_name: 'Alan McCarthy',
       email: 'alan@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Impact Director',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -117,8 +125,10 @@ export default function TeamPage() {
     },
     {
       id: 5,
-      name: 'Mish Rep',
+      full_name: 'Mish Rep',
       email: 'mish@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Operations Officer',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -138,8 +148,10 @@ export default function TeamPage() {
     },
     {
       id: 6,
-      name: 'Kiara Holt',
+      full_name: 'Kiara Holt',
       email: 'kiara@shadowgoose.com',
+      is_active: true,
+      is_superuser: false,
       job_title: 'Media Production Intern',
       organisation: 'Shadow Goose Entertainment',
       location: 'Melbourne, VIC',
@@ -262,16 +274,16 @@ export default function TeamPage() {
                     <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
                       <AvatarImage src={member.avatar_url || undefined} />
                       <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-600 text-white text-lg font-bold">
-                        {getInitials(member.name)}
+                        {getInitials(member.full_name)}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                        <Badge className={`${getStatusColor(member.current_status)} border-0 text-xs font-medium`}>
-                          {member.current_status}
-                        </Badge>
-                      </div>
+                                          <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-bold text-gray-900">{member.full_name}</h3>
+                          <Badge className={`${getStatusColor(member.current_status)} border-0 text-xs font-medium`}>
+                            {member.current_status}
+                          </Badge>
+                        </div>
                       <p className="text-green-600 font-semibold mb-1">{member.job_title}</p>
                       <p className="text-sm text-gray-600">{member.organisation}</p>
                     </div>
