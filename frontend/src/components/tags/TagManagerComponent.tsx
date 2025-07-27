@@ -99,7 +99,7 @@ const TagManagerComponent = () => {
     };
 
     if (selectedTag) {
-      updateMutation.mutate({ id: selectedTag.id, data });
+      updateMutation.mutate({ id: selectedTag.id.toString(), data });
     } else {
       createMutation.mutate(data);
     }
@@ -112,7 +112,7 @@ const TagManagerComponent = () => {
 
   const handleDelete = async (tag: Tag) => {
     if (window.confirm('Are you sure you want to delete this tag?')) {
-      deleteMutation.mutate(tag.id);
+      deleteMutation.mutate(tag.id.toString());
     }
   };
 

@@ -4,6 +4,28 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Task, User, Project, CreateTaskRequest, UpdateTaskRequest } from '../../types/models';
 
+// Map Task status to form status
+const mapTaskStatusToFormStatus = (status: Task['status']): 'todo' | 'in_progress' | 'in_review' | 'done' | 'archived' => {
+  switch (status) {
+    case 'pending': return 'todo';
+    case 'in_progress': return 'in_progress';
+    case 'completed': return 'done';
+    case 'cancelled': return 'archived';
+    default: return 'todo';
+  }
+};
+
+// Map form status to Task status
+const mapFormStatusToTaskStatus = (status: string): Task['status'] => {
+  switch (status) {
+    case 'todo': return 'pending';
+    case 'in_progress': return 'in_progress';
+    case 'done': return 'completed';
+    case 'archived': return 'cancelled';
+    default: return 'pending';
+  }
+};
+
 const taskFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
@@ -41,7 +63,11 @@ export default function TaskForm({ task, users, projects, onSubmit, onCancel }: 
     defaultValues: task ? {
       ...task,
       due_date: task.due_date ? new Date(task.due_date).toISOString().slice(0, 16) : undefined,
-      tags: task.tags?.map(tag => tag.id) || [],
+      tags: task.tags?.map(tag => tag.id.toString()) || [],
+      status: mapTaskStatusToFormStatus(task.status),
+      assignee_id: task.assignee_id?.toString(),
+      id: task.id.toString(),
+      project_id: task.project_id?.toString(),
     } : {
       priority: 'medium',
       tags: [],
@@ -55,7 +81,7 @@ export default function TaskForm({ task, users, projects, onSubmit, onCancel }: 
     if (task) {
       Object.entries(task).forEach(([key, value]) => {
         if (key === 'tags') {
-          setValue('tags' as any, task.tags?.map(tag => tag.id) || []);
+          setValue('tags' as any, task.tags?.map(tag => tag.id.toString()) || []);
         } else if (key === 'due_date' && value) {
           setValue('due_date' as any, new Date(value as Date).toISOString().slice(0, 16));
         } else {
@@ -84,8 +110,12 @@ export default function TaskForm({ task, users, projects, onSubmit, onCancel }: 
     
     if (isUpdate) {
       const updateData: UpdateTaskRequest = {
-        id: task.id,
+        id: task.id.toString(),
         ...processedData,
+        due_date: processedData.due_date?.toISOString(),
+        project_id: processedData.project_id ? parseInt(processedData.project_id) : undefined,
+        status: processedData.status ? mapFormStatusToTaskStatus(processedData.status) : undefined,
+        tags: processedData.tags?.map(tag => parseInt(tag)).filter(tag => !isNaN(tag)) || undefined,
       };
       onSubmit(updateData);
           } else {
@@ -93,7 +123,10 @@ export default function TaskForm({ task, users, projects, onSubmit, onCancel }: 
           ...processedData,
           title: processedData.title || '',
           priority: processedData.priority || 'medium',
-          project_id: processedData.project_id || '',
+          project_id: processedData.project_id ? parseInt(processedData.project_id) : undefined,
+          due_date: processedData.due_date?.toISOString(),
+          status: processedData.status ? mapFormStatusToTaskStatus(processedData.status) : undefined,
+          tags: processedData.tags?.map(tag => parseInt(tag)).filter(tag => !isNaN(tag)) || undefined,
         };
         onSubmit(createData);
       }

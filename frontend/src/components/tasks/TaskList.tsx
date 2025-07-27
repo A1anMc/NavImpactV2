@@ -88,7 +88,7 @@ export default function TaskList({ tasks, users, onEdit, onDelete, onStatusChang
   const filteredAndSortedTasks = tasks
     .filter(task => {
       const matchesStatus = !state.filter.status || task.status === state.filter.status;
-      const matchesAssignee = !state.filter.assignee || task.assignee_id === state.filter.assignee;
+      const matchesAssignee = !state.filter.assignee || task.assignee_id?.toString() === state.filter.assignee;
       const matchesSearch = !state.filter.search || 
         task.title.toLowerCase().includes(state.filter.search.toLowerCase()) ||
         task.description?.toLowerCase().includes(state.filter.search.toLowerCase());
@@ -222,7 +222,7 @@ export default function TaskList({ tasks, users, onEdit, onDelete, onStatusChang
                 <td className="px-6 py-4 whitespace-nowrap">
                   <select
                     value={task.status}
-                    onChange={(e) => onStatusChange(task.id, e.target.value as Task['status'])}
+                    onChange={(e) => onStatusChange(task.id.toString(), e.target.value as Task['status'])}
                     className={`text-xs rounded-full px-2 py-1 ${statusColors[task.status as keyof typeof statusColors]} border-transparent focus:border-gray-500 focus:ring-0`}
                   >
                     <option value="todo">To Do</option>
@@ -245,7 +245,7 @@ export default function TaskList({ tasks, users, onEdit, onDelete, onStatusChang
                     Edit
                   </button>
                   <button
-                    onClick={() => onDelete(task.id)}
+                    onClick={() => onDelete(task.id.toString())}
                     className="text-red-600 hover:text-red-900"
                   >
                     Delete

@@ -56,12 +56,12 @@ export const useCreateGrant = () => {
 
   return useMutation({
     mutationFn: async (grantInput: CreateGrantInput) => {
-      // Convert string dates to Date objects and string tags to Tag objects
+      // Prepare grant data for API
       const grantData = {
         ...grantInput,
-        open_date: grantInput.open_date ? new Date(grantInput.open_date) : undefined,
-        deadline: grantInput.deadline ? new Date(grantInput.deadline) : undefined,
-        tags: grantInput.tags?.map(tagName => ({ name: tagName } as any)) || undefined,
+        open_date: grantInput.open_date,
+        deadline: grantInput.deadline,
+        tags: grantInput.tags,
       };
       return grantsApi.createGrant(grantData);
     },
@@ -77,12 +77,12 @@ export const useUpdateGrant = () => {
 
   return useMutation({
     mutationFn: async ({ id, grantInput }: { id: string; grantInput: CreateGrantInput }) => {
-      // Convert string dates to Date objects and string tags to Tag objects
+      // Prepare grant data for API
       const grantData = {
         ...grantInput,
-        open_date: grantInput.open_date ? new Date(grantInput.open_date) : undefined,
-        deadline: grantInput.deadline ? new Date(grantInput.deadline) : undefined,
-        tags: grantInput.tags?.map(tagName => ({ name: tagName } as any)) || undefined,
+        open_date: grantInput.open_date,
+        deadline: grantInput.deadline,
+        tags: grantInput.tags,
       };
       return grantsApi.updateGrant(id, grantData);
     },
@@ -139,7 +139,7 @@ export const useSources = () => {
   return useQuery({
     queryKey: grantKeys.sources(),
     queryFn: async () => {
-      return grantsApi.getSources();
+      return grantsApi.getGrantSources();
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -150,7 +150,7 @@ export const useGrantsBySource = (source: string, params?: { skip?: number; limi
   return useQuery({
     queryKey: [...grantKeys.lists(), 'source', source, params],
     queryFn: async () => {
-      return grantsApi.getGrantsBySource(source, params);
+      return grantsApi.getGrantsWithFilters({ source });
     },
     enabled: !!source,
     staleTime: 5 * 60 * 1000, // 5 minutes

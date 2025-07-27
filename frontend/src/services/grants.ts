@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import { apiClient } from '@/lib/api-client';
 import { Grant, CreateGrantInput, GrantFilters, PaginatedResponse } from '@/types/models';
 
 // API endpoints
@@ -95,11 +95,15 @@ export const grantsApi = {
     try {
       console.log('[grantsApi.getGrants] Fetching grants with params:', params);
       
-      const response = await apiClient.getGrants(params);
+      const queryParams = new URLSearchParams();
+      if (params?.skip) queryParams.append('skip', params.skip.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+      const response = await apiClient.get(`${ENDPOINTS.BASE}?${queryParams.toString()}`);
       
       console.log('[grantsApi.getGrants] Response received:', response);
       
-      return response;
+      return response.data;
     } catch (error) {
       console.error('[grantsApi.getGrants] Error:', error);
       throw error;

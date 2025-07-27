@@ -13,6 +13,7 @@ export interface User {
 export interface Tag {
   id: number;
   name: string;
+  description?: string;
   color?: string;
   created_at: Date;
   updated_at: Date;
@@ -74,6 +75,7 @@ export interface Task {
   total_time_spent?: number;
   comment_count?: number;
   reaction_summary?: Record<string, number>;
+  assignee_id?: number; // Alias for assigned_to_id for compatibility
 }
 
 export interface TaskComment {
@@ -262,6 +264,7 @@ export interface GrantFilters {
   success_probability_min?: number;
   page?: number;
   size?: number;
+  source?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -291,7 +294,29 @@ export interface CreateGrantInput {
   audience_tags?: string[];
   status?: string;
   notes?: string;
+  tags?: string[];
 }
+
+export interface CreateTagRequest {
+  name: string;
+  description?: string;
+  color?: string;
+}
+
+export interface UpdateTagRequest extends Partial<CreateTagRequest> {}
+
+export interface CreateTaskRequest {
+  title: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  due_date?: string;
+  project_id?: number;
+  assigned_to_id?: number;
+  tags?: number[];
+}
+
+export interface UpdateTaskRequest extends Partial<CreateTaskRequest> {}
 
 // API Response types
 export interface ApiResponse<T> {
