@@ -153,13 +153,70 @@ async def setup_sge_team(
         logger.error(f"Database error creating SGE team: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error creating SGE team"
+            detail=f"Database error creating SGE team: {str(e)}"
         )
     except Exception as e:
         logger.error(f"Error creating SGE team: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating SGE team"
+            detail=f"Error creating SGE team: {str(e)}"
+        )
+
+# Simple test endpoint to create one user
+@router.post("/test-create-user")
+async def test_create_user(
+    db: Session = Depends(get_db)
+):
+    """Test creating a single user to isolate database issues."""
+    try:
+        # Check if user already exists
+        existing_user = db.query(User).filter(User.email == "test@shadowgoose.com").first()
+        
+        if existing_user:
+            return {
+                "message": "Test user already exists",
+                "user": {
+                    "id": existing_user.id,
+                    "email": existing_user.email,
+                    "full_name": existing_user.full_name
+                }
+            }
+        
+        # Create simple test user
+        user = User(
+            email="test@shadowgoose.com",
+            hashed_password=get_password_hash("test123"),
+            full_name="Test User",
+            job_title="Test Role",
+            organisation="Shadow Goose Entertainment",
+            is_active=True
+        )
+        
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        return {
+            "message": "Test user created successfully",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name
+            }
+        }
+        
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error creating test user: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error creating test user: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error: {str(e)}"
         )
 
 @router.get("/profile", response_model=UserProfile)
