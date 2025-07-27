@@ -56,11 +56,16 @@ export const Card: React.FC<CardProps> = ({
 interface CardHeaderProps {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => {
+export const CardHeader: React.FC<CardHeaderProps> = ({ children, className, onClick, ...props }) => {
   return (
-    <div className={cn('flex items-center justify-between mb-6', className)}>
+    <div 
+      className={cn('flex items-center justify-between mb-6', className)}
+      onClick={onClick}
+      {...props}
+    >
       {children}
     </div>
   );
