@@ -1,8 +1,8 @@
-"""Add SGE Media Module (Simplified)
+"""Add SGE Media Module
 
-Revision ID: 20250127_sge_media_simple
-Revises: 001_fresh_database_setup
-Create Date: 2025-01-27 12:00:00.000000
+Revision ID: 20250127_sge_media
+Revises: 20250127_sustainability
+Create Date: 2025-01-27 11:00:00.000000
 
 """
 from alembic import op
@@ -10,17 +10,17 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '20250127_sge_media_simple'
+revision = '20250127_sge_media'
 down_revision = '001_fresh_database_setup'
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    # Create SGE Media Projects table (without foreign key initially)
+    # Create SGE Media Projects table (extends existing projects)
     op.create_table('sge_media_projects',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('project_id', sa.Integer(), nullable=True),  # Make nullable initially
+        sa.Column('project_id', sa.Integer(), nullable=False),
         sa.Column('media_type', sa.String(length=50), nullable=False),
         sa.Column('duration', sa.String(length=20), nullable=True),
         sa.Column('release_date', sa.Date(), nullable=True),
@@ -30,6 +30,7 @@ def upgrade():
         sa.Column('thumbnail_url', sa.String(length=500), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=True),
         sa.Column('updated_at', sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     
@@ -45,6 +46,7 @@ def upgrade():
         sa.Column('engagement_rate', sa.Numeric(precision=5, scale=2), nullable=True),
         sa.Column('notes', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(['media_project_id'], ['sge_media_projects.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     
@@ -60,6 +62,7 @@ def upgrade():
         sa.Column('shares', sa.Integer(), nullable=True),
         sa.Column('comments', sa.Integer(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(['media_project_id'], ['sge_media_projects.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     
@@ -75,6 +78,7 @@ def upgrade():
         sa.Column('impact_date', sa.Date(), nullable=True),
         sa.Column('quantifiable_outcome', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(['media_project_id'], ['sge_media_projects.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     
@@ -118,4 +122,4 @@ def downgrade():
     op.drop_table('sge_impact_stories')
     op.drop_table('sge_performance_metrics')
     op.drop_table('sge_distribution_logs')
-    op.drop_table('sge_media_projects') 
+    op.drop_table('sge_media_projects')
