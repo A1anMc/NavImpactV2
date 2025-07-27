@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = '20250127_add_notion_integration'
-down_revision = '20250127_sge_media_simple'
+down_revision = '20250127_sge_media'
 branch_labels = None
 depends_on = None
 
