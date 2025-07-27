@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Temporary endpoint for creating SGE team members (placed first to avoid route conflicts)
-@router.post("/create-sge-team")
-async def create_sge_team(
+@router.post("/setup-sge-team")
+async def setup_sge_team(
     db: Session = Depends(get_db)
 ):
     """Create SGE team members (temporary endpoint for setup)."""
