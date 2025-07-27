@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 import logging
+from sqlalchemy import text
 
 from app.core.deps import get_db, get_current_user
 from app.models.user import User
@@ -281,6 +282,67 @@ async def create_ursula(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error: {str(e)}"
         )
+
+# Health check endpoint that creates missing user profile columns
+@router.get("/user-profile-health")
+async def user_profile_health_check(db: Session = Depends(get_db)):
+    """Check if user profile columns exist and create them if missing."""
+    try:
+        # Check if bio column exists
+        result = db.execute(text("""
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = 'users'
+            AND column_name = 'bio'
+        """))
+        
+        if result.fetchone():
+            return {
+                "status": "healthy",
+                "message": "User profile columns exist",
+                "columns": ["bio", "avatar_url", "job_title", "organisation", "phone", "location", "timezone", "current_status", "skills", "interests", "social_links", "is_intern", "mentor_id", "preferences"]
+            }
+        else:
+            # Create missing columns
+            db.execute(text("""
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(200);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS organisation VARCHAR(200);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS location VARCHAR(200);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone VARCHAR(50);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS current_status VARCHAR(50) DEFAULT 'available';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS skills TEXT[] DEFAULT '{}';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS interests TEXT[] DEFAULT '{}';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS social_links JSONB DEFAULT '{}';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS is_intern BOOLEAN DEFAULT FALSE;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS mentor_id INTEGER;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}';
+            """))
+            
+            # Add foreign key constraint for mentor_id
+            db.execute(text("""
+                ALTER TABLE users 
+                ADD CONSTRAINT IF NOT EXISTS fk_users_mentor_id_users 
+                FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE SET NULL;
+            """))
+            
+            db.commit()
+            
+            return {
+                "status": "created",
+                "message": "User profile columns created successfully",
+                "columns": ["bio", "avatar_url", "job_title", "organisation", "phone", "location", "timezone", "current_status", "skills", "interests", "social_links", "is_intern", "mentor_id", "preferences"]
+            }
+            
+    except Exception as e:
+        db.rollback()
+        return {
+            "status": "error",
+            "message": f"Failed to create user profile columns: {str(e)}",
+            "columns": []
+        }
 
 @router.get("/profile", response_model=UserProfile)
 async def get_current_user_profile(
