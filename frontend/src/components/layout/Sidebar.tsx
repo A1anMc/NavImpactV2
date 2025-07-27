@@ -71,15 +71,17 @@ const Sidebar: FC = () => {
 
   return (
     <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200 shadow-sm">
-      {/* Simplified Logo Section */}
+      {/* SGE Logo Section */}
       <div className="flex h-16 items-center px-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
-            <img src="/logo.svg" alt="NavImpact" className="h-6 w-6" />
+          <div className="p-2 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
+            <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors">NavImpact</span>
-            <span className="text-xs text-gray-500 font-medium">Impact & Intelligence</span>
+            <span className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors">SGE</span>
+            <span className="text-xs text-gray-500 font-medium">Media Impact</span>
           </div>
         </Link>
       </div>

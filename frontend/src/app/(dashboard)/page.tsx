@@ -18,6 +18,7 @@ import {
   ArrowRightIcon,
   ArrowTrendingUpIcon,
   CheckCircleIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 
 export default function DashboardPage() {
@@ -26,25 +27,43 @@ export default function DashboardPage() {
       <div className="p-8 max-w-7xl mx-auto">
         {/* Simplified Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to NavImpact
-          </h1>
-          <p className="text-gray-600">
-            Your central hub for impact measurement and project management
-          </p>
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl shadow-lg">
+              <svg className="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                Shadow Goose Entertainment
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Media Impact & Project Management Dashboard
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-6 text-sm text-gray-500">
+            <span className="flex items-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              System Online
+            </span>
+            <span>6 Team Members</span>
+            <span>4 Active Projects</span>
+          </div>
         </div>
 
-        {/* Key Metrics - Simplified */}
+        {/* SGE Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Active Projects</p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
+                  <p className="text-sm text-gray-600">Media Projects</p>
+                  <p className="text-2xl font-bold text-gray-900">4</p>
+                  <p className="text-xs text-green-600">Active</p>
                 </div>
                 <div className="p-2 bg-green-100 rounded-lg">
-                  <FolderIcon className="h-5 w-5 text-green-600" />
+                  <PhotoIcon className="h-5 w-5 text-green-600" />
                 </div>
               </div>
             </CardContent>
@@ -54,11 +73,12 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Impact Score</p>
-                  <p className="text-2xl font-bold text-gray-900">87%</p>
+                  <p className="text-sm text-gray-600">Team Members</p>
+                  <p className="text-2xl font-bold text-gray-900">6</p>
+                  <p className="text-xs text-blue-600">Including 1 Intern</p>
                 </div>
                 <div className="p-2 bg-blue-100 rounded-lg">
-                  <ArrowTrendingUpIcon className="h-5 w-5 text-blue-600" />
+                  <UserCircleIcon className="h-5 w-5 text-blue-600" />
                 </div>
               </div>
             </CardContent>
@@ -68,8 +88,9 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Grants Found</p>
-                  <p className="text-2xl font-bold text-gray-900">8</p>
+                  <p className="text-sm text-gray-600">Grants Available</p>
+                  <p className="text-2xl font-bold text-gray-900">12</p>
+                  <p className="text-xs text-yellow-600">Matching SGE</p>
                 </div>
                 <div className="p-2 bg-yellow-100 rounded-lg">
                   <DocumentMagnifyingGlassIcon className="h-5 w-5 text-yellow-600" />
@@ -82,18 +103,61 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Tasks Due</p>
-                  <p className="text-2xl font-bold text-gray-900">5</p>
+                  <p className="text-sm text-gray-600">Impact Stories</p>
+                  <p className="text-2xl font-bold text-gray-900">8</p>
+                  <p className="text-xs text-purple-600">Documented</p>
                 </div>
                 <div className="p-2 bg-purple-100 rounded-lg">
-                  <ClipboardDocumentListIcon className="h-5 w-5 text-purple-600" />
+                  <ChartBarIcon className="h-5 w-5 text-purple-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Content Grid - Simplified */}
+        {/* SGE Project Showcase */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Featured Media Projects</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg">
+                    <PhotoIcon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">Wild Hearts</h3>
+                    <p className="text-sm text-gray-600 mb-3">Environmental conservation documentary</p>
+                    <div className="flex items-center justify-between">
+                      <Badge className="bg-green-100 text-green-800">In Production</Badge>
+                      <span className="text-xs text-gray-500">75% Complete</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                    <PhotoIcon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">Around the Table</h3>
+                    <p className="text-sm text-gray-600 mb-3">Community engagement series</p>
+                    <div className="flex items-center justify-between">
+                      <Badge className="bg-yellow-100 text-yellow-800">Planning</Badge>
+                      <span className="text-xs text-gray-500">25% Complete</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Primary Actions */}
           <div className="lg:col-span-2 space-y-6">
