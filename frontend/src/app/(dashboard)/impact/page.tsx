@@ -20,17 +20,25 @@ export default function ImpactPage() {
             <p className="text-gray-600">Track and measure your organisation's social impact across all projects</p>
           </div>
           <div className="flex items-center space-x-3">
-            <Button 
-              variant={activeView === 'dashboard' ? 'default' : 'outline'}
+            <Button
+              variant="outline"
               onClick={() => setActiveView('dashboard')}
-              className={activeView === 'dashboard' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+              className={
+                activeView === 'dashboard'
+                  ? 'bg-green-600 hover:bg-green-700 text-white border-green-600'
+                  : 'text-gray-600 border-gray-300'
+              }
             >
               Dashboard
             </Button>
-            <Button 
-              variant={activeView === 'calculator' ? 'default' : 'outline'}
+            <Button
+              variant="outline"
               onClick={() => setActiveView('calculator')}
-              className={activeView === 'calculator' ? 'bg-green-600 hover:bg-green-700 text-white' : 'text-gray-600 border-gray-300'}
+              className={
+                activeView === 'calculator'
+                  ? 'bg-green-600 hover:bg-green-700 text-white border-green-600'
+                  : 'text-gray-600 border-gray-300'
+              }
             >
               Score Calculator
             </Button>
