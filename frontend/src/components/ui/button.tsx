@@ -21,25 +21,25 @@ export const Button: React.FC<ButtonProps> = ({
   asChild = false,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm hover:shadow-md';
   
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
+    sm: 'px-3 py-2 text-sm',
+    md: 'px-4 py-2.5 text-sm',
     lg: 'px-6 py-3 text-base',
   };
 
   const variantClasses = {
-    primary: 'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500',
-    secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700 focus:ring-neutral-500',
-    success: 'bg-success-600 hover:bg-success-700 text-white focus:ring-success-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    ghost: 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
-    outline: 'border border-neutral-300 hover:bg-neutral-50 text-neutral-700 focus:ring-neutral-500',
-    impact: 'bg-impact-600 hover:bg-impact-700 text-white focus:ring-impact-500',
+    primary: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 border border-green-600 hover:border-green-700',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500 border border-gray-200 hover:border-gray-300',
+    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 border border-green-600 hover:border-green-700',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 border border-red-600 hover:border-red-700',
+    ghost: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500 border border-transparent',
+    outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700 focus:ring-gray-500 bg-white',
+    impact: 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white focus:ring-green-500 border border-transparent',
   };
 
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed shadow-none hover:shadow-sm' : 'cursor-pointer';
 
   const buttonClasses = cn(
     baseClasses,
@@ -106,25 +106,25 @@ export const IconButton: React.FC<IconButtonProps> = ({
   disabled = false,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'inline-flex items-center justify-center rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm hover:shadow-md';
   
   const sizeClasses = {
-    sm: 'p-1.5',
-    md: 'p-2',
+    sm: 'p-2',
+    md: 'p-2.5',
     lg: 'p-3',
   };
 
   const variantClasses = {
-    primary: 'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500',
-    secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700 focus:ring-neutral-500',
-    success: 'bg-success-600 hover:bg-success-700 text-white focus:ring-success-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    ghost: 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:ring-neutral-500',
-    outline: 'border border-neutral-300 hover:bg-neutral-50 text-neutral-700 focus:ring-neutral-500',
-    impact: 'bg-impact-600 hover:bg-impact-700 text-white focus:ring-impact-500',
+    primary: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 border border-green-600 hover:border-green-700',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500 border border-gray-200 hover:border-gray-300',
+    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 border border-green-600 hover:border-green-700',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 border border-red-600 hover:border-red-700',
+    ghost: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500 border border-transparent',
+    outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700 focus:ring-gray-500 bg-white',
+    impact: 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white focus:ring-green-500 border border-transparent',
   };
 
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed shadow-none hover:shadow-sm' : 'cursor-pointer';
 
   return (
     <button

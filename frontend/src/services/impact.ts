@@ -312,9 +312,9 @@ class ImpactService {
       },
       trend_analysis: {
         impact_score_trend: this.generateTrendData(78.5, 12),
-        reach_growth: this.generateTrendData(15420, 12, true),
-        outcome_achievement: this.generateTrendData(154, 12, true),
-        stakeholder_satisfaction_trend: this.generateTrendData(85, 12),
+        reach_growth: this.generateReachData(15420, 12, true),
+        outcome_achievement: this.generateOutcomeData(154, 12, true),
+        stakeholder_satisfaction_trend: this.generateSatisfactionData(85, 12),
       },
       benchmarking: {
         sector_comparison: {
@@ -392,6 +392,73 @@ class ImpactService {
       data.push({
         date: date.toISOString().split('T')[0],
         score: Math.round(value * 10) / 10,
+      });
+    }
+    
+    return data;
+  }
+
+  private generateReachData(baseValue: number, periods: number, isCumulative = false): Array<{ date: string; reach: number }> {
+    const data = [];
+    const baseDate = new Date();
+    baseDate.setMonth(baseDate.getMonth() - periods);
+    
+    for (let i = 0; i < periods; i++) {
+      const date = new Date(baseDate);
+      date.setMonth(date.getMonth() + i);
+      
+      const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+      const value = isCumulative 
+        ? baseValue * (1 + variation) * (i + 1)
+        : baseValue * (1 + variation);
+      
+      data.push({
+        date: date.toISOString().split('T')[0],
+        reach: Math.round(value),
+      });
+    }
+    
+    return data;
+  }
+
+  private generateOutcomeData(baseValue: number, periods: number, isCumulative = false): Array<{ date: string; outcomes: number }> {
+    const data = [];
+    const baseDate = new Date();
+    baseDate.setMonth(baseDate.getMonth() - periods);
+    
+    for (let i = 0; i < periods; i++) {
+      const date = new Date(baseDate);
+      date.setMonth(date.getMonth() + i);
+      
+      const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+      const value = isCumulative 
+        ? baseValue * (1 + variation) * (i + 1)
+        : baseValue * (1 + variation);
+      
+      data.push({
+        date: date.toISOString().split('T')[0],
+        outcomes: Math.round(value),
+      });
+    }
+    
+    return data;
+  }
+
+  private generateSatisfactionData(baseValue: number, periods: number): Array<{ date: string; satisfaction: number }> {
+    const data = [];
+    const baseDate = new Date();
+    baseDate.setMonth(baseDate.getMonth() - periods);
+    
+    for (let i = 0; i < periods; i++) {
+      const date = new Date(baseDate);
+      date.setMonth(date.getMonth() + i);
+      
+      const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+      const value = baseValue * (1 + variation);
+      
+      data.push({
+        date: date.toISOString().split('T')[0],
+        satisfaction: Math.round(value * 10) / 10,
       });
     }
     

@@ -158,3 +158,55 @@ For support, email support@sgedashboard.com or create an issue in this repositor
 - **Live Backend**: https://sge-dashboard-api.onrender.com/health
 - **API Documentation**: https://sge-dashboard-api.onrender.com/api/docs
 - **GitHub Repository**: https://github.com/A1anMc/SGEDashboardJuly
+
+# NavImpactV2
+
+## Project Folder Structure (Read Me First!)
+
+This project is a monorepo with both frontend (web) and backend (API) code. Please read this section to avoid confusion!
+
+### 📦 **Active Folders**
+
+- **frontend/**
+  - The **main web app** (Next.js/React)
+  - All web UI code, components, and assets live here
+  - Run all npm/yarn commands for the web app in this folder
+
+- **app/**
+  - The **FastAPI backend** (Python)
+  - All API, database, and backend logic
+
+- **alembic/**
+  - Database migrations for the backend
+
+### 🗃️ **Legacy/ARCHIVE Folders**
+
+- **ARCHIVE/old-frontend/**
+  - **Deprecated!** Old version of the frontend. Do NOT use for new development.
+  - Only here for historical reference.
+
+- **ARCHIVE/sge-legacy/**
+  - Old scripts, configs, and docs from a previous system. Not in use.
+
+### ⚠️ **Other Folders That May Cause Confusion**
+
+- **src/**
+  - Contains some old or experimental frontend code.
+  - **Do NOT use for new development.**
+  - The real, live frontend is in `frontend/`.
+
+- **alembic/**
+  - Only for backend database migrations (not frontend).
+
+### 🟢 **Where to Work**
+- **Frontend (web):** `frontend/`
+- **Backend (API):** `app/`
+- **Ignore ARCHIVE and src/ for new work.**
+
+### 🛑 **Do NOT:**
+- Do NOT copy code from `ARCHIVE/old-frontend/` or `src/` unless you know what you are doing.
+- Do NOT run npm/yarn commands in the project root—always use the correct subfolder.
+
+---
+
+For any questions, see this README or ask the maintainers!

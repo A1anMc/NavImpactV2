@@ -333,18 +333,4 @@ export interface StakeholderAnalysis {
   };
 }
 
-// Export all types
-export type {
-  ImpactMetrics,
-  ImpactScore,
-  ImpactAnalytics,
-  FrameworkAlignment,
-  ImpactStory,
-  EvidenceCollection,
-  AssessmentWorkflow,
-  ImpactReport,
-  ImpactConfig,
-  ImpactBenchmark,
-  ImpactPrediction,
-  StakeholderAnalysis,
-}; 
+ 

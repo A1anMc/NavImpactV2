@@ -120,7 +120,7 @@ export const pageContent = {
 };
 
 // Impact metrics and KPIs
-export const impactMetrics = {
+export const impactMetricsConfig = {
   reach: {
     label: "Total Reach",
     description: "Number of individuals or communities directly impacted",
@@ -228,7 +228,7 @@ export const frameworkAlignment = {
 export default {
   copyKit,
   pageContent,
-  impactMetrics,
+  impactMetricsConfig,
   sdgDescriptions,
   victorianFrameworkDescriptions,
   impactAreas,

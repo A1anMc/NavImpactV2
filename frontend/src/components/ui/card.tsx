@@ -7,6 +7,7 @@ interface CardProps {
   hover?: boolean;
   interactive?: boolean;
   padding?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'elevated' | 'outlined';
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -15,6 +16,7 @@ export const Card: React.FC<CardProps> = ({
   hover = false,
   interactive = false,
   padding = 'md',
+  variant = 'default',
 }) => {
   const paddingClasses = {
     sm: 'p-4',
@@ -22,12 +24,19 @@ export const Card: React.FC<CardProps> = ({
     lg: 'p-8',
   };
 
+  const variantClasses = {
+    default: 'bg-white border border-gray-200 shadow-sm',
+    elevated: 'bg-white border-0 shadow-lg',
+    outlined: 'bg-white border-2 border-gray-200 shadow-sm',
+  };
+
   return (
     <div
       className={cn(
-        'bg-white rounded-lg border border-neutral-200 shadow-sm',
-        hover && 'hover:shadow-md transition-shadow duration-200',
-        interactive && 'cursor-pointer hover:shadow-lg transition-all duration-200',
+        'rounded-xl transition-all duration-200',
+        variantClasses[variant],
+        hover && 'hover:shadow-lg hover:border-gray-300',
+        interactive && 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:border-gray-300',
         paddingClasses[padding],
         className
       )}
@@ -45,7 +54,7 @@ interface CardHeaderProps {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => {
   return (
-    <div className={cn('flex items-center justify-between mb-4', className)}>
+    <div className={cn('flex items-center justify-between mb-6', className)}>
       {children}
     </div>
   );
@@ -59,7 +68,7 @@ interface CardTitleProps {
 
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className }) => {
   return (
-    <h3 className={cn('text-lg font-semibold text-neutral-900', className)}>
+    <h3 className={cn('text-xl font-semibold text-gray-900 leading-tight', className)}>
       {children}
     </h3>
   );
@@ -73,7 +82,7 @@ interface CardDescriptionProps {
 
 export const CardDescription: React.FC<CardDescriptionProps> = ({ children, className }) => {
   return (
-    <p className={cn('text-sm text-neutral-600', className)}>
+    <p className={cn('text-sm text-gray-600 leading-relaxed', className)}>
       {children}
     </p>
   );
@@ -87,7 +96,7 @@ interface CardContentProps {
 
 export const CardContent: React.FC<CardContentProps> = ({ children, className }) => {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-6', className)}>
       {children}
     </div>
   );
@@ -101,7 +110,7 @@ interface CardFooterProps {
 
 export const CardFooter: React.FC<CardFooterProps> = ({ children, className }) => {
   return (
-    <div className={cn('flex items-center justify-between pt-4 border-t border-neutral-200', className)}>
+    <div className={cn('flex items-center justify-between pt-6 border-t border-gray-200', className)}>
       {children}
     </div>
   );

@@ -34,7 +34,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
         const portfolioAnalytics = await impactService.getPortfolioAnalytics();
         setAnalytics(portfolioAnalytics);
       } else if (project) {
-        const projectAnalytics = await impactService.getProjectAnalytics(project.id);
+        const projectAnalytics = await impactService.getProjectAnalytics(String(project.id));
         setAnalytics(projectAnalytics);
         
         // Calculate impact score for project
@@ -56,7 +56,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
         setFrameworkAlignment(alignment);
 
         // Load impact stories
-        const stories = await impactService.getImpactStories(project.id);
+        const stories = await impactService.getImpactStories(String(project.id));
         setImpactStories(stories);
       }
     } catch (error) {
