@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    print("Starting SGE Media Module migration...")
     # Create SGE Media Projects table (without foreign key initially)
     op.create_table('sge_media_projects',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -100,6 +101,8 @@ def upgrade():
     op.create_index(op.f('ix_sge_performance_metrics_metric_date'), 'sge_performance_metrics', ['metric_date'], unique=False)
     op.create_index(op.f('ix_sge_impact_stories_media_project_id'), 'sge_impact_stories', ['media_project_id'], unique=False)
     op.create_index(op.f('ix_sge_impact_stories_story_type'), 'sge_impact_stories', ['story_type'], unique=False)
+    
+    print("SGE Media Module migration completed successfully!")
 
 
 def downgrade():
