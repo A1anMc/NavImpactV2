@@ -219,6 +219,69 @@ async def test_create_user(
             detail=f"Error: {str(e)}"
         )
 
+# Minimal endpoint to create one SGE user
+@router.post("/create-ursula")
+async def create_ursula(
+    db: Session = Depends(get_db)
+):
+    """Create just Ursula to test user creation."""
+    try:
+        # Check if user already exists
+        existing_user = db.query(User).filter(User.email == "ursula@shadowgoose.com").first()
+        
+        if existing_user:
+            return {
+                "message": "Ursula already exists",
+                "user": {
+                    "id": existing_user.id,
+                    "email": existing_user.email,
+                    "full_name": existing_user.full_name,
+                    "job_title": existing_user.job_title
+                }
+            }
+        
+        # Create Ursula
+        user = User(
+            email="ursula@shadowgoose.com",
+            hashed_password=get_password_hash("SGE2024!"),
+            full_name="Ursula Searle",
+            job_title="Managing Director",
+            organisation="Shadow Goose Entertainment",
+            bio="Strategic leader focused on sustainable media impact and organisational growth",
+            skills=["Strategic Planning", "Leadership", "Project Management", "Business Development"],
+            current_status="available",
+            is_intern=False,
+            is_active=True
+        )
+        
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        return {
+            "message": "Ursula created successfully",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name,
+                "job_title": user.job_title
+            }
+        }
+        
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error creating Ursula: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error creating Ursula: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error: {str(e)}"
+        )
+
 @router.get("/profile", response_model=UserProfile)
 async def get_current_user_profile(
     current_user: User = Depends(get_current_user),
