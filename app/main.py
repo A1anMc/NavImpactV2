@@ -28,6 +28,9 @@ from app.models.task import Task  # noqa: F401
 from app.models.task_comment import TaskComment  # noqa: F401
 from app.models.time_entry import TimeEntry  # noqa: F401
 
+# SGE Media Module Models
+from app.models.sge_media import SgeMediaProject, SgeDistributionLog, SgePerformanceMetrics, SgeImpactStory, SgeClientAccess  # noqa: F401
+
 from app.api.v1.api import api_router
 from app.db.session import get_engine, close_database
 from app.core.config import settings
