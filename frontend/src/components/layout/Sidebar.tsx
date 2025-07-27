@@ -15,6 +15,7 @@ import {
   QuestionMarkCircleIcon,
   UsersIcon,
   UserGroupIcon,
+  UserCircleIcon,
   SparklesIcon,
   ArrowRightIcon,
 } from '@heroicons/react/24/outline';
