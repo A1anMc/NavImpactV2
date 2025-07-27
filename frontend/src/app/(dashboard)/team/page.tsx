@@ -18,9 +18,112 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function TeamPage() {
+  // Temporary mock data while authentication is being set up
+  const mockTeamMembers: SGETeamMember[] = [
+    {
+      id: 1,
+      email: 'ursula@shadowgoose.com',
+      full_name: 'Ursula Searle',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Managing Director',
+      organisation: 'Shadow Goose Entertainment',
+      bio: 'Strategic leader focused on sustainable media impact and organisational growth',
+      skills: ['Strategic Planning', 'Leadership', 'Project Management', 'Business Development'],
+      current_status: 'available',
+      is_intern: false,
+      projects_assigned: ['Wild Hearts', 'Around the Table']
+    },
+    {
+      id: 2,
+      email: 'ash@shadowgoose.com',
+      full_name: 'Ash Dorman',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Managing Director',
+      organisation: 'Shadow Goose Entertainment',
+      bio: 'Business development and strategic partnerships specialist',
+      skills: ['Strategic Planning', 'Leadership', 'Business Development', 'Partnerships'],
+      current_status: 'available',
+      is_intern: false,
+      projects_assigned: ['Forging Friendships']
+    },
+    {
+      id: 3,
+      email: 'shamita@shadowgoose.com',
+      full_name: 'Shamita Siva',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Creative Director',
+      organisation: 'Shadow Goose Entertainment',
+      bio: 'Creative visionary with expertise in storytelling and visual media',
+      skills: ['Creative Direction', 'Storytelling', 'Visual Media', 'Project Management'],
+      current_status: 'busy',
+      is_intern: false,
+      projects_assigned: ['Wild Hearts', 'The Last Line']
+    },
+    {
+      id: 4,
+      email: 'alan@navimpact.org',
+      full_name: 'Alan McCarthy',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Impact Director',
+      organisation: 'NavImpact',
+      bio: 'Impact measurement and evaluation specialist',
+      skills: ['Impact Measurement', 'Data Analysis', 'Evaluation', 'Strategy'],
+      current_status: 'available',
+      is_intern: false,
+      projects_assigned: ['Impact Framework']
+    },
+    {
+      id: 5,
+      email: 'mish@shadowgoose.com',
+      full_name: 'Mish Rep',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Operations Officer',
+      organisation: 'Shadow Goose Entertainment',
+      bio: 'Operations and logistics specialist ensuring smooth project delivery',
+      skills: ['Operations', 'Logistics', 'Project Coordination', 'Administration'],
+      current_status: 'away',
+      is_intern: false,
+      projects_assigned: ['Around the Table']
+    },
+    {
+      id: 6,
+      email: 'kiara@shadowgoose.com',
+      full_name: 'Kiara Holt',
+      is_active: true,
+      is_superuser: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      job_title: 'Intern',
+      organisation: 'Shadow Goose Entertainment',
+      bio: 'Learning media production and impact measurement',
+      skills: ['Media Production', 'Research', 'Social Media'],
+      current_status: 'available',
+      is_intern: true,
+      projects_assigned: ['Learning Projects']
+    }
+  ];
+
+  // Use mock data for now, will switch to real API when authentication is ready
   const { data: teamMembers, isLoading, error } = useQuery({
     queryKey: ['sge-team'],
     queryFn: usersApi.getSGETeam,
+    initialData: mockTeamMembers, // Use mock data as fallback
+    retry: false, // Don't retry if API fails
   });
 
   const getStatusColor = (status: string) => {
