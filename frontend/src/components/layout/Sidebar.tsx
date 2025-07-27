@@ -10,6 +10,7 @@ import {
   ClockIcon,
   FolderIcon,
   CogIcon,
+  CircleStackIcon,
 } from '@heroicons/react/24/outline';
 
 // Custom NavImpact dashboard navigation, built by Alan – not boilerplate
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Impact', href: '/impact', icon: ChartBarIcon },
   { name: 'Media', href: '/media', icon: PhotoIcon },
   { name: 'Time Logs', href: '/time-logs', icon: ClockIcon },
+  { name: 'Customer Hub', href: '/customer-hub', icon: CircleStackIcon },
 ];
 
 const Sidebar: FC = () => {

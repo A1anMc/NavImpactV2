@@ -8,6 +8,7 @@ interface CardProps {
   interactive?: boolean;
   padding?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'elevated' | 'outlined';
+  onClick?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -17,6 +18,8 @@ export const Card: React.FC<CardProps> = ({
   interactive = false,
   padding = 'md',
   variant = 'default',
+  onClick,
+  ...props
 }) => {
   const paddingClasses = {
     sm: 'p-4',
@@ -37,9 +40,12 @@ export const Card: React.FC<CardProps> = ({
         variantClasses[variant],
         hover && 'hover:shadow-lg hover:border-gray-300',
         interactive && 'cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:border-gray-300',
+        onClick && 'cursor-pointer',
         paddingClasses[padding],
         className
       )}
+      onClick={onClick}
+      {...props}
     >
       {children}
     </div>
