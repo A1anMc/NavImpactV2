@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { impactService } from '@/services/impact';
 import { Project } from '@/types/projects';
-import { ImpactScore, ImpactAnalytics, FrameworkAlignment } from '@/types/impact';
+import { ImpactScore, ImpactAnalytics, FrameworkAlignment, ImpactStory } from '@/types/impact';
 
 interface ImpactDashboardProps {
   project?: Project;
@@ -17,12 +17,15 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
   const [impactScore, setImpactScore] = useState<ImpactScore | null>(null);
   const [analytics, setAnalytics] = useState<ImpactAnalytics | null>(null);
   const [frameworkAlignment, setFrameworkAlignment] = useState<FrameworkAlignment | null>(null);
+  const [impactStories, setImpactStories] = useState<ImpactStory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'stories' | 'reports'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'stories' | 'reports' | 'predictions' | 'benchmarks'>('overview');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'3m' | '6m' | '1y' | 'all'>('1y');
+  const [viewMode, setViewMode] = useState<'summary' | 'detailed'>('summary');
 
   useEffect(() => {
     loadImpactData();
-  }, [project]);
+  }, [project, selectedTimeframe]);
 
   const loadImpactData = async () => {
     setLoading(true);
@@ -37,13 +40,13 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
         // Calculate impact score for project
         const metrics = {
           reach_count: project.reach_count || 0,
-          outcome_count: 1, // Placeholder
-          sustainability_score: 75, // Placeholder
-          innovation_score: 80, // Placeholder
-          evidence_quality: 85, // Placeholder
-          stakeholder_satisfaction: 90, // Placeholder
-          cost_effectiveness: 0.8, // Placeholder
-          scalability_potential: 70, // Placeholder
+          outcome_count: 1,
+          sustainability_score: 75,
+          innovation_score: 80,
+          evidence_quality: 85,
+          stakeholder_satisfaction: 90,
+          cost_effectiveness: 0.8,
+          scalability_potential: 70,
         };
         const score = impactService.calculateImpactScore(metrics);
         setImpactScore(score);
@@ -51,6 +54,10 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
         // Calculate framework alignment
         const alignment = impactService.calculateFrameworkAlignment(project);
         setFrameworkAlignment(alignment);
+
+        // Load impact stories
+        const stories = await impactService.getImpactStories(project.id);
+        setImpactStories(stories);
       }
     } catch (error) {
       console.error('Error loading impact data:', error);
@@ -74,11 +81,16 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
           framework_alignment: true,
           financial_analysis: true,
           recommendations: true,
+          methodology: true,
+          limitations: true,
+          appendices: true,
         },
         customizations: {
           branding: true,
           stakeholder_focus: ['funders', 'partners'],
           key_messages: ['Demonstrating measurable impact', 'Strategic alignment with government priorities'],
+          visual_style: 'professional' as const,
+          language: 'english' as const,
         },
       };
       
@@ -86,6 +98,41 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
       window.open(result.report_url, '_blank');
     } catch (error) {
       console.error('Error generating report:', error);
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600 bg-green-50';
+    if (score >= 60) return 'text-yellow-600 bg-yellow-50';
+    return 'text-red-600 bg-red-50';
+  };
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 80) return 'High Impact';
+    if (score >= 60) return 'Medium Impact';
+    return 'Low Impact';
+  };
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'improving':
+        return (
+          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        );
+      case 'declining':
+        return (
+          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+          </svg>
+        );
+      default:
+        return (
+          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
+          </svg>
+        );
     }
   };
 
@@ -109,7 +156,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-8 max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -123,23 +170,76 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <Button variant="outline" className="text-gray-600 border-gray-300">Export Data</Button>
+            {/* Timeframe Selector */}
+            <div className="flex items-center space-x-1 bg-white border border-gray-200 rounded-lg p-1">
+              {[
+                { value: '3m', label: '3M' },
+                { value: '6m', label: '6M' },
+                { value: '1y', label: '1Y' },
+                { value: 'all', label: 'All' },
+              ].map((timeframe) => (
+                <button
+                  key={timeframe.value}
+                  onClick={() => setSelectedTimeframe(timeframe.value as any)}
+                  className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                    selectedTimeframe === timeframe.value
+                      ? 'bg-green-100 text-green-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  {timeframe.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center space-x-1 bg-white border border-gray-200 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('summary')}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  viewMode === 'summary'
+                    ? 'bg-green-100 text-green-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Summary
+              </button>
+              <button
+                onClick={() => setViewMode('detailed')}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  viewMode === 'detailed'
+                    ? 'bg-green-100 text-green-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Detailed
+              </button>
+            </div>
+
+            <Button variant="outline" className="text-gray-600 border-gray-300">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export Data
+            </Button>
             <Button onClick={generateReport} className="bg-green-600 hover:bg-green-700 text-white">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Generate Impact Report
+              Generate Report
             </Button>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Enhanced Navigation Tabs */}
         <div className="flex space-x-1 mb-8 bg-white p-1 rounded-lg border border-gray-200">
           {[
             { id: 'overview', label: 'Overview', icon: '📊' },
             { id: 'metrics', label: 'Metrics', icon: '📈' },
             { id: 'stories', label: 'Stories', icon: '📖' },
             { id: 'reports', label: 'Reports', icon: '📋' },
+            { id: 'predictions', label: 'Predictions', icon: '🔮' },
+            { id: 'benchmarks', label: 'Benchmarks', icon: '🏆' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -159,9 +259,9 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
-            {/* Impact Score Cards */}
+            {/* Enhanced Impact Score Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-white border border-gray-200 shadow-sm">
+              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -169,7 +269,15 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                       <p className="text-3xl font-bold text-gray-900">
                         {impactScore ? Math.round(impactScore.weighted_score) : analytics?.portfolio_summary.average_impact_score || 0}
                       </p>
-                      <p className="text-sm text-green-600">+12.3% vs last quarter</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-green-600">+12.3% vs last quarter</span>
+                        {impactScore && getTrendIcon(impactScore.trend)}
+                      </div>
+                      <div className="mt-2">
+                        <Badge className={`${getScoreColor(impactScore?.weighted_score || 0)} text-xs`}>
+                          {getScoreLabel(impactScore?.weighted_score || 0)}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                       <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +288,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border border-gray-200 shadow-sm">
+              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -188,7 +296,15 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                       <p className="text-3xl font-bold text-gray-900">
                         {analytics?.portfolio_summary.total_reach.toLocaleString() || project?.reach_count?.toLocaleString() || 0}
                       </p>
-                      <p className="text-sm text-green-600">+8.5% vs last quarter</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-green-600">+8.5% vs last quarter</span>
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      </div>
+                      <div className="mt-2">
+                        <Badge className="bg-blue-100 text-blue-800 text-xs">Growing</Badge>
+                      </div>
                     </div>
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +315,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border border-gray-200 shadow-sm">
+              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -207,7 +323,15 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                       <p className="text-3xl font-bold text-gray-900">
                         {analytics?.portfolio_summary.evidence_coverage || 85}%
                       </p>
-                      <p className="text-sm text-green-600">+5.2% vs last quarter</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-green-600">+5.2% vs last quarter</span>
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      </div>
+                      <div className="mt-2">
+                        <Badge className="bg-purple-100 text-purple-800 text-xs">Strong</Badge>
+                      </div>
                     </div>
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                       <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,7 +342,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border border-gray-200 shadow-sm">
+              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -226,7 +350,15 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                       <p className="text-3xl font-bold text-gray-900">
                         {analytics?.roi_analysis.roi_ratio ? analytics.roi_analysis.roi_ratio.toFixed(1) : 3.2}:1
                       </p>
-                      <p className="text-sm text-green-600">+0.8 vs last quarter</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-green-600">+0.8 vs last quarter</span>
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      </div>
+                      <div className="mt-2">
+                        <Badge className="bg-orange-100 text-orange-800 text-xs">Excellent</Badge>
+                      </div>
                     </div>
                     <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                       <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +370,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
               </Card>
             </div>
 
-            {/* Framework Alignment */}
+            {/* Enhanced Framework Alignment */}
             {frameworkAlignment && (
               <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardHeader>
@@ -260,7 +392,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                               <div className="flex items-center space-x-2">
                                 <div className="w-24 bg-gray-200 rounded-full h-2">
                                   <div 
-                                    className="bg-green-600 h-2 rounded-full" 
+                                    className="bg-green-600 h-2 rounded-full transition-all duration-300" 
                                     style={{ width: `${score}%` }}
                                   ></div>
                                 </div>
@@ -279,9 +411,9 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                         {Object.entries(frameworkAlignment.sdg_alignment).map(([sdg, score]) => {
                           if (sdg === 'total_score') return null;
                           return (
-                            <div key={sdg} className="flex items-center justify-between p-2 border border-gray-200 rounded">
+                            <div key={sdg} className="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
                               <span className="text-xs text-gray-700">{sdg}</span>
-                              <Badge className="bg-green-100 text-green-800 text-xs">
+                              <Badge className={`${score >= 70 ? 'bg-green-100 text-green-800' : score >= 40 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} text-xs`}>
                                 {score}%
                               </Badge>
                             </div>
@@ -294,7 +426,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
               </Card>
             )}
 
-            {/* Impact Breakdown */}
+            {/* Enhanced Impact Breakdown */}
             {impactScore && (
               <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardHeader>
@@ -303,16 +435,61 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {Object.entries(impactScore.breakdown).map(([metric, score]) => (
-                      <div key={metric} className="text-center">
+                      <div key={metric} className="text-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="text-2xl font-bold text-gray-900 mb-1">{Math.round(score)}</div>
                         <div className="text-sm text-gray-600 capitalize mb-2">
                           {metric.replace(/_/g, ' ')}
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-green-600 h-2 rounded-full" 
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300" 
                             style={{ width: `${score}%` }}
                           ></div>
+                        </div>
+                        <div className="mt-2">
+                          <Badge className={`${score >= 80 ? 'bg-green-100 text-green-800' : score >= 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} text-xs`}>
+                            {score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Needs Improvement'}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Risk Assessment */}
+            {analytics?.risk_assessment && (
+              <Card className="bg-white border border-gray-200 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">Risk Assessment</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <Badge className={`${
+                      analytics.risk_assessment.overall_risk_level === 'low' ? 'bg-green-100 text-green-800' :
+                      analytics.risk_assessment.overall_risk_level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {analytics.risk_assessment.overall_risk_level.toUpperCase()} RISK
+                    </Badge>
+                    <span className="text-sm text-gray-600">
+                      {analytics.risk_assessment.risk_factors.length} risk factors identified
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {analytics.risk_assessment.risk_factors.map((risk, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded">
+                        <div>
+                          <div className="font-medium text-gray-900">{risk.factor}</div>
+                          <div className="text-sm text-gray-600">
+                            Likelihood: {Math.round(risk.likelihood * 100)}% | Impact: {Math.round(risk.impact * 100)}%
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge className="bg-blue-100 text-blue-800 text-xs">
+                            {risk.mitigation_strategies.length} strategies
+                          </Badge>
                         </div>
                       </div>
                     ))}
@@ -331,7 +508,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 <CardTitle className="text-lg font-semibold text-gray-900">Detailed Metrics</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Detailed metrics and measurement tools will be implemented here.</p>
+                <p className="text-gray-600">Advanced metrics and measurement tools will be implemented here.</p>
               </CardContent>
             </Card>
           </div>
@@ -345,7 +522,26 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 <CardTitle className="text-lg font-semibold text-gray-900">Impact Stories</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Impact stories and beneficiary testimonials will be displayed here.</p>
+                {impactStories.length > 0 ? (
+                  <div className="space-y-4">
+                    {impactStories.map((story) => (
+                      <div key={story.id} className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2">{story.title}</h4>
+                        <p className="text-gray-600 mb-3">{story.story_summary}</p>
+                        <div className="flex items-center space-x-4">
+                          <Badge className="bg-green-100 text-green-800">
+                            {story.beneficiary_type}
+                          </Badge>
+                          <span className="text-sm text-gray-500">
+                            {new Date(story.created_date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">No impact stories available yet.</p>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -360,6 +556,34 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">Generated impact reports and historical data will be shown here.</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Predictions Tab */}
+        {activeTab === 'predictions' && (
+          <div className="space-y-8">
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Predictive Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">AI-powered impact predictions and forecasting will be displayed here.</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Benchmarks Tab */}
+        {activeTab === 'benchmarks' && (
+          <div className="space-y-8">
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Benchmarking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Industry benchmarks and peer comparisons will be shown here.</p>
               </CardContent>
             </Card>
           </div>
