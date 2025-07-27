@@ -1,0 +1,88 @@
+{
+  "timestamp": 1753605771.50946,
+  "summary": {
+    "total_tests": 13,
+    "passed_tests": 13,
+    "failed_tests": 0
+  },
+  "results": [
+    {
+      "test": "Health Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605761.743263
+    },
+    {
+      "test": "Projects List Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605762.964236
+    },
+    {
+      "test": "Projects Response Structure",
+      "success": true,
+      "details": "Found 3 projects",
+      "timestamp": 1753605762.964315
+    },
+    {
+      "test": "Framework Field Present",
+      "success": true,
+      "details": "framework_alignment field: True",
+      "timestamp": 1753605762.9643252
+    },
+    {
+      "test": "Framework Filter Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605764.196021
+    },
+    {
+      "test": "SDG Filter Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605765.4059038
+    },
+    {
+      "test": "Portfolio Summary Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605766.657036
+    },
+    {
+      "test": "Portfolio Framework Data",
+      "success": true,
+      "details": "Framework breakdown present: True",
+      "timestamp": 1753605766.6572402
+    },
+    {
+      "test": "Framework Count",
+      "success": true,
+      "details": "Projects with frameworks: 3",
+      "timestamp": 1753605766.657262
+    },
+    {
+      "test": "Create Project Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605767.9944708
+    },
+    {
+      "test": "Create Project Success",
+      "success": true,
+      "details": "Project created successfully",
+      "timestamp": 1753605767.994488
+    },
+    {
+      "test": "API Documentation",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605769.212963
+    },
+    {
+      "test": "Frontend Connectivity",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1753605770.502443
+    }
+  ]
+}
