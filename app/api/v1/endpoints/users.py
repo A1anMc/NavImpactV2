@@ -99,30 +99,6 @@ async def get_team_members(
             detail="Database error fetching team"
         )
 
-@router.get("/{user_id}/public", response_model=UserPublic)
-async def get_public_user_profile(
-    user_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """Get public profile of a specific user."""
-    try:
-        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-        return user
-    except HTTPException:
-        raise
-    except SQLAlchemyError as e:
-        logger.error(f"Database error fetching user: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error fetching user"
-        )
-
 @router.get("/sge-team", response_model=List[SGETeamMember])
 async def get_sge_team(
     db: Session = Depends(get_db),
@@ -187,6 +163,30 @@ async def get_interns(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error fetching interns"
+        )
+
+@router.get("/{user_id}/public", response_model=UserPublic)
+async def get_public_user_profile(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get public profile of a specific user."""
+    try:
+        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        return user
+    except HTTPException:
+        raise
+    except SQLAlchemyError as e:
+        logger.error(f"Database error fetching user: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error fetching user"
         )
 
 @router.put("/{user_id}/mentor", response_model=UserPublic)
