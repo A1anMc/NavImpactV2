@@ -12,6 +12,7 @@ import {
   CogIcon,
   CircleStackIcon,
   QuestionMarkCircleIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 // Custom NavImpact dashboard navigation, built by Alan – not boilerplate
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Media', href: '/media', icon: PhotoIcon },
   { name: 'Time Logs', href: '/time-logs', icon: ClockIcon },
   { name: 'Customer Hub', href: '/customer-hub', icon: CircleStackIcon },
+  { name: 'Sustainability', href: '/sustainability', icon: ShieldCheckIcon },
   { name: 'Help & Guide', href: '/help-guide', icon: QuestionMarkCircleIcon },
 ];
 
