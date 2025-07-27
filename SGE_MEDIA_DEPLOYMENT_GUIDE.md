@@ -180,3 +180,66 @@ git push --force origin main
 ---
 
 *The SGE Media Module is ready for production deployment and will provide immediate value to SGE while establishing the foundation for future revenue-generating features.*
+
+---
+
+### 1. **Migration Not Applying**
+- We pushed the SGE Media Module migration to production, but the SGE Media tables are still not being created on the Render database.
+- The `/api/v1/sge-media-health` endpoint keeps returning:  
+  `{"status":"pending","message":"SGE Media tables not found - migration needed","tables":[],"table_count":0}`
+
+### 2. **What We Tried**
+- We checked and fixed migration dependencies (so the SGE Media migration depends on the correct base migration).
+- We simplified the migration to remove foreign key constraints, in case that was causing issues.
+- We added print statements to the migration for debugging, hoping to see output in the Render logs.
+- We committed and pushed these changes, triggering a new deployment (Render is set to run `alembic upgrade head` on deploy).
+
+### 3. **What We Observed**
+- The API is healthy (`/health` endpoint returns OK), so the backend is running.
+- The SGE Media tables are still missing after each deployment.
+- The simplified migration file (`20250127_add_sge_media_module_simple.py`) was deleted (possibly by Render or a cleanup process), but the main migration file remains.
+
+### 4. **Possible Causes**
+- **Migration is not being picked up or run by Alembic on Render.**
+  - This could be due to a migration chain issue (Alembic thinks it’s already at head, or the migration history is broken).
+- **Alembic version table in the database is out of sync.**
+- **A silent error during migration (not visible unless we check Render logs).**
+- **File naming or dependency mismatch.**
+- **The migration file is present locally but not in the deployed container.**
+
+---
+
+## **Next Steps / How to Fix**
+
+### **A. Check Render Deployment Logs**
+- The most direct way to see what’s happening is to check the Render backend service logs for any Alembic errors or skipped migrations.
+- Look for lines mentioning `alembic upgrade head`, errors, or skipped migrations.
+
+### **B. Confirm Alembic Version in DB**
+- The Alembic version table (`alembic_version`) in the database may be stuck at an old revision, so new migrations are ignored.
+- If you have access to the Render database (via a SQL client or Render’s web console), run:
+  ```sql
+  SELECT * FROM alembic_version;
+  ```
+  - This will show the current migration revision applied.
+
+### **C. Manual Migration**
+- If the migration is not being picked up, you may need to run:
+  ```bash
+  alembic upgrade head
+  ```
+  - Directly on the Render backend shell (if available).
+
+### **D. Migration Chain**
+- Ensure that the migration chain is correct:
+  - The `down_revision` in each migration matches the `revision` of the previous migration.
+  - No duplicate or missing revision IDs.
+
+---
+
+## **Summary**
+- The migration is not being applied on Render, so the SGE Media tables are not created.
+- The backend is running, but the new features are blocked by the missing tables.
+- The next step is to check the Render backend logs and/or the Alembic version in the production database to diagnose why the migration is not running.
+
+**Would you like instructions on how to check the Render logs or the Alembic version table? Or do you want to try running the migration manually on Render?**
