@@ -15,6 +15,8 @@ import {
   ShieldCheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  UsersIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
 // Simplified navigation structure
@@ -26,6 +28,13 @@ const navigationGroups = [
       { name: 'Projects', href: '/projects', icon: FolderIcon },
       { name: 'Grants', href: '/grants', icon: DocumentMagnifyingGlassIcon },
       { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentListIcon },
+    ]
+  },
+  {
+    name: 'Team',
+    items: [
+      { name: 'Team Members', href: '/team', icon: UsersIcon },
+      { name: 'Collaboration', href: '/collaboration', icon: UserGroupIcon },
     ]
   },
   {

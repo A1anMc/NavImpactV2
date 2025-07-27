@@ -28,6 +28,25 @@ def test_health_endpoint():
         print(f"❌ Health check error: {str(e)}")
         return False
 
+def test_user_profile_health():
+    """Test and trigger user profile health check."""
+    print("\n🔍 Testing User Profile Health Check...")
+    try:
+        response = requests.get(f"{API_BASE}/users/user-profile-health")
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ User Profile Health: {data.get('status', 'unknown')}")
+            print(f"   Message: {data.get('message', 'No message')}")
+            print(f"   Columns: {len(data.get('columns', []))} columns found")
+            return data.get('status') == 'healthy'
+        else:
+            print(f"❌ User profile health check failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ User profile health check error: {str(e)}")
+        return False
+
 def test_user_endpoints():
     """Test user-related endpoints."""
     print("\n🔍 Testing User Endpoints...")
@@ -38,7 +57,8 @@ def test_user_endpoints():
         ("GET", "/users/team"),
         ("GET", "/users/sge-team"),
         ("GET", "/users/interns"),
-        ("POST", "/users/create-sge-team"),  # Our new endpoint
+        ("POST", "/users/setup-sge-team"),  # Our SGE team endpoint
+        ("POST", "/users/create-ursula"),   # Single user test endpoint
     ]
     
     for method, endpoint in endpoints:
@@ -53,10 +73,14 @@ def test_user_endpoints():
                 print(f"✅ {method} {endpoint}: Authentication required (expected)")
             elif response.status_code == 200:
                 print(f"✅ {method} {endpoint}: Success")
+                if method == "POST":
+                    print(f"   Response: {response.json()}")
             elif response.status_code == 404:
                 print(f"❌ {method} {endpoint}: Not Found")
             else:
                 print(f"⚠️  {method} {endpoint}: {response.status_code}")
+                if method == "POST":
+                    print(f"   Response: {response.text}")
                 
         except Exception as e:
             print(f"❌ {method} {endpoint}: Error - {str(e)}")
@@ -126,6 +150,7 @@ def main():
     
     # Run all tests
     health_ok = test_health_endpoint()
+    test_user_profile_health() # Added this line
     test_user_endpoints()
     test_openapi_spec()
     test_database_schema()
