@@ -3,13 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Enable static export for Render
-  output: 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true,
-  },
-  
   // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
