@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,7 @@ import {
   TrophyIcon,
   StarIcon,
   FireIcon,
-  LightningBoltIcon,
-  CrownIcon,
+  PlusIcon,
 } from '@heroicons/react/24/outline';
 
 export default function DashboardPage() {
@@ -131,9 +131,20 @@ export default function DashboardPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-sge-black/90 via-sge-forest/50 to-sge-tawny/70"></div>
         <div className="relative z-10 px-6 py-12">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-center space-x-4 mb-8">
-              <div className="p-4 bg-gradient-to-br from-sge-forest to-sge-tawny rounded-2xl shadow-2xl">
-                <SparklesIcon className="h-8 w-8 text-sge-white" />
+            <div className="flex items-center space-x-6 mb-8">
+              <div className="relative">
+                <div className="p-4 bg-gradient-to-br from-sge-forest to-sge-tawny rounded-2xl shadow-2xl">
+                  <Image
+                    src="/SGE-logo.png"
+                    alt="Shadow Goose Entertainment Logo"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-contain"
+                  />
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-sge-tawny rounded-full flex items-center justify-center">
+                  <SparklesIcon className="h-2 w-2 text-sge-white" />
+                </div>
               </div>
               <div>
                 <h1 className="text-5xl font-carrot font-bold text-sge-white mb-2">
@@ -193,7 +204,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-3xl font-carrot font-bold text-sge-white">Active Productions</h2>
               <Button className="bg-gradient-to-r from-sge-forest to-sge-tawny hover:from-sge-tawny hover:to-sge-forest text-sge-white border-0">
-                <PlayIcon className="h-4 w-4 mr-2" />
+                <PlusIcon className="h-4 w-4 mr-2" />
                 New Project
               </Button>
             </div>
