@@ -7,23 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
-  ChartBarIcon,
-  FolderIcon,
-  DocumentMagnifyingGlassIcon,
-  ClipboardDocumentListIcon,
-  PhotoIcon,
+  PlayIcon,
   ClockIcon,
   UserGroupIcon,
-  SparklesIcon,
-  PlayIcon,
   FilmIcon,
   CameraIcon,
   MegaphoneIcon,
   GlobeAltIcon,
   TrophyIcon,
-  StarIcon,
-  FireIcon,
   PlusIcon,
+  ArrowRightIcon,
+  CalendarIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
 export default function DashboardPage() {
@@ -39,6 +37,7 @@ export default function DashboardPage() {
       budget: '$125,000',
       timeline: 'Q2 2025',
       impact: 'High',
+      color: 'from-blue-500 to-purple-600',
     },
     {
       id: 2,
@@ -51,6 +50,7 @@ export default function DashboardPage() {
       budget: '$85,000',
       timeline: 'Q3 2025',
       impact: 'Medium',
+      color: 'from-green-500 to-emerald-600',
     },
     {
       id: 3,
@@ -63,6 +63,7 @@ export default function DashboardPage() {
       budget: '$200,000',
       timeline: 'Q4 2025',
       impact: 'High',
+      color: 'from-orange-500 to-red-600',
     },
   ];
 
@@ -72,28 +73,32 @@ export default function DashboardPage() {
       value: '3',
       change: '+1',
       icon: FilmIcon,
-      color: 'from-sge-forest to-sge-tawny',
+      color: 'bg-blue-500',
+      trend: 'up',
     },
     {
       title: 'Production Hours',
       value: '1,247',
       change: '+23%',
       icon: ClockIcon,
-      color: 'from-sge-tawny to-sge-black',
+      color: 'bg-green-500',
+      trend: 'up',
     },
     {
       title: 'Team Members',
       value: '6',
       change: '+1',
       icon: UserGroupIcon,
-      color: 'from-sge-black to-sge-forest',
+      color: 'bg-purple-500',
+      trend: 'up',
     },
     {
       title: 'Impact Score',
       value: '94%',
       change: '+8%',
       icon: TrophyIcon,
-      color: 'from-sge-forest to-sge-tawny',
+      color: 'bg-orange-500',
+      trend: 'up',
     },
   ];
 
@@ -105,6 +110,8 @@ export default function DashboardPage() {
       user: 'Ursula Searle',
       time: '2 hours ago',
       type: 'milestone',
+      icon: CheckCircleIcon,
+      color: 'text-green-500',
     },
     {
       id: 2,
@@ -113,6 +120,8 @@ export default function DashboardPage() {
       user: 'Ash Dorman',
       time: '4 hours ago',
       type: 'grant',
+      icon: ChartBarIcon,
+      color: 'text-blue-500',
     },
     {
       id: 3,
@@ -121,77 +130,82 @@ export default function DashboardPage() {
       user: 'Shamita Siva',
       time: '6 hours ago',
       type: 'review',
+      icon: StarIcon,
+      color: 'text-purple-500',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sge-black via-sge-forest/20 to-sge-tawny/30">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-sge-black/90 via-sge-forest/50 to-sge-tawny/70"></div>
-        <div className="relative z-10 px-6 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center space-x-6 mb-8">
-              <div className="relative">
-                <div className="p-4 bg-gradient-to-br from-sge-forest to-sge-tawny rounded-2xl shadow-2xl">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Image
-                    src="/SGE-logo.png"
-                    alt="Shadow Goose Entertainment Logo"
-                    width={48}
-                    height={48}
-                    className="w-12 h-12 object-contain"
+                    src="/SGE_Main_Logo_White.svg"
+                    alt="SGE Logo"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
                   />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-sge-tawny rounded-full flex items-center justify-center">
-                  <SparklesIcon className="h-2 w-2 text-sge-white" />
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Shadow Goose Entertainment</h1>
+                  <p className="text-sm text-gray-500">Production Dashboard</p>
                 </div>
               </div>
-              <div>
-                <h1 className="text-5xl font-carrot font-bold text-sge-white mb-2">
-                  Shadow Goose Entertainment
-                </h1>
-                <p className="text-xl font-neue text-sge-white/80">
-                  Cinematic storytelling that drives meaningful impact
-                </p>
-              </div>
             </div>
-            
-            {/* Status Indicators */}
-            <div className="flex items-center space-x-6 mb-8">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sge-white/90 font-neue">All systems operational</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-sge-tawny rounded-full"></div>
-                <span className="text-sge-white/90 font-neue">3 active productions</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-sge-forest rounded-full"></div>
-                <span className="text-sge-white/90 font-neue">94% impact score</span>
-              </div>
+            <div className="flex items-center space-x-4">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <PlusIcon className="h-4 w-4 mr-2" />
+                New Project
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="px-6 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
           
+          {/* Welcome Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="max-w-3xl">
+              <h2 className="text-3xl font-bold mb-4">Welcome back, Team</h2>
+              <p className="text-blue-100 text-lg mb-6">
+                Track your productions, manage your team, and drive meaningful impact through cinematic storytelling.
+              </p>
+              <div className="flex items-center space-x-4">
+                <Button className="bg-white text-blue-600 hover:bg-gray-100">
+                  View All Projects
+                </Button>
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+                  Team Overview
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {metrics.map((metric, index) => (
-              <Card key={index} className="glass border-sge-forest/20 hover:border-sge-tawny/40 transition-all duration-300 hover:scale-105">
+              <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-neue text-sge-white/60 mb-1">{metric.title}</p>
-                      <p className="text-3xl font-carrot font-bold text-sge-white">{metric.value}</p>
-                      <p className="text-sm font-neue text-green-400">{metric.change}</p>
+                      <p className="text-sm font-medium text-gray-600 mb-1">{metric.title}</p>
+                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                      <div className="flex items-center mt-2">
+                        <span className="text-sm text-green-600 font-medium">{metric.change}</span>
+                        <span className="text-sm text-gray-500 ml-1">from last month</span>
+                      </div>
                     </div>
-                    <div className={`p-3 bg-gradient-to-br ${metric.color} rounded-xl`}>
-                      <metric.icon className="h-6 w-6 text-sge-white" />
+                    <div className={`p-3 ${metric.color} rounded-xl`}>
+                      <metric.icon className="h-6 w-6 text-white" />
                     </div>
                   </div>
                 </CardContent>
@@ -202,8 +216,11 @@ export default function DashboardPage() {
           {/* Projects Section */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-carrot font-bold text-sge-white">Active Productions</h2>
-              <Button className="bg-gradient-to-r from-sge-forest to-sge-tawny hover:from-sge-tawny hover:to-sge-forest text-sge-white border-0">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Active Productions</h2>
+                <p className="text-gray-600 mt-1">Track progress and manage your current projects</p>
+              </div>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <PlusIcon className="h-4 w-4 mr-2" />
                 New Project
               </Button>
@@ -211,65 +228,71 @@ export default function DashboardPage() {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <Card key={project.id} className="glass border-sge-forest/20 hover:border-sge-tawny/40 transition-all duration-300 hover:scale-105 group">
+                <Card key={project.id} className="hover:shadow-lg transition-all duration-200 hover:scale-105">
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl font-carrot text-sge-white group-hover:text-sge-tawny transition-colors">
-                          {project.name}
-                        </CardTitle>
-                        <p className="text-sm font-neue text-sge-white/70 mt-1">{project.description}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className={`w-3 h-3 bg-gradient-to-r ${project.color} rounded-full`}></div>
+                          <Badge className={`${
+                            project.status === 'In Production' ? 'bg-green-100 text-green-800' :
+                            project.status === 'Pre-Production' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {project.status}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg text-gray-900">{project.name}</CardTitle>
+                        <p className="text-sm text-gray-600 mt-1">{project.description}</p>
                       </div>
-                      <Badge className={`${
-                        project.status === 'In Production' ? 'bg-green-500/20 text-green-400' :
-                        project.status === 'Pre-Production' ? 'bg-sge-tawny/20 text-sge-tawny' :
-                        'bg-sge-forest/20 text-sge-forest'
-                      }`}>
-                        {project.status}
-                      </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-sge-white/60">Progress</span>
-                        <span className="text-sge-white">{project.progress}%</span>
+                        <span className="text-gray-600">Progress</span>
+                        <span className="font-medium text-gray-900">{project.progress}%</span>
                       </div>
-                      <Progress value={project.progress} className="h-2 bg-sge-black/30">
-                        <div className="h-full bg-gradient-to-r from-sge-forest to-sge-tawny rounded-full transition-all duration-300" 
+                      <Progress value={project.progress} className="h-2">
+                        <div className={`h-full bg-gradient-to-r ${project.color} rounded-full transition-all duration-300`} 
                              style={{ width: `${project.progress}%` }}></div>
                       </Progress>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-sge-white/60 font-neue">Category</p>
-                        <p className="text-sge-white font-carrot">{project.category}</p>
+                        <p className="text-gray-600">Category</p>
+                        <p className="font-medium text-gray-900">{project.category}</p>
                       </div>
                       <div>
-                        <p className="text-sge-white/60 font-neue">Budget</p>
-                        <p className="text-sge-white font-carrot">{project.budget}</p>
+                        <p className="text-gray-600">Budget</p>
+                        <p className="font-medium text-gray-900">{project.budget}</p>
                       </div>
                       <div>
-                        <p className="text-sge-white/60 font-neue">Timeline</p>
-                        <p className="text-sge-white font-carrot">{project.timeline}</p>
+                        <p className="text-gray-600">Timeline</p>
+                        <p className="font-medium text-gray-900">{project.timeline}</p>
                       </div>
                       <div>
-                        <p className="text-sge-white/60 font-neue">Impact</p>
-                        <p className="text-sge-white font-carrot">{project.impact}</p>
+                        <p className="text-gray-600">Impact</p>
+                        <p className="font-medium text-gray-900">{project.impact}</p>
                       </div>
                     </div>
                     
-                    <div className="pt-4 border-t border-sge-forest/20">
-                      <p className="text-xs text-sge-white/60 font-neue mb-2">Team</p>
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-xs text-gray-600 mb-2">Team</p>
                       <div className="flex flex-wrap gap-1">
                         {project.team.map((member, index) => (
-                          <Badge key={index} variant="outline" className="text-xs border-sge-forest/30 text-sge-white/80">
+                          <Badge key={index} variant="outline" className="text-xs">
                             {member}
                           </Badge>
                         ))}
                       </div>
                     </div>
+                    
+                    <Button className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200">
+                      View Details
+                      <ArrowRightIcon className="h-4 w-4 ml-2" />
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -278,26 +301,23 @@ export default function DashboardPage() {
 
           {/* Recent Activity */}
           <div className="space-y-6">
-            <h2 className="text-3xl font-carrot font-bold text-sge-white">Recent Activity</h2>
-            <Card className="glass border-sge-forest/20">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+              <p className="text-gray-600 mt-1">Latest updates from your team</p>
+            </div>
+            <Card>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center space-x-4 p-4 rounded-xl bg-sge-black/20 hover:bg-sge-black/30 transition-colors">
-                      <div className={`p-2 rounded-lg ${
-                        activity.type === 'milestone' ? 'bg-green-500/20' :
-                        activity.type === 'grant' ? 'bg-sge-tawny/20' :
-                        'bg-sge-forest/20'
-                      }`}>
-                        {activity.type === 'milestone' && <TrophyIcon className="h-5 w-5 text-green-400" />}
-                        {activity.type === 'grant' && <DocumentMagnifyingGlassIcon className="h-5 w-5 text-sge-tawny" />}
-                        {activity.type === 'review' && <ClipboardDocumentListIcon className="h-5 w-5 text-sge-forest" />}
+                    <div key={activity.id} className="flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className={`p-2 rounded-lg bg-gray-100 ${activity.color}`}>
+                        <activity.icon className="h-5 w-5" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sge-white font-neue">{activity.action}</p>
-                        <p className="text-sm text-sge-white/60">{activity.project} • {activity.user}</p>
+                        <p className="font-medium text-gray-900">{activity.action}</p>
+                        <p className="text-sm text-gray-600">{activity.project} • {activity.user}</p>
                       </div>
-                      <span className="text-sm text-sge-white/40 font-neue">{activity.time}</span>
+                      <span className="text-sm text-gray-500">{activity.time}</span>
                     </div>
                   ))}
                 </div>
@@ -307,23 +327,26 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <div className="space-y-6">
-            <h2 className="text-3xl font-carrot font-bold text-sge-white">Quick Actions</h2>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
+              <p className="text-gray-600 mt-1">Common tasks and workflows</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button className="glass border-sge-forest/20 hover:border-sge-tawny/40 h-20 flex flex-col items-center justify-center space-y-2">
-                <PlayIcon className="h-6 w-6 text-sge-white" />
-                <span className="text-sm font-neue text-sge-white">Start Production</span>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <PlayIcon className="h-6 w-6 text-blue-600" />
+                <span className="text-sm font-medium text-gray-900">Start Production</span>
               </Button>
-              <Button className="glass border-sge-forest/20 hover:border-sge-tawny/40 h-20 flex flex-col items-center justify-center space-y-2">
-                <CameraIcon className="h-6 w-6 text-sge-white" />
-                <span className="text-sm font-neue text-sge-white">Schedule Shoot</span>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <CameraIcon className="h-6 w-6 text-green-600" />
+                <span className="text-sm font-medium text-gray-900">Schedule Shoot</span>
               </Button>
-              <Button className="glass border-sge-forest/20 hover:border-sge-tawny/40 h-20 flex flex-col items-center justify-center space-y-2">
-                <MegaphoneIcon className="h-6 w-6 text-sge-white" />
-                <span className="text-sm font-neue text-sge-white">Marketing</span>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <MegaphoneIcon className="h-6 w-6 text-purple-600" />
+                <span className="text-sm font-medium text-gray-900">Marketing</span>
               </Button>
-              <Button className="glass border-sge-forest/20 hover:border-sge-tawny/40 h-20 flex flex-col items-center justify-center space-y-2">
-                <GlobeAltIcon className="h-6 w-6 text-sge-white" />
-                <span className="text-sm font-neue text-sge-white">Distribution</span>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <GlobeAltIcon className="h-6 w-6 text-orange-600" />
+                <span className="text-sm font-medium text-gray-900">Distribution</span>
               </Button>
             </div>
           </div>
