@@ -22,9 +22,17 @@ import {
   SparklesIcon,
   LightBulbIcon,
   ClipboardDocumentIcon,
+  ChatBubbleLeftIcon,
+  ClockIcon as ClockIconSolid,
+  UserIcon,
+  EyeSlashIcon,
+  PencilIcon,
+  CheckIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
+// Enhanced grant data with versioning and collaboration
 const grants = [
   {
     id: 1,
@@ -40,6 +48,24 @@ const grants = [
     matchRate: '75%',
     successRate: '15%',
     aiScore: 95,
+    // Version tracking
+    version: 'v2.1',
+    lastModified: '2024-01-15',
+    modifiedBy: 'Alan McCarthy',
+    // Collaboration features
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' },
+      { name: 'Harry Dog', role: 'editor', avatar: 'HD' },
+      { name: 'Clooney Cat', role: 'viewer', avatar: 'CC' }
+    ],
+    comments: [
+      { id: 1, author: 'Harry Dog', text: 'Updated budget section with new figures', timestamp: '2024-01-15 14:30' },
+      { id: 2, author: 'Clooney Cat', text: 'Added social impact metrics', timestamp: '2024-01-14 16:45' }
+    ],
+    changeLog: [
+      { version: 'v2.1', date: '2024-01-15', changes: 'Updated budget, added impact metrics', author: 'Alan McCarthy' },
+      { version: 'v2.0', date: '2024-01-10', changes: 'Initial draft completed', author: 'Alan McCarthy' }
+    ]
   },
   {
     id: 2,
@@ -55,6 +81,19 @@ const grants = [
     matchRate: '60%',
     successRate: '25%',
     aiScore: 88,
+    version: 'v1.0',
+    lastModified: '2024-01-20',
+    modifiedBy: 'Alan McCarthy',
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' },
+      { name: 'Harry Dog', role: 'editor', avatar: 'HD' }
+    ],
+    comments: [
+      { id: 1, author: 'Harry Dog', text: 'Submitted to ABC portal', timestamp: '2024-01-20 09:15' }
+    ],
+    changeLog: [
+      { version: 'v1.0', date: '2024-01-20', changes: 'Final submission', author: 'Alan McCarthy' }
+    ]
   },
   {
     id: 3,
@@ -70,6 +109,17 @@ const grants = [
     matchRate: '50%',
     successRate: '8%',
     aiScore: 82,
+    version: 'v1.2',
+    lastModified: '2024-01-18',
+    modifiedBy: 'Alan McCarthy',
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' }
+    ],
+    comments: [],
+    changeLog: [
+      { version: 'v1.2', date: '2024-01-18', changes: 'Added global distribution strategy', author: 'Alan McCarthy' },
+      { version: 'v1.1', date: '2024-01-12', changes: 'Updated project description', author: 'Alan McCarthy' }
+    ]
   },
   {
     id: 4,
@@ -85,6 +135,19 @@ const grants = [
     matchRate: '70%',
     successRate: '20%',
     aiScore: 78,
+    version: 'v0.8',
+    lastModified: '2024-01-16',
+    modifiedBy: 'Alan McCarthy',
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' },
+      { name: 'Clooney Cat', role: 'viewer', avatar: 'CC' }
+    ],
+    comments: [
+      { id: 1, author: 'Clooney Cat', text: 'Need to add more multicultural elements', timestamp: '2024-01-16 11:20' }
+    ],
+    changeLog: [
+      { version: 'v0.8', date: '2024-01-16', changes: 'Added multicultural focus section', author: 'Alan McCarthy' }
+    ]
   },
   {
     id: 5,
@@ -100,31 +163,66 @@ const grants = [
     matchRate: '40%',
     successRate: '12%',
     aiScore: 75,
+    version: 'v1.5',
+    lastModified: '2024-01-19',
+    modifiedBy: 'Alan McCarthy',
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' },
+      { name: 'Harry Dog', role: 'editor', avatar: 'HD' },
+      { name: 'Clooney Cat', role: 'editor', avatar: 'CC' }
+    ],
+    comments: [
+      { id: 1, author: 'Harry Dog', text: 'Updated Victorian production requirements', timestamp: '2024-01-19 15:30' },
+      { id: 2, author: 'Clooney Cat', text: 'Added commercial potential analysis', timestamp: '2024-01-19 16:45' }
+    ],
+    changeLog: [
+      { version: 'v1.5', date: '2024-01-19', changes: 'Updated Victorian requirements and commercial analysis', author: 'Alan McCarthy' },
+      { version: 'v1.4', date: '2024-01-15', changes: 'Added feature film budget breakdown', author: 'Alan McCarthy' }
+    ]
   },
   {
     id: 6,
     title: 'Documentary Australia Foundation',
     amount: '$75,000',
     deadline: '2024-03-30',
-    status: 'researching',
+    status: 'open',
     category: 'Documentary',
     organisation: 'Documentary Australia',
     description: 'Social impact documentary funding with philanthropic support.',
-    requirements: ['Social impact', 'Philanthropic angle', 'Australian stories'],
+    requirements: ['Social impact', 'Philanthropic angle', 'Community engagement'],
     priority: 'medium',
-    matchRate: '80%',
+    matchRate: '65%',
     successRate: '18%',
-    aiScore: 85,
-  },
+    aiScore: 72,
+    version: 'v1.1',
+    lastModified: '2024-01-17',
+    modifiedBy: 'Alan McCarthy',
+    collaborators: [
+      { name: 'Alan McCarthy', role: 'owner', avatar: 'AM' }
+    ],
+    comments: [],
+    changeLog: [
+      { version: 'v1.1', date: '2024-01-17', changes: 'Added philanthropic support section', author: 'Alan McCarthy' }
+    ]
+  }
 ];
 
 const categories = [
-  { name: 'Documentary', count: 3, color: 'bg-blue-500' },
-  { name: 'Television', count: 2, color: 'bg-green-500' },
-  { name: 'Feature Film', count: 1, color: 'bg-purple-500' },
+  { name: 'All Categories', value: 'all' },
+  { name: 'Documentary', value: 'Documentary' },
+  { name: 'Feature Film', value: 'Feature Film' },
+  { name: 'Television', value: 'Television' },
 ];
 
 const statuses = [
+  { name: 'All Status', value: 'all' },
+  { name: 'Open', value: 'open' },
+  { name: 'Draft', value: 'draft' },
+  { name: 'Submitted', value: 'submitted' },
+  { name: 'Closed', value: 'closed' },
+];
+
+const quickStats = [
   { name: 'Open', count: 4, color: 'bg-green-100 text-green-800' },
   { name: 'Submitted', count: 1, color: 'bg-blue-100 text-blue-800' },
   { name: 'Draft', count: 1, color: 'bg-yellow-100 text-yellow-800' },
@@ -134,6 +232,7 @@ export default function GrantsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCollaboration, setShowCollaboration] = useState(false);
 
   const filteredGrants = grants.filter(grant => {
     const matchesCategory = selectedCategory === 'all' || grant.category === selectedCategory;
@@ -228,27 +327,27 @@ export default function GrantsPage() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">18%</p>
+                    <p className="text-sm font-medium text-gray-600">Team Collaborators</p>
+                    <p className="text-2xl font-bold text-gray-900">3</p>
                   </div>
-                  <ChartBarIcon className="h-8 w-8 text-purple-600" />
+                  <UserGroupIcon className="h-8 w-8 text-purple-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">AI Matches</p>
-                    <p className="text-2xl font-bold text-gray-900">4</p>
+                    <p className="text-sm font-medium text-gray-600">Version History</p>
+                    <p className="text-2xl font-bold text-gray-900">{grants.reduce((sum, g) => sum + g.changeLog.length, 0)}</p>
                   </div>
-                  <SparklesIcon className="h-8 w-8 text-orange-600" />
+                  <ClockIconSolid className="h-8 w-8 text-orange-600" />
                 </div>
               </CardContent>
             </Card>
@@ -258,7 +357,7 @@ export default function GrantsPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search grants..."
@@ -272,26 +371,32 @@ export default function GrantsPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category.name} value={category.name}>{category.name}</option>
+                {categories.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.name}
+                  </option>
                 ))}
               </select>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Status</option>
-                {statuses.map(status => (
-                  <option key={status.name} value={status.name.toLowerCase()}>{status.name}</option>
+                {statuses.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.name}
+                  </option>
                 ))}
               </select>
-              <Button className="bg-green-600 hover:bg-green-700">
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Add Grant
+              <Button
+                onClick={() => setShowCollaboration(!showCollaboration)}
+                variant="outline"
+                className="flex items-center space-x-2"
+              >
+                <UserGroupIcon className="h-4 w-4" />
+                <span>Collaboration</span>
               </Button>
             </div>
           </div>
@@ -303,82 +408,107 @@ export default function GrantsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg font-semibold text-gray-900 mb-2">
-                        {grant.title}
-                      </CardTitle>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <span className="font-medium">{grant.organisation}</span>
-                        <span>•</span>
-                        <span>{grant.category}</span>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Badge className={grant.status === 'open' ? 'bg-green-100 text-green-800' : 
+                                        grant.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 
+                                        'bg-yellow-100 text-yellow-800'}>
+                          {grant.status}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {grant.version}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {grant.priority} priority
+                        </Badge>
                       </div>
+                      <CardTitle className="text-lg">{grant.title}</CardTitle>
+                      <p className="text-sm text-gray-600 mt-1">{grant.organisation}</p>
                     </div>
-                    <div className="flex flex-col items-end space-y-2">
-                      <Badge className={
-                        grant.status === 'open' ? 'bg-green-100 text-green-800' :
-                        grant.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
-                        grant.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }>
-                        {grant.status}
-                      </Badge>
-                      {grant.aiScore && (
-                        <div className="flex items-center space-x-1">
-                          <SparklesIcon className="h-3 w-3 text-purple-600" />
-                          <span className="text-xs font-medium text-purple-600">{grant.aiScore}%</span>
-                        </div>
-                      )}
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-green-600">{grant.amount}</p>
+                      <p className="text-sm text-gray-500">{grant.category}</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">{grant.description}</p>
                   
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Amount</p>
-                      <p className="text-lg font-bold text-green-600">{grant.amount}</p>
+                  {/* Collaboration Section */}
+                  {showCollaboration && (
+                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-medium text-gray-700">Team Collaboration</h4>
+                        <span className="text-xs text-gray-500">Last modified: {grant.lastModified}</span>
+                      </div>
+                      
+                      {/* Collaborators */}
+                      <div className="flex items-center space-x-2 mb-3">
+                        {grant.collaborators.map((collaborator, index) => (
+                          <div key={index} className="flex items-center space-x-1">
+                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-xs font-medium text-blue-700">{collaborator.avatar}</span>
+                            </div>
+                            <span className="text-xs text-gray-600">{collaborator.name}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {collaborator.role}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Comments */}
+                      {grant.comments.length > 0 && (
+                        <div className="space-y-2">
+                          <h5 className="text-xs font-medium text-gray-700">Recent Comments</h5>
+                          {grant.comments.slice(0, 2).map((comment) => (
+                            <div key={comment.id} className="flex items-start space-x-2">
+                              <ChatBubbleLeftIcon className="h-4 w-4 text-gray-400 mt-0.5" />
+                              <div className="flex-1">
+                                <p className="text-xs text-gray-600">{comment.text}</p>
+                                <p className="text-xs text-gray-400">{comment.author} • {comment.timestamp}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Change Log */}
+                      <div className="mt-3">
+                        <h5 className="text-xs font-medium text-gray-700 mb-1">Recent Changes</h5>
+                        {grant.changeLog.slice(0, 1).map((change, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <ClockIconSolid className="h-3 w-3 text-gray-400" />
+                            <span className="text-xs text-gray-600">{change.changes}</span>
+                            <span className="text-xs text-gray-400">• {change.date}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Deadline</p>
-                      <p className="text-sm text-gray-600">{grant.deadline}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    <div className="text-center">
-                      <p className="text-xs text-gray-500">Match Rate</p>
-                      <p className="text-sm font-medium">{grant.matchRate}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-gray-500">Success Rate</p>
-                      <p className="text-sm font-medium">{grant.successRate}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-gray-500">Priority</p>
-                      <Badge className={
-                        grant.priority === 'high' ? 'bg-red-100 text-red-800' :
-                        grant.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }>
-                        {grant.priority}
-                      </Badge>
-                    </div>
-                  </div>
-                  
+                  )}
+
                   <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <CalendarIcon className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Deadline: {grant.deadline}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <ChartBarIcon className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">Match: {grant.matchRate}</span>
+                      </div>
+                    </div>
                     <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm">
+                        <EyeIcon className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
                       <Link href={`/grants/apply/${grant.id}`}>
-                        <Button size="sm" variant="outline">
-                          <ClipboardDocumentIcon className="h-4 w-4 mr-1" />
+                        <Button size="sm">
+                          <ArrowRightIcon className="h-4 w-4 mr-1" />
                           Apply
                         </Button>
                       </Link>
-                      <Button size="sm" variant="outline">
-                        <EyeIcon className="h-4 w-4 mr-1" />
-                        View Details
-                      </Button>
                     </div>
-                    <ArrowRightIcon className="h-4 w-4 text-gray-400" />
                   </div>
                 </CardContent>
               </Card>

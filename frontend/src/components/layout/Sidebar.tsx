@@ -14,12 +14,16 @@ import {
   ChevronRightIcon,
   BookOpenIcon,
   CurrencyDollarIcon,
+  CalendarIcon,
+  ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
   { name: 'Productions', href: '/productions', icon: FilmIcon },
   { name: 'Grants', href: '/grants', icon: CurrencyDollarIcon },
+  { name: 'Grant Timeline', href: '/grants/timeline', icon: CalendarIcon },
+  { name: 'Grant Feedback', href: '/grants/feedback', icon: ChatBubbleLeftIcon },
   { name: 'Team', href: '/team', icon: UserGroupIcon },
   { name: 'Collaboration', href: '/collaboration', icon: GlobeAltIcon },
   { name: 'Profile', href: '/profile', icon: UserGroupIcon },

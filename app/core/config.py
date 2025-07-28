@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, Any
 from dotenv import load_dotenv
 import json
 
@@ -97,6 +97,40 @@ class Settings:
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "100" if os.getenv("ENVIRONMENT", "development") == "development" else "60"))
     RATE_LIMIT_REQUESTS_PER_HOUR: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_HOUR", "10000" if os.getenv("ENVIRONMENT", "development") == "development" else "1000"))
     REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
+
+    # Grant Scrapers Configuration
+    ALLOWED_SCRAPER_SOURCES: Dict[str, Dict[str, Any]] = {
+        "australian_grants": {
+            "base_url": "https://www.screenaustralia.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "Screen Australia and Australian government grants"
+        },
+        "business_gov": {
+            "base_url": "https://business.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "Australian government business grants"
+        },
+        "media_investment": {
+            "base_url": "https://www.abc.net.au",
+            "enabled": True,
+            "rate_limit": 0.5,
+            "description": "Media and entertainment industry grants"
+        },
+        "grantconnect": {
+            "base_url": "https://www.grants.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "GrantConnect.gov.au integration"
+        },
+        "philanthropic": {
+            "base_url": "https://www.philanthropy.org.au",
+            "enabled": True,
+            "rate_limit": 0.5,
+            "description": "Philanthropic funding sources"
+        }
+    }
     
     # Trusted Hosts (for production)
     TRUSTED_HOSTS: List[str] = [
