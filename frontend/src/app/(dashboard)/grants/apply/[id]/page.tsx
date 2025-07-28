@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +19,17 @@ import {
   PlayIcon,
   PauseIcon,
 } from '@heroicons/react/24/outline';
+
+export async function generateStaticParams() {
+  return [
+    { id: '1' },
+    { id: '2' },
+    { id: '3' },
+    { id: '4' },
+    { id: '5' },
+    { id: '6' },
+  ];
+}
 
 // Mock grant data
 const grantData = {
@@ -105,73 +114,6 @@ const applicationSteps = [
 ];
 
 export default function GrantApplicationPage() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [applicationData, setApplicationData] = useState({});
-  const [aiAnalysis, setAiAnalysis] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const handleStepComplete = (stepId) => {
-    setCurrentStep(stepId + 1);
-  };
-
-  const handleAiAnalysis = async () => {
-    setIsAnalyzing(true);
-    // Simulate AI analysis
-    setTimeout(() => {
-      setAiAnalysis({
-        score: 85,
-        strengths: [
-          'Strong social impact focus',
-          'Clear target audience',
-          'Experienced team',
-          'Innovative approach'
-        ],
-        improvements: [
-          'Add more specific metrics',
-          'Include risk mitigation',
-          'Strengthen budget justification'
-        ],
-        suggestions: [
-          'Consider adding community consultation',
-          'Include sustainability measures',
-          'Add audience engagement strategy'
-        ]
-      });
-      setIsAnalyzing(false);
-    }, 3000);
-  };
-
-  const downloadGrantInfo = () => {
-    // Simulate download
-    const grantInfo = `
-Grant: ${grantData.title}
-Amount: ${grantData.amount}
-Deadline: ${grantData.deadline}
-Category: ${grantData.category}
-Organisation: ${grantData.organisation}
-
-Description:
-${grantData.description}
-
-Requirements:
-${grantData.requirements.map(req => `- ${req}`).join('\n')}
-
-Application Steps:
-${grantData.applicationSteps.map(step => `- ${step}`).join('\n')}
-
-AI Suggestions:
-${grantData.aiSuggestions.map(suggestion => `- ${suggestion}`).join('\n')}
-    `;
-    
-    const blob = new Blob([grantInfo], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${grantData.title.replace(/\s+/g, '_')}_Grant_Info.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -186,7 +128,6 @@ ${grantData.aiSuggestions.map(suggestion => `- ${suggestion}`).join('\n')}
               </div>
               <div className="flex items-center space-x-4">
                 <Button 
-                  onClick={downloadGrantInfo}
                   variant="outline" 
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
@@ -194,178 +135,114 @@ ${grantData.aiSuggestions.map(suggestion => `- ${suggestion}`).join('\n')}
                   Download Grant Info
                 </Button>
                 <Button 
-                  onClick={handleAiAnalysis}
-                  disabled={isAnalyzing}
                   className="bg-green-600 hover:bg-green-700"
                 >
                   <SparklesIcon className="h-4 w-4 mr-2" />
-                  {isAnalyzing ? 'Analyzing...' : 'AI Analysis'}
+                  AI Analysis
                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Application Progress */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <ClipboardDocumentIcon className="h-5 w-5" />
-                    <span>Application Progress</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {applicationSteps.map((step) => (
-                      <div key={step.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          step.id < currentStep ? 'bg-green-500 text-white' :
-                          step.id === currentStep ? 'bg-blue-500 text-white' :
-                          'bg-gray-200 text-gray-600'
-                        }`}>
-                          {step.id < currentStep ? (
-                            <CheckCircleIcon className="h-5 w-5" />
-                          ) : (
-                            <span className="text-sm font-medium">{step.id}</span>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900">{step.title}</h3>
-                          <p className="text-sm text-gray-600">{step.description}</p>
-                          <div className="flex items-center space-x-4 mt-2">
-                            <span className="text-xs text-gray-500">{step.estimatedTime}</span>
-                            {step.aiSupport && (
-                              <Badge className="bg-purple-100 text-purple-800 text-xs">
-                                <SparklesIcon className="h-3 w-3 mr-1" />
-                                AI Support
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        <Button 
-                          size="sm"
-                          onClick={() => handleStepComplete(step.id)}
-                          disabled={step.id > currentStep}
-                        >
-                          {step.id < currentStep ? 'Completed' : 'Start'}
-                        </Button>
-                      </div>
-                    ))}
+          {/* Grant Info */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl">{grantData.title}</CardTitle>
+                <Badge variant="secondary" className="text-sm">
+                  {grantData.category}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center space-x-2">
+                  <CurrencyDollarIcon className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Amount</p>
+                    <p className="font-semibold">{grantData.amount}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CalendarIcon className="h-5 w-5 text-red-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Deadline</p>
+                    <p className="font-semibold">{grantData.deadline}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <ChartBarIcon className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Match Rate</p>
+                    <p className="font-semibold">{grantData.matchRate}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* AI Analysis Panel */}
-            <div className="space-y-6">
-              
-              {/* Grant Summary */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Grant Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Amount</p>
-                    <p className="text-2xl font-bold text-green-600">{grantData.amount}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Deadline</p>
-                    <p className="text-sm text-gray-600">{grantData.deadline}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Success Rate</p>
-                    <p className="text-sm text-gray-600">{grantData.successRate}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Match Rate</p>
-                    <p className="text-sm text-gray-600">{grantData.matchRate}</p>
-                  </div>
-                  <Badge className={
-                    grantData.priority === 'high' ? 'bg-red-100 text-red-800' :
-                    grantData.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-green-100 text-green-800'
-                  }>
-                    {grantData.priority} Priority
-                  </Badge>
-                </CardContent>
-              </Card>
-
-              {/* AI Analysis Results */}
-              {aiAnalysis && (
-                <Card>
+          {/* Application Steps */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Application Steps</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {applicationSteps.map((step) => (
+                <Card key={step.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <SparklesIcon className="h-5 w-5" />
-                      <span>AI Analysis</span>
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{step.title}</CardTitle>
+                      <Badge variant="outline">{step.status}</Badge>
+                    </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-gray-900">Application Score</p>
-                      <p className="text-3xl font-bold text-green-600">{aiAnalysis.score}%</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 mb-2">Strengths</p>
-                      <ul className="space-y-1">
-                        {aiAnalysis.strengths.map((strength, index) => (
-                          <li key={index} className="text-sm text-green-600 flex items-center">
-                            <CheckCircleIcon className="h-3 w-3 mr-1" />
-                            {strength}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 mb-2">Improvements</p>
-                      <ul className="space-y-1">
-                        {aiAnalysis.improvements.map((improvement, index) => (
-                          <li key={index} className="text-sm text-orange-600 flex items-center">
-                            <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
-                            {improvement}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 mb-2">Suggestions</p>
-                      <ul className="space-y-1">
-                        {aiAnalysis.suggestions.map((suggestion, index) => (
-                          <li key={index} className="text-sm text-blue-600 flex items-center">
-                            <LightBulbIcon className="h-3 w-3 mr-1" />
-                            {suggestion}
-                          </li>
-                        ))}
-                      </ul>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">{step.description}</p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span className="flex items-center">
+                        <ClockIcon className="h-4 w-4 mr-1" />
+                        {step.estimatedTime}
+                      </span>
+                      {step.aiSupport && (
+                        <span className="flex items-center text-blue-600">
+                          <SparklesIcon className="h-4 w-4 mr-1" />
+                          AI Support
+                        </span>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* AI Suggestions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <LightBulbIcon className="h-5 w-5" />
-                    <span>AI Suggestions</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {grantData.aiSuggestions.map((suggestion, index) => (
-                      <div key={index} className="p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-800">{suggestion}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              ))}
             </div>
+          </div>
+
+          {/* AI Suggestions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
+                AI Suggestions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {grantData.aiSuggestions.map((suggestion, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <LightBulbIcon className="h-5 w-5 text-yellow-500 mt-0.5" />
+                    <p className="text-gray-700">{suggestion}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center space-x-4">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <DocumentTextIcon className="h-5 w-5 mr-2" />
+              Start Application
+            </Button>
+            <Button size="lg" variant="outline">
+              <EyeIcon className="h-5 w-5 mr-2" />
+              Preview Application
+            </Button>
           </div>
         </div>
       </div>
