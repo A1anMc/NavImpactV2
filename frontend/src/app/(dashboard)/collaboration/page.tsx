@@ -1,460 +1,312 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { SGETeamMember, InternProfile } from '@/types/models';
-import { usersApi } from '@/services/users';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   UserGroupIcon,
+  ChatBubbleLeftRightIcon,
   ClockIcon,
-  AcademicCapIcon,
-  ChartBarIcon,
-  CalendarIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  UserIcon,
+  PlusIcon,
+  CalendarIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
+const teamMembers = [
+  {
+    id: 1,
+    name: 'Ursula Searle',
+    role: 'Managing Director',
+    status: 'online',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Reviewing Wild Hearts rough cut',
+    lastActive: '2 minutes ago',
+  },
+  {
+    id: 2,
+    name: 'Ash Dorman',
+    role: 'Managing Director',
+    status: 'busy',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Budget planning for Q2',
+    lastActive: '5 minutes ago',
+  },
+  {
+    id: 3,
+    name: 'Shamita Siva',
+    role: 'Creative Director',
+    status: 'online',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Editing Around the Table scenes',
+    lastActive: '1 minute ago',
+  },
+  {
+    id: 4,
+    name: 'Alan McCarthy',
+    role: 'Impact Director',
+    status: 'away',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Impact measurement analysis',
+    lastActive: '15 minutes ago',
+  },
+  {
+    id: 5,
+    name: 'Mish Rep',
+    role: 'Operations Officer',
+    status: 'online',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Coordinating production schedules',
+    lastActive: '3 minutes ago',
+  },
+  {
+    id: 6,
+    name: 'Kiara Holt',
+    role: 'Production Intern',
+    status: 'online',
+    avatar: '/api/placeholder/40/40',
+    currentTask: 'Research for The Last Line',
+    lastActive: 'Just now',
+  },
+];
+
+const recentConversations = [
+  {
+    id: 1,
+    title: 'Wild Hearts Production Meeting',
+    participants: ['Ursula Searle', 'Shamita Siva', 'Alan McCarthy'],
+    lastMessage: 'Great progress on the rough cut!',
+    time: '2 hours ago',
+    unread: 3,
+  },
+  {
+    id: 2,
+    title: 'Around the Table Script Review',
+    participants: ['Ash Dorman', 'Shamita Siva', 'Kiara Holt'],
+    lastMessage: 'Script revisions look excellent',
+    time: '4 hours ago',
+    unread: 0,
+  },
+  {
+    id: 3,
+    title: 'Q2 Budget Planning',
+    participants: ['Ursula Searle', 'Ash Dorman', 'Mish Rep'],
+    lastMessage: 'Budget approved for new equipment',
+    time: '1 day ago',
+    unread: 1,
+  },
+];
+
+const upcomingMeetings = [
+  {
+    id: 1,
+    title: 'Weekly Production Sync',
+    time: 'Today, 2:00 PM',
+    participants: 6,
+    type: 'Team Meeting',
+  },
+  {
+    id: 2,
+    title: 'Wild Hearts Post-Production Review',
+    time: 'Tomorrow, 10:00 AM',
+    participants: 4,
+    type: 'Project Review',
+  },
+  {
+    id: 3,
+    title: 'Client Presentation Prep',
+    time: 'Friday, 3:00 PM',
+    participants: 3,
+    type: 'Client Meeting',
+  },
+];
+
 export default function CollaborationPage() {
-  // Temporary mock data while authentication is being set up
-  const mockTeamMembers: SGETeamMember[] = [
-    {
-      id: 1,
-      email: 'ursula@shadowgoose.com',
-      full_name: 'Ursula Searle',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Managing Director',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Strategic leader focused on sustainable media impact and organisational growth',
-      skills: ['Strategic Planning', 'Leadership', 'Project Management', 'Business Development'],
-      current_status: 'available',
-      is_intern: false,
-      projects_assigned: ['Wild Hearts', 'Around the Table']
-    },
-    {
-      id: 2,
-      email: 'ash@shadowgoose.com',
-      full_name: 'Ash Dorman',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Managing Director',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Business development and strategic partnerships specialist',
-      skills: ['Strategic Planning', 'Leadership', 'Business Development', 'Partnerships'],
-      current_status: 'available',
-      is_intern: false,
-      projects_assigned: ['Forging Friendships']
-    },
-    {
-      id: 3,
-      email: 'shamita@shadowgoose.com',
-      full_name: 'Shamita Siva',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Creative Director',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Creative visionary with expertise in storytelling and visual media',
-      skills: ['Creative Direction', 'Storytelling', 'Visual Media', 'Project Management'],
-      current_status: 'busy',
-      is_intern: false,
-      projects_assigned: ['Wild Hearts', 'The Last Line']
-    },
-    {
-      id: 4,
-      email: 'alan@navimpact.org',
-      full_name: 'Alan McCarthy',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Impact Director',
-      organisation: 'NavImpact',
-      bio: 'Impact measurement and evaluation specialist',
-      skills: ['Impact Measurement', 'Data Analysis', 'Evaluation', 'Strategy'],
-      current_status: 'available',
-      is_intern: false,
-      projects_assigned: ['Impact Framework']
-    },
-    {
-      id: 5,
-      email: 'mish@shadowgoose.com',
-      full_name: 'Mish Rep',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Operations Officer',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Operations and logistics specialist ensuring smooth project delivery',
-      skills: ['Operations', 'Logistics', 'Project Coordination', 'Administration'],
-      current_status: 'away',
-      is_intern: false,
-      projects_assigned: ['Around the Table']
-    },
-    {
-      id: 6,
-      email: 'kiara@shadowgoose.com',
-      full_name: 'Kiara Holt',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Intern',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Learning media production and impact measurement',
-      skills: ['Media Production', 'Research', 'Social Media'],
-      current_status: 'available',
-      is_intern: true,
-      projects_assigned: ['Learning Projects']
-    }
-  ];
-
-  const mockInterns: InternProfile[] = [
-    {
-      id: 6,
-      email: 'kiara@shadowgoose.com',
-      full_name: 'Kiara Holt',
-      is_active: true,
-      is_superuser: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-      job_title: 'Intern',
-      organisation: 'Shadow Goose Entertainment',
-      bio: 'Learning media production and impact measurement',
-      skills: ['Media Production', 'Research', 'Social Media'],
-      current_status: 'available',
-      is_intern: true,
-      projects_assigned: ['Learning Projects'],
-      mentor_name: 'Shamita Siva',
-      learning_goals: ['Master video editing', 'Learn impact measurement', 'Develop storytelling skills'],
-      skills_learning: ['Adobe Premiere Pro', 'Impact Evaluation', 'Documentary Filmmaking'],
-      projects_involved: ['Wild Hearts', 'Learning Projects']
-    }
-  ];
-
-  // Use mock data for now, will switch to real API when authentication is ready
-  const { data: teamMembers, isLoading: teamLoading } = useQuery({
-    queryKey: ['sge-team'],
-    queryFn: usersApi.getSGETeam,
-    initialData: mockTeamMembers, // Use mock data as fallback
-    retry: false, // Don't retry if API fails
-  });
-
-  const { data: interns, isLoading: internsLoading } = useQuery({
-    queryKey: ['interns'],
-    queryFn: usersApi.getInterns,
-    initialData: mockInterns, // Use mock data as fallback
-    retry: false, // Don't retry if API fails
-  });
-
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'available':
-        return 'bg-green-100 text-green-800';
-      case 'busy':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'away':
-        return 'bg-gray-100 text-gray-800';
-      case 'offline':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  if (teamLoading || internsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Team Collaboration</h1>
-            <p className="text-gray-600">Loading collaboration data...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Team Collaboration</h1>
-          <p className="text-gray-600">
-            Real-time team status, project assignments, and collaboration tools
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Team Status Overview */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <UserGroupIcon className="h-5 w-5 mr-2" />
-                  Team Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {teamMembers?.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={member.avatar_url} alt={member.full_name} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-semibold">
-                            {getInitials(member.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-medium text-gray-900">{member.full_name}</h3>
-                          <p className="text-sm text-gray-600">{member.job_title}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Badge className={`text-xs ${getStatusColor(member.current_status || 'available')}`}>
-                          {member.current_status || 'Available'}
-                        </Badge>
-                        {member.is_intern && (
-                          <Badge className="bg-purple-100 text-purple-800 text-xs">
-                            Intern
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
+            <div className="max-w-3xl">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="p-3 bg-white/10 rounded-xl">
+                  <ChatBubbleLeftRightIcon className="h-8 w-8" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">Team Collaboration</h1>
+                  <p className="text-purple-100 text-lg">
+                    Stay connected with your team and coordinate production efforts seamlessly.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-purple-100">5 team members online</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-blue-300 rounded-full"></div>
+                  <span className="text-purple-100">3 active conversations</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="space-y-6">
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Team Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Members</span>
-                  <span className="font-semibold text-gray-900">{teamMembers?.length || 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Available</span>
-                  <span className="font-semibold text-green-600">
-                    {teamMembers?.filter(m => m.current_status === 'available').length || 0}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Interns</span>
-                  <span className="font-semibold text-purple-600">
-                    {teamMembers?.filter(m => m.is_intern).length || 0}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Directors</span>
-                  <span className="font-semibold text-blue-600">
-                    {teamMembers?.filter(m => m.job_title?.includes('Director')).length || 0}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-gray-600">Kiara updated her learning progress</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-gray-600">Shamita assigned new project tasks</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm text-gray-600">Ursula scheduled team meeting</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Intern Development Section */}
-        {interns && interns.length > 0 && (
-          <div className="mt-8">
-            <Card className="bg-white border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <AcademicCapIcon className="h-5 w-5 mr-2" />
-                  Intern Development
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {interns.map((intern) => (
-                    <div key={intern.id} className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={intern.avatar_url} alt={intern.full_name} />
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-white text-sm font-semibold">
-                            {getInitials(intern.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{intern.full_name}</h3>
-                          <p className="text-sm text-gray-600">Intern</p>
-                          {intern.mentor_name && (
-                            <p className="text-xs text-blue-600">Mentored by {intern.mentor_name}</p>
-                          )}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Team Status */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <UserGroupIcon className="h-5 w-5" />
+                    <span>Team Status</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {teamMembers.map((member) => (
+                      <div key={member.id} className="flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="relative">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={member.avatar} alt={member.name} />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                              {member.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                            member.status === 'online' ? 'bg-green-500' :
+                            member.status === 'busy' ? 'bg-yellow-500' :
+                            'bg-gray-400'
+                          }`}></div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium text-gray-900">{member.name}</p>
+                              <p className="text-sm text-gray-600">{member.role}</p>
+                            </div>
+                            <Badge variant={
+                              member.status === 'online' ? 'default' :
+                              member.status === 'busy' ? 'secondary' :
+                              'outline'
+                            }>
+                              {member.status}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{member.currentTask}</p>
+                          <p className="text-xs text-gray-500 mt-1">Last active: {member.lastActive}</p>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-                      <div className="space-y-3">
-                        {intern.learning_goals && intern.learning_goals.length > 0 && (
+            {/* Quick Actions */}
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <PlusIcon className="h-5 w-5" />
+                    <span>Quick Actions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full justify-start" variant="outline">
+                    <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+                    Start New Chat
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    Schedule Meeting
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <DocumentTextIcon className="h-4 w-4 mr-2" />
+                    Create Task
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <UserGroupIcon className="h-4 w-4 mr-2" />
+                    Invite Team Member
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Upcoming Meetings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CalendarIcon className="h-5 w-5" />
+                    <span>Upcoming Meetings</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {upcomingMeetings.map((meeting) => (
+                      <div key={meeting.id} className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="text-sm font-medium text-gray-900 mb-2">Learning Goals</h4>
-                            <div className="flex flex-wrap gap-1">
-                              {intern.learning_goals.slice(0, 3).map((goal, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {goal}
-                                </Badge>
-                              ))}
+                            <p className="font-medium text-gray-900">{meeting.title}</p>
+                            <p className="text-sm text-gray-600">{meeting.time}</p>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <Badge variant="outline" className="text-xs">
+                                {meeting.type}
+                              </Badge>
+                              <span className="text-xs text-gray-500">{meeting.participants} participants</span>
                             </div>
                           </div>
-                        )}
-
-                        {intern.skills_learning && intern.skills_learning.length > 0 && (
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900 mb-2">Skills Learning</h4>
-                            <div className="flex flex-wrap gap-1">
-                              {intern.skills_learning.slice(0, 3).map((skill, index) => (
-                                <Badge key={index} className="bg-blue-100 text-blue-800 text-xs">
-                                  {skill}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex space-x-2 pt-2">
-                          <Button variant="outline" size="sm" className="flex-1">
-                            View Progress
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Message
+                          <Button size="sm" variant="outline">
+                            Join
                           </Button>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        )}
 
-        {/* Project Collaboration */}
-        <div className="mt-8">
-          <Card className="bg-white border-0 shadow-sm">
+          {/* Recent Conversations */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                <ChartBarIcon className="h-5 w-5 mr-2" />
-                Project Collaboration
+              <CardTitle className="flex items-center space-x-2">
+                <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                <span>Recent Conversations</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Sample Project Cards */}
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Wild Hearts</h3>
-                    <Badge className="bg-green-100 text-green-800 text-xs">Active</Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Documentary about environmental conservation
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-medium">75%</span>
+              <div className="space-y-4">
+                {recentConversations.map((conversation) => (
+                  <div key={conversation.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <p className="font-medium text-gray-900">{conversation.title}</p>
+                        {conversation.unread > 0 && (
+                          <Badge className="bg-blue-600 text-white text-xs">
+                            {conversation.unread}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{conversation.lastMessage}</p>
+                      <div className="flex items-center space-x-4 mt-2">
+                        <span className="text-xs text-gray-500">{conversation.time}</span>
+                        <span className="text-xs text-gray-500">
+                          {conversation.participants.join(', ')}
+                        </span>
+                      </div>
                     </div>
-                    <Progress value={75} className="h-2" />
-                    <div className="flex items-center text-sm text-gray-600">
-                      <UserIcon className="h-4 w-4 mr-1" />
-                      <span>3 team members</span>
-                    </div>
+                    <Button size="sm" variant="outline">
+                      Open
+                    </Button>
                   </div>
-                </div>
-
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Around the Table</h3>
-                    <Badge className="bg-yellow-100 text-yellow-800 text-xs">Planning</Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Community engagement series
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-medium">25%</span>
-                    </div>
-                    <Progress value={25} className="h-2" />
-                    <div className="flex items-center text-sm text-gray-600">
-                      <UserIcon className="h-4 w-4 mr-1" />
-                      <span>2 team members</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Forging Friendships</h3>
-                    <Badge className="bg-blue-100 text-blue-800 text-xs">Review</Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Social impact documentary
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-medium">90%</span>
-                    </div>
-                    <Progress value={90} className="h-2" />
-                    <div className="flex items-center text-sm text-gray-600">
-                      <UserIcon className="h-4 w-4 mr-1" />
-                      <span>4 team members</span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
