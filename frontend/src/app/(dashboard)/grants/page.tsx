@@ -29,6 +29,8 @@ import {
   PencilIcon,
   CheckIcon,
   XMarkIcon,
+  FireIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -247,54 +249,76 @@ export default function GrantsPage() {
     return sum + amount;
   }, 0);
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'open': return 'bg-green-100 text-green-800 border-green-200';
+      case 'submitted': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'draft': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'closed': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case 'high': return <FireIcon className="h-4 w-4 text-red-500" />;
+      case 'medium': return <StarIcon className="h-4 w-4 text-yellow-500" />;
+      case 'low': return <CheckIcon className="h-4 w-4 text-green-500" />;
+      default: return <CheckIcon className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           
           {/* Hero Section */}
-          <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-8 text-white">
-            <div className="max-w-3xl">
+          <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl p-8 text-white shadow-2xl">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative max-w-4xl">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 bg-white/10 rounded-xl">
-                  <CurrencyDollarIcon className="h-8 w-8" />
+                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                  <CurrencyDollarIcon className="h-10 w-10" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold mb-2">Grants & Funding</h1>
-                  <p className="text-green-100 text-lg">
-                    Discover and manage funding opportunities for your entertainment projects.
+                  <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                    Grants & Funding
+                  </h1>
+                  <p className="text-xl text-blue-100 leading-relaxed">
+                    Discover and manage funding opportunities for your entertainment projects with AI-powered matching.
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  <span className="text-green-100">${totalAmount.toLocaleString()} total funding available</span>
+              <div className="flex items-center space-x-8">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-lg font-semibold">${totalAmount.toLocaleString()} total funding</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-blue-300 rounded-full"></div>
-                  <span className="text-green-100">{grants.length} active opportunities</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
+                  <span className="text-lg font-semibold">{grants.length} active opportunities</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* AI Matching Section */}
-          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-            <CardContent className="p-6">
+          <Card className="bg-gradient-to-r from-purple-50 via-pink-50 to-indigo-50 border-0 shadow-lg">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <SparklesIcon className="h-8 w-8 text-purple-600" />
+                <div className="flex items-center space-x-6">
+                  <div className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+                    <SparklesIcon className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">AI Grant Matching</h3>
-                    <p className="text-gray-600">Let AI find the perfect grants for your project</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">AI Grant Matching</h3>
+                    <p className="text-gray-600 text-lg">Let AI find the perfect grants for your project</p>
                   </div>
                 </div>
                 <Link href="/grants/match">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                    <SparklesIcon className="h-4 w-4 mr-2" />
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg transform hover:scale-105 transition-all">
+                    <SparklesIcon className="h-5 w-5 mr-3" />
                     Find My Matches
                   </Button>
                 </Link>
@@ -304,151 +328,181 @@ export default function GrantsPage() {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Funding</p>
-                    <p className="text-2xl font-bold text-gray-900">${totalAmount.toLocaleString()}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Total Funding</p>
+                    <p className="text-3xl font-bold text-gray-900">${totalAmount.toLocaleString()}</p>
                   </div>
-                  <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+                  <div className="p-3 bg-green-100 rounded-xl">
+                    <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Active Grants</p>
-                    <p className="text-2xl font-bold text-gray-900">{grants.filter(g => g.status === 'open').length}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Active Grants</p>
+                    <p className="text-3xl font-bold text-gray-900">{grants.filter(g => g.status === 'open').length}</p>
                   </div>
-                  <DocumentTextIcon className="h-8 w-8 text-blue-600" />
+                  <div className="p-3 bg-blue-100 rounded-xl">
+                    <DocumentTextIcon className="h-8 w-8 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Team Collaborators</p>
-                    <p className="text-2xl font-bold text-gray-900">3</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Team Members</p>
+                    <p className="text-3xl font-bold text-gray-900">3</p>
                   </div>
-                  <UserGroupIcon className="h-8 w-8 text-purple-600" />
+                  <div className="p-3 bg-purple-100 rounded-xl">
+                    <UserGroupIcon className="h-8 w-8 text-purple-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Version History</p>
-                    <p className="text-2xl font-bold text-gray-900">{grants.reduce((sum, g) => sum + g.changeLog.length, 0)}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">AI Score</p>
+                    <p className="text-3xl font-bold text-gray-900">92%</p>
                   </div>
-                  <ClockIconSolid className="h-8 w-8 text-orange-600" />
+                  <div className="p-3 bg-orange-100 rounded-xl">
+                    <LightBulbIcon className="h-8 w-8 text-orange-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filters and Search */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search grants..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search grants by title, organisation, or keywords..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {categories.map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {statuses.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.name}
-                  </option>
-                ))}
-              </select>
-              <Button
-                onClick={() => setShowCollaboration(!showCollaboration)}
-                variant="outline"
-                className="flex items-center space-x-2"
-              >
-                <UserGroupIcon className="h-4 w-4" />
-                <span>Collaboration</span>
-              </Button>
+              <div className="flex gap-4">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
+                >
+                  {categories.map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
+                >
+                  {statuses.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.name}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={() => setShowCollaboration(!showCollaboration)}
+                  variant="outline"
+                  className="flex items-center space-x-2 px-6 py-3 text-lg rounded-xl"
+                >
+                  <UserGroupIcon className="h-5 w-5" />
+                  <span>Collaboration</span>
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Grants Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {filteredGrants.map((grant) => (
-              <Card key={grant.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
+              <Card key={grant.id} className="bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
+                <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Badge className={grant.status === 'open' ? 'bg-green-100 text-green-800' : 
-                                        grant.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 
-                                        'bg-yellow-100 text-yellow-800'}>
+                      <div className="flex items-center space-x-3 mb-3">
+                        <Badge className={`${getStatusColor(grant.status)} border`}>
                           {grant.status}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs font-medium">
                           {grant.version}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {grant.priority} priority
-                        </Badge>
+                        <div className="flex items-center space-x-1">
+                          {getPriorityIcon(grant.priority)}
+                          <Badge variant="outline" className="text-xs">
+                            {grant.priority} priority
+                          </Badge>
+                        </div>
                       </div>
-                      <CardTitle className="text-lg">{grant.title}</CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">{grant.organisation}</p>
+                      <CardTitle className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                        {grant.title}
+                      </CardTitle>
+                      <p className="text-gray-600 font-medium">{grant.organisation}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-green-600">{grant.amount}</p>
-                      <p className="text-sm text-gray-500">{grant.category}</p>
+                      <p className="text-3xl font-bold text-green-600">{grant.amount}</p>
+                      <p className="text-sm text-gray-500 font-medium">{grant.category}</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">{grant.description}</p>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{grant.description}</p>
+                  
+                  {/* AI Score */}
+                  <div className="flex items-center justify-between mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+                    <div className="flex items-center space-x-3">
+                      <LightBulbIcon className="h-5 w-5 text-blue-600" />
+                      <span className="font-semibold text-gray-900">AI Match Score</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                          style={{ width: `${grant.aiScore}%` }}
+                        ></div>
+                      </div>
+                      <span className="font-bold text-gray-900">{grant.aiScore}%</span>
+                    </div>
+                  </div>
                   
                   {/* Collaboration Section */}
                   {showCollaboration && (
-                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-medium text-gray-700">Team Collaboration</h4>
+                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold text-gray-700">Team Collaboration</h4>
                         <span className="text-xs text-gray-500">Last modified: {grant.lastModified}</span>
                       </div>
                       
                       {/* Collaborators */}
-                      <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex items-center space-x-3 mb-4">
                         {grant.collaborators.map((collaborator, index) => (
-                          <div key={index} className="flex items-center space-x-1">
-                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-medium text-blue-700">{collaborator.avatar}</span>
+                          <div key={index} className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <span className="text-xs font-bold text-white">{collaborator.avatar}</span>
                             </div>
-                            <span className="text-xs text-gray-600">{collaborator.name}</span>
+                            <span className="text-sm font-medium text-gray-700">{collaborator.name}</span>
                             <Badge variant="outline" className="text-xs">
                               {collaborator.role}
                             </Badge>
@@ -458,53 +512,41 @@ export default function GrantsPage() {
 
                       {/* Comments */}
                       {grant.comments.length > 0 && (
-                        <div className="space-y-2">
-                          <h5 className="text-xs font-medium text-gray-700">Recent Comments</h5>
+                        <div className="space-y-3">
+                          <h5 className="text-xs font-semibold text-gray-700">Recent Comments</h5>
                           {grant.comments.slice(0, 2).map((comment) => (
-                            <div key={comment.id} className="flex items-start space-x-2">
-                              <ChatBubbleLeftIcon className="h-4 w-4 text-gray-400 mt-0.5" />
+                            <div key={comment.id} className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                              <ChatBubbleLeftIcon className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
                               <div className="flex-1">
-                                <p className="text-xs text-gray-600">{comment.text}</p>
-                                <p className="text-xs text-gray-400">{comment.author} • {comment.timestamp}</p>
+                                <p className="text-sm text-gray-700">{comment.text}</p>
+                                <p className="text-xs text-gray-500 mt-1">{comment.author} • {comment.timestamp}</p>
                               </div>
                             </div>
                           ))}
                         </div>
                       )}
-
-                      {/* Change Log */}
-                      <div className="mt-3">
-                        <h5 className="text-xs font-medium text-gray-700 mb-1">Recent Changes</h5>
-                        {grant.changeLog.slice(0, 1).map((change, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            <ClockIconSolid className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs text-gray-600">{change.changes}</span>
-                            <span className="text-xs text-gray-400">• {change.date}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <CalendarIcon className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">Deadline: {grant.deadline}</span>
+                    <div className="flex items-center space-x-6">
+                      <div className="flex items-center space-x-2">
+                        <CalendarIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-600">Deadline: {grant.deadline}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <ChartBarIcon className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">Match: {grant.matchRate}</span>
+                      <div className="flex items-center space-x-2">
+                        <ChartBarIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-600">Match: {grant.matchRate}</span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm">
-                        <EyeIcon className="h-4 w-4 mr-1" />
+                    <div className="flex items-center space-x-3">
+                      <Button variant="outline" size="sm" className="rounded-lg">
+                        <EyeIcon className="h-4 w-4 mr-2" />
                         View
                       </Button>
                       <Link href={`/grants/apply/${grant.id}`}>
-                        <Button size="sm">
-                          <ArrowRightIcon className="h-4 w-4 mr-1" />
+                        <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg">
+                          <ArrowRightIcon className="h-4 w-4 mr-2" />
                           Apply
                         </Button>
                       </Link>

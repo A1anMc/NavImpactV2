@@ -6,364 +6,411 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircleIcon,
-  XMarkIcon,
-  ExclamationTriangleIcon,
-  ClockIcon,
-  ChatBubbleLeftIcon,
-  LightBulbIcon,
-  DocumentTextIcon,
-  UserGroupIcon,
-  CalendarIcon,
+  XCircleIcon,
   SparklesIcon,
-  PlusIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  ChartBarIcon,
+  UserGroupIcon,
+  ClipboardDocumentListIcon,
+  LightBulbIcon,
   EyeIcon,
   PencilIcon,
   TrashIcon,
+  StarIcon,
+  FireIcon,
+  ClockIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 
-// Feedback data
-const feedbackData = [
+const pastApplications = [
   {
     id: 1,
-    grantId: 2,
-    title: 'ABC Pitch Initiative',
-    organisation: 'ABC',
-    outcome: 'won',
-    submissionDate: '2024-01-20',
-    decisionDate: '2024-01-25',
-    amount: '$25,000',
-    feedback: 'Excellent proposal with strong diverse representation. The innovative format and Australian stories focus were particularly compelling. Team experience was well demonstrated.',
-    reviewerNotes: 'Strong social impact narrative. Clear audience strategy. Budget well justified.',
-    improvements: [
-      'Include more specific audience demographics',
-      'Add more detailed distribution strategy',
-      'Strengthen the innovative format description'
-    ],
-    aiAnalysis: {
-      strengths: [
-        'Strong diverse representation focus',
-        'Clear Australian stories emphasis',
-        'Well-justified budget'
-      ],
-      weaknesses: [
-        'Could include more specific audience data',
-        'Distribution strategy needs more detail'
-      ],
-      nextTime: [
-        'Include audience demographics in detail',
-        'Expand distribution strategy section',
-        'Add more innovative format examples'
-      ]
+    grantTitle: 'Screen Australia Documentary Development',
+    submissionDate: '2023-11-01',
+    outcome: 'Won',
+    amount: '$50,000',
+    feedback: 'Strong narrative, clear impact statement. Budget was well-justified.',
+    aiDebrief: {
+      strengths: ['Compelling story', 'Strong team experience', 'Clear budget'],
+      weaknesses: ['Limited distribution plan'],
+      improvements: ['Expand distribution strategy', 'Highlight audience engagement'],
     },
+    category: 'Documentary',
+    organisation: 'Screen Australia',
     teamMembers: ['Alan McCarthy', 'Harry Dog'],
-    category: 'Television'
+    timeToDecision: '45 days',
+    successFactors: ['Strong narrative', 'Clear budget', 'Experienced team']
   },
   {
     id: 2,
-    grantId: 3,
-    title: 'Netflix Documentary Fund',
-    organisation: 'Netflix',
-    outcome: 'lost',
-    submissionDate: '2024-01-15',
-    decisionDate: '2024-01-30',
-    amount: '$100,000',
-    feedback: 'Proposal was strong but lacked global appeal. The human interest angle was good, but production value needs to be higher for Netflix standards.',
-    reviewerNotes: 'Good story but not global enough. Production value below standard.',
-    improvements: [
-      'Strengthen global appeal narrative',
-      'Increase production value focus',
-      'Add more international distribution details'
-    ],
-    aiAnalysis: {
-      strengths: [
-        'Strong human interest story',
-        'Good local impact focus'
-      ],
-      weaknesses: [
-        'Lacks global appeal',
-        'Production value below standard',
-        'Missing international distribution'
-      ],
-      nextTime: [
-        'Emphasize global audience appeal',
-        'Include higher production value details',
-        'Add international distribution strategy'
-      ]
+    grantTitle: 'ABC Pitch Initiative',
+    submissionDate: '2023-10-15',
+    outcome: 'Lost',
+    amount: '$25,000',
+    feedback: 'Good concept but lacked innovation. Consider more diverse representation.',
+    aiDebrief: {
+      strengths: ['Good concept', 'Clear objectives'],
+      weaknesses: ['Lacked innovation', 'Limited diversity'],
+      improvements: ['Add innovative elements', 'Include diverse perspectives'],
     },
+    category: 'Television',
+    organisation: 'ABC',
     teamMembers: ['Alan McCarthy'],
-    category: 'Documentary'
+    timeToDecision: '30 days',
+    successFactors: ['Innovation', 'Diversity', 'Clear objectives']
   },
   {
     id: 3,
-    grantId: 4,
-    title: 'SBS Content Fund',
-    organisation: 'SBS',
-    outcome: 'invited_to_revise',
-    submissionDate: '2024-01-10',
-    decisionDate: '2024-01-28',
-    amount: '$35,000',
-    feedback: 'Good multicultural focus but needs more diverse voices. The Australian content is strong, but we need more representation in the creative team.',
-    reviewerNotes: 'Strong multicultural angle. Need more diverse team representation.',
-    improvements: [
-      'Add more diverse team members',
-      'Strengthen multicultural elements',
-      'Include more diverse voices in narrative'
-    ],
-    aiAnalysis: {
-      strengths: [
-        'Strong multicultural focus',
-        'Good Australian content emphasis'
-      ],
-      weaknesses: [
-        'Lacks diverse team representation',
-        'Could include more diverse voices'
-      ],
-      nextTime: [
-        'Include more diverse team members',
-        'Strengthen multicultural narrative elements',
-        'Add diverse voice representation'
-      ]
+    grantTitle: 'Netflix Documentary Fund',
+    submissionDate: '2023-09-20',
+    outcome: 'Won',
+    amount: '$100,000',
+    feedback: 'Excellent global appeal and production quality. Strong human interest angle.',
+    aiDebrief: {
+      strengths: ['Global appeal', 'High production quality', 'Human interest'],
+      weaknesses: ['Could strengthen distribution plan'],
+      improvements: ['Enhance distribution strategy', 'Add more global perspectives'],
     },
+    category: 'Documentary',
+    organisation: 'Netflix',
     teamMembers: ['Alan McCarthy', 'Clooney Cat'],
-    category: 'Television'
+    timeToDecision: '60 days',
+    successFactors: ['Global appeal', 'Production quality', 'Human interest']
+  },
+  {
+    id: 4,
+    grantTitle: 'SBS Content Fund',
+    submissionDate: '2023-08-10',
+    outcome: 'Lost',
+    amount: '$35,000',
+    feedback: 'Good multicultural focus but needs stronger community engagement.',
+    aiDebrief: {
+      strengths: ['Multicultural focus', 'Good concept'],
+      weaknesses: ['Weak community engagement', 'Limited impact measurement'],
+      improvements: ['Strengthen community partnerships', 'Add impact measurement'],
+    },
+    category: 'Television',
+    organisation: 'SBS',
+    teamMembers: ['Alan McCarthy', 'Clooney Cat'],
+    timeToDecision: '25 days',
+    successFactors: ['Community engagement', 'Impact measurement', 'Multicultural focus']
+  },
+  {
+    id: 5,
+    grantTitle: 'Film Victoria Production Investment',
+    submissionDate: '2023-07-05',
+    outcome: 'Won',
+    amount: '$200,000',
+    feedback: 'Strong commercial potential and Victorian production focus. Excellent budget breakdown.',
+    aiDebrief: {
+      strengths: ['Commercial potential', 'Victorian focus', 'Clear budget'],
+      weaknesses: ['Could strengthen marketing strategy'],
+      improvements: ['Enhance marketing plan', 'Add more commercial elements'],
+    },
+    category: 'Feature Film',
+    organisation: 'Film Victoria',
+    teamMembers: ['Alan McCarthy', 'Harry Dog', 'Clooney Cat'],
+    timeToDecision: '75 days',
+    successFactors: ['Commercial potential', 'Local focus', 'Clear budget']
   }
 ];
 
 const outcomes = [
-  { value: 'won', label: 'Won', color: 'bg-green-100 text-green-800', icon: CheckCircleIcon },
-  { value: 'lost', label: 'Lost', color: 'bg-red-100 text-red-800', icon: XMarkIcon },
-  { value: 'invited_to_revise', label: 'Invited to Revise', color: 'bg-yellow-100 text-yellow-800', icon: ExclamationTriangleIcon },
-  { value: 'no_response', label: 'No Response', color: 'bg-gray-100 text-gray-800', icon: ClockIcon },
+  { name: 'All Outcomes', value: 'all' },
+  { name: 'Won', value: 'Won' },
+  { name: 'Lost', value: 'Lost' },
+  { name: 'Pending', value: 'Pending' },
+];
+
+const categories = [
+  { name: 'All Categories', value: 'all' },
+  { name: 'Documentary', value: 'Documentary' },
+  { name: 'Television', value: 'Television' },
+  { name: 'Feature Film', value: 'Feature Film' },
 ];
 
 export default function GrantFeedbackPage() {
   const [selectedOutcome, setSelectedOutcome] = useState('all');
-  const [selectedFeedback, setSelectedFeedback] = useState(null);
-  const [showAddFeedback, setShowAddFeedback] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedApplication, setSelectedApplication] = useState(null);
 
-  const filteredFeedback = feedbackData.filter(feedback => {
-    return selectedOutcome === 'all' || feedback.outcome === selectedOutcome;
+  const filteredApplications = pastApplications.filter(app => {
+    const matchesOutcome = selectedOutcome === 'all' || app.outcome === selectedOutcome;
+    const matchesCategory = selectedCategory === 'all' || app.category === selectedCategory;
+    const matchesSearch = app.grantTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.organisation.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesOutcome && matchesCategory && matchesSearch;
   });
 
-  const getOutcomeIcon = (outcome) => {
-    const outcomeData = outcomes.find(o => o.value === outcome);
-    const IconComponent = outcomeData?.icon || ClockIcon;
-    return <IconComponent className="h-5 w-5" />;
+  const getOutcomeColor = (outcome) => {
+    switch (outcome) {
+      case 'Won': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Lost': return 'bg-red-100 text-red-800 border-red-200';
+      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
-  const getOutcomeColor = (outcome) => {
-    const outcomeData = outcomes.find(o => o.value === outcome);
-    return outcomeData?.color || 'bg-gray-100 text-gray-800';
+  const getOutcomeIcon = (outcome) => {
+    switch (outcome) {
+      case 'Won': return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
+      case 'Lost': return <XCircleIcon className="h-5 w-5 text-red-600" />;
+      case 'Pending': return <ClockIcon className="h-5 w-5 text-yellow-600" />;
+      default: return <ClockIcon className="h-5 w-5 text-gray-600" />;
+    }
   };
+
+  const successRate = (pastApplications.filter(app => app.outcome === 'Won').length / pastApplications.length * 100).toFixed(1);
+  const totalAmount = pastApplications.filter(app => app.outcome === 'Won').reduce((sum, app) => sum + parseInt(app.amount.replace(/[^0-9]/g, '')), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Grant Feedback & Debrief</h1>
-              <p className="text-gray-600">Track outcomes, learn from feedback, and improve future applications</p>
+          <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 rounded-3xl p-8 text-white shadow-2xl">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative max-w-4xl">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                  <ChatBubbleLeftRightIcon className="h-10 w-10" />
+                </div>
+                <div>
+                  <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+                    Grant Feedback & Insights
+                  </h1>
+                  <p className="text-xl text-purple-100 leading-relaxed">
+                    Learn from past applications and improve your success rate with AI-powered insights.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-8">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-lg font-semibold">{successRate}% success rate</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
+                  <span className="text-lg font-semibold">${totalAmount.toLocaleString()} total won</span>
+                </div>
+              </div>
             </div>
-            <Button onClick={() => setShowAddFeedback(true)}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add Feedback
-            </Button>
           </div>
 
-          {/* Stats */}
+          {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                    <p className="text-2xl font-bold text-gray-900">{feedbackData.length}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Success Rate</p>
+                    <p className="text-3xl font-bold text-green-600">{successRate}%</p>
                   </div>
-                  <DocumentTextIcon className="h-8 w-8 text-blue-600" />
+                  <div className="p-3 bg-green-100 rounded-xl">
+                    <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {Math.round((feedbackData.filter(f => f.outcome === 'won').length / feedbackData.length) * 100)}%
-                    </p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Total Won</p>
+                    <p className="text-3xl font-bold text-blue-600">${totalAmount.toLocaleString()}</p>
                   </div>
-                  <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                  <div className="p-3 bg-blue-100 rounded-xl">
+                    <CurrencyDollarIcon className="h-8 w-8 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Funding Won</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      ${feedbackData.filter(f => f.outcome === 'won').reduce((sum, f) => sum + parseInt(f.amount.replace(/[^0-9]/g, '')), 0).toLocaleString()}
-                    </p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Applications</p>
+                    <p className="text-3xl font-bold text-gray-900">{pastApplications.length}</p>
                   </div>
-                  <SparklesIcon className="h-8 w-8 text-purple-600" />
+                  <div className="p-3 bg-purple-100 rounded-xl">
+                    <ClipboardDocumentListIcon className="h-8 w-8 text-purple-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">AI Insights</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {feedbackData.reduce((sum, f) => sum + f.aiAnalysis.strengths.length + f.aiAnalysis.weaknesses.length, 0)}
-                    </p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Avg Decision Time</p>
+                    <p className="text-3xl font-bold text-gray-900">47 days</p>
                   </div>
-                  <LightBulbIcon className="h-8 w-8 text-yellow-600" />
+                  <div className="p-3 bg-orange-100 rounded-xl">
+                    <ClockIcon className="h-8 w-8 text-orange-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filters */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Filter by outcome:</span>
-            <div className="flex space-x-2">
-              <Button
-                variant={selectedOutcome === 'all' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedOutcome('all')}
-              >
-                All
-              </Button>
-              {outcomes.map(outcome => (
-                <Button
-                  key={outcome.value}
-                  variant={selectedOutcome === outcome.value ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedOutcome(outcome.value)}
-                  className={selectedOutcome === outcome.value ? outcome.color : ''}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <ChatBubbleLeftRightIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search applications by title, organisation, or keywords..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <select
+                  value={selectedOutcome}
+                  onChange={(e) => setSelectedOutcome(e.target.value)}
+                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg bg-white"
                 >
-                  {outcome.label}
-                </Button>
-              ))}
+                  {outcomes.map((outcome) => (
+                    <option key={outcome.value} value={outcome.value}>
+                      {outcome.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg bg-white"
+                >
+                  {categories.map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Feedback List */}
-          <div className="space-y-6">
-            {filteredFeedback.map(feedback => (
-              <Card key={feedback.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
+          {/* Applications Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {filteredApplications.map((app) => (
+              <Card key={app.id} className="bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
+                <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-3">
-                        <div className="flex items-center space-x-2">
-                          {getOutcomeIcon(feedback.outcome)}
-                          <Badge className={getOutcomeColor(feedback.outcome)}>
-                            {outcomes.find(o => o.value === feedback.outcome)?.label}
-                          </Badge>
+                        <Badge className={`${getOutcomeColor(app.outcome)} border`}>
+                          {app.outcome}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs font-medium">
+                          {app.category}
+                        </Badge>
+                        <div className="flex items-center space-x-1">
+                          {getOutcomeIcon(app.outcome)}
                         </div>
-                        <Badge variant="outline">{feedback.category}</Badge>
-                        <span className="text-sm text-gray-500">{feedback.organisation}</span>
+                      </div>
+                      <CardTitle className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                        {app.grantTitle}
+                      </CardTitle>
+                      <p className="text-gray-600 font-medium">{app.organisation}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-3xl font-bold text-green-600">{app.amount}</p>
+                      <p className="text-sm text-gray-500 font-medium">{app.timeToDecision}</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{app.feedback}</p>
+                  
+                  {/* AI Insights */}
+                  <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <SparklesIcon className="h-5 w-5 text-purple-600" />
+                      <span className="font-semibold text-gray-900">AI Insights</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center">
+                          <CheckCircleIcon className="h-4 w-4 mr-1" />
+                          Strengths
+                        </h5>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          {app.aiDebrief.strengths.map((strength, index) => (
+                            <li key={index} className="flex items-start space-x-1">
+                              <span className="text-green-500 mt-1">•</span>
+                              <span>{strength}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                       
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">{feedback.title}</h3>
+                      <div>
+                        <h5 className="text-sm font-semibold text-red-700 mb-2 flex items-center">
+                          <XCircleIcon className="h-4 w-4 mr-1" />
+                          Weaknesses
+                        </h5>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          {app.aiDebrief.weaknesses.map((weakness, index) => (
+                            <li key={index} className="flex items-start space-x-1">
+                              <span className="text-red-500 mt-1">•</span>
+                              <span>{weakness}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div className="flex items-center space-x-2">
-                          <CalendarIcon className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            Submitted: {feedback.submissionDate}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <CalendarIcon className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            Decision: {feedback.decisionDate}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <SparklesIcon className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            Amount: {feedback.amount}
-                          </span>
-                        </div>
+                      <div>
+                        <h5 className="text-sm font-semibold text-blue-700 mb-2 flex items-center">
+                          <LightBulbIcon className="h-4 w-4 mr-1" />
+                          Improvements
+                        </h5>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          {app.aiDebrief.improvements.map((improvement, index) => (
+                            <li key={index} className="flex items-start space-x-1">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span>{improvement}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Feedback */}
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Reviewer Feedback</h4>
-                          <p className="text-gray-600 text-sm mb-3">{feedback.feedback}</p>
-                          <div className="space-y-2">
-                            <h5 className="text-sm font-medium text-gray-700">Key Improvements:</h5>
-                            <ul className="space-y-1">
-                              {feedback.improvements.map((improvement, index) => (
-                                <li key={index} className="text-sm text-gray-600 flex items-start space-x-2">
-                                  <span className="text-blue-500 mt-1">•</span>
-                                  <span>{improvement}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        {/* AI Analysis */}
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-2">AI Analysis</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <h5 className="text-sm font-medium text-green-700">Strengths:</h5>
-                              <ul className="space-y-1 mt-1">
-                                {feedback.aiAnalysis.strengths.map((strength, index) => (
-                                  <li key={index} className="text-sm text-gray-600 flex items-start space-x-2">
-                                    <CheckCircleIcon className="h-3 w-3 text-green-500 mt-0.5 flex-shrink-0" />
-                                    <span>{strength}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div>
-                              <h5 className="text-sm font-medium text-red-700">Areas for Improvement:</h5>
-                              <ul className="space-y-1 mt-1">
-                                {feedback.aiAnalysis.weaknesses.map((weakness, index) => (
-                                  <li key={index} className="text-sm text-gray-600 flex items-start space-x-2">
-                                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 mt-0.5 flex-shrink-0" />
-                                    <span>{weakness}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
+                  {/* Team and Details */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-6">
+                      <div className="flex items-center space-x-2">
+                        <UserGroupIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-600">{app.teamMembers.join(', ')}</span>
                       </div>
-
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <UserGroupIcon className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              Team: {feedback.teamMembers.join(', ')}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Button variant="outline" size="sm">
-                              <EyeIcon className="h-4 w-4 mr-1" />
-                              View Details
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <PencilIcon className="h-4 w-4 mr-1" />
-                              Edit
-                            </Button>
-                          </div>
-                        </div>
+                      <div className="flex items-center space-x-2">
+                        <CalendarIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-600">{app.submissionDate}</span>
                       </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Button variant="outline" size="sm" className="rounded-lg">
+                        <EyeIcon className="h-4 w-4 mr-2" />
+                        View
+                      </Button>
+                      <Button variant="outline" size="sm" className="rounded-lg">
+                        <PencilIcon className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
