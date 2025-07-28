@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 // Create axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://sge-dashboard-api.onrender.com',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
