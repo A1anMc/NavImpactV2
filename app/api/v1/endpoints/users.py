@@ -259,15 +259,15 @@ async def create_ursula(
         db.commit()
         db.refresh(user)
     
-    return {
-            "message": "Ursula created successfully",
-            "user": {
-        "id": user.id,
-        "email": user.email,
-        "full_name": user.full_name,
-                "job_title": user.job_title
+        return {
+                "message": "Ursula created successfully",
+                "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+                    "job_title": user.job_title
+                }
             }
-        }
         
     except SQLAlchemyError as e:
         db.rollback()
