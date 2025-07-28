@@ -12,12 +12,12 @@ const nextConfig = {
   
   // Environment variables
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://shadow-goose-api.onrender.com',
   },
   
   // Image optimization
   images: {
-    domains: ['navimpact-frontend.onrender.com', 'navimpact-api.onrender.com'],
+    domains: ['shadow-goose-api.onrender.com', 'shadow-goose-dashboard.onrender.com'],
     unoptimized: true, // For better standalone compatibility
   },
   
