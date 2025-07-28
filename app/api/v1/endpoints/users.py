@@ -137,10 +137,10 @@ async def setup_sge_team(
             "message": "SGE team created successfully",
             "created_count": len(created_users),
             "users": [
-                {
-                    "id": user.id,
-                    "email": user.email,
-                    "full_name": user.full_name,
+        {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
                     "job_title": user.job_title,
                     "is_intern": user.is_intern,
                     "mentor_id": user.mentor_id
@@ -258,13 +258,13 @@ async def create_ursula(
         db.add(user)
         db.commit()
         db.refresh(user)
-        
-        return {
+    
+    return {
             "message": "Ursula created successfully",
             "user": {
-                "id": user.id,
-                "email": user.email,
-                "full_name": user.full_name,
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
                 "job_title": user.job_title
             }
         }
