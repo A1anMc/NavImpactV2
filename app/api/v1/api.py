@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, sge_media, sge_media_health, debug
+from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, sge_media, sge_media_health, debug, notion
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -21,3 +21,6 @@ api_router.include_router(settings.router, prefix="/settings", tags=["settings"]
 api_router.include_router(sge_media.router, prefix="/sge-media", tags=["sge-media"])
 api_router.include_router(sge_media_health.router, tags=["sge-media-health"])
 api_router.include_router(debug.router, prefix="/debug", tags=["debug"])
+
+# Notion Integration
+api_router.include_router(notion.router, prefix="/notion", tags=["notion"])

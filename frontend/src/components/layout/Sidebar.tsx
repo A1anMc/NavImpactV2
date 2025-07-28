@@ -16,6 +16,7 @@ import {
   UserCircleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -41,6 +42,12 @@ const navigation = [
     name: 'Collaboration',
     href: '/collaboration',
     icon: ChartBarIcon,
+    current: false,
+  },
+  {
+    name: 'Notion',
+    href: '/notion',
+    icon: DocumentTextIcon,
     current: false,
   },
   {
