@@ -19,7 +19,11 @@ import {
   GlobeAltIcon,
   UserGroupIcon,
   ChartBarIcon,
+  SparklesIcon,
+  LightBulbIcon,
+  ClipboardDocumentIcon,
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 const grants = [
   {
@@ -35,6 +39,7 @@ const grants = [
     priority: 'high',
     matchRate: '75%',
     successRate: '15%',
+    aiScore: 95,
   },
   {
     id: 2,
@@ -49,6 +54,7 @@ const grants = [
     priority: 'medium',
     matchRate: '60%',
     successRate: '25%',
+    aiScore: 88,
   },
   {
     id: 3,
@@ -63,6 +69,7 @@ const grants = [
     priority: 'high',
     matchRate: '50%',
     successRate: '8%',
+    aiScore: 82,
   },
   {
     id: 4,
@@ -77,6 +84,7 @@ const grants = [
     priority: 'medium',
     matchRate: '70%',
     successRate: '20%',
+    aiScore: 78,
   },
   {
     id: 5,
@@ -91,6 +99,7 @@ const grants = [
     priority: 'high',
     matchRate: '40%',
     successRate: '12%',
+    aiScore: 75,
   },
   {
     id: 6,
@@ -105,6 +114,7 @@ const grants = [
     priority: 'medium',
     matchRate: '80%',
     successRate: '18%',
+    aiScore: 85,
   },
 ];
 
@@ -170,6 +180,29 @@ export default function GrantsPage() {
             </div>
           </div>
 
+          {/* AI Matching Section */}
+          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-purple-100 rounded-xl">
+                    <SparklesIcon className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">AI Grant Matching</h3>
+                    <p className="text-gray-600">Let AI find the perfect grants for your project</p>
+                  </div>
+                </div>
+                <Link href="/grants/match">
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    Find My Matches
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
@@ -212,10 +245,10 @@ export default function GrantsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Deadlines</p>
-                    <p className="text-2xl font-bold text-gray-900">3</p>
+                    <p className="text-sm font-medium text-gray-600">AI Matches</p>
+                    <p className="text-2xl font-bold text-gray-900">4</p>
                   </div>
-                  <ClockIcon className="h-8 w-8 text-orange-600" />
+                  <SparklesIcon className="h-8 w-8 text-orange-600" />
                 </div>
               </CardContent>
             </Card>
@@ -279,14 +312,22 @@ export default function GrantsPage() {
                         <span>{grant.category}</span>
                       </div>
                     </div>
-                    <Badge className={
-                      grant.status === 'open' ? 'bg-green-100 text-green-800' :
-                      grant.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
-                      grant.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }>
-                      {grant.status}
-                    </Badge>
+                    <div className="flex flex-col items-end space-y-2">
+                      <Badge className={
+                        grant.status === 'open' ? 'bg-green-100 text-green-800' :
+                        grant.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                        grant.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }>
+                        {grant.status}
+                      </Badge>
+                      {grant.aiScore && (
+                        <div className="flex items-center space-x-1">
+                          <SparklesIcon className="h-3 w-3 text-purple-600" />
+                          <span className="text-xs font-medium text-purple-600">{grant.aiScore}%</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -326,13 +367,15 @@ export default function GrantsPage() {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
+                      <Link href={`/grants/apply/${grant.id}`}>
+                        <Button size="sm" variant="outline">
+                          <ClipboardDocumentIcon className="h-4 w-4 mr-1" />
+                          Apply
+                        </Button>
+                      </Link>
                       <Button size="sm" variant="outline">
                         <EyeIcon className="h-4 w-4 mr-1" />
                         View Details
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <DocumentTextIcon className="h-4 w-4 mr-1" />
-                        Apply
                       </Button>
                     </div>
                     <ArrowRightIcon className="h-4 w-4 text-gray-400" />
