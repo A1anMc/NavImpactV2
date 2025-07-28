@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Goose Entertainment - Media Impact Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sge-black': '#181818',
+                        'sge-white': '#fffefe',
+                        'sge-forest': '#425627',
+                        'sge-tawny': '#885C24',
+                    },
+                    fontFamily: {
+                        'carrot': ['Carrotflower', 'serif'],
+                        'neue': ['"Neue Haas Grotesk Display Pro"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Carrotflower:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #181818 0%, #425627 50%, #885C24 100%);
+            min-height: 100vh;
+            font-family: 'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .glass {
+            background: rgba(24, 24, 24, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(66, 86, 39, 0.2);
+        }
+        .team-card {
+            background: rgba(255, 254, 254, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(66, 86, 39, 0.1);
+        }
+    </style>
+</head>
+<body class="text-sge-white">
+    <!-- Header -->
+    <header class="glass border-b border-sge-forest/20 p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="p-3 bg-gradient-to-br from-sge-forest to-sge-tawny rounded-xl shadow-lg">
+                    <svg class="h-8 w-8 text-sge-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-carrot bg-gradient-to-r from-sge-white to-sge-white/90 bg-clip-text text-transparent">
+                        Shadow Goose Entertainment
+                    </h1>
+                    <p class="text-sm text-sge-white/60 font-neue">Media Impact Dashboard</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-sm text-sge-white/60">Status</div>
+                <div class="text-sge-forest font-semibold">Live</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto p-6">
+        <!-- Hero Section -->
+        <section class="mb-12">
+            <div class="glass rounded-2xl p-8 mb-8">
+                <h2 class="text-4xl font-carrot mb-4 bg-gradient-to-r from-sge-white to-sge-forest bg-clip-text text-transparent">
+                    Media Impact Platform
+                </h2>
+                <p class="text-xl text-sge-white/80 mb-6 font-neue">
+                    Strategic media production with measurable impact outcomes
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="team-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-sge-forest">6</div>
+                        <div class="text-sm text-sge-white/60">Team Members</div>
+                    </div>
+                    <div class="team-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-sge-forest">2</div>
+                        <div class="text-sm text-sge-white/60">Active Projects</div>
+                    </div>
+                    <div class="team-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-sge-forest">£125K</div>
+                        <div class="text-sm text-sge-white/60">Grant Pipeline</div>
+                    </div>
+                    <div class="team-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold text-sge-forest">88.5</div>
+                        <div class="text-sm text-sge-white/60">Impact Score</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-carrot mb-6 text-sge-white">SGE Team</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="team-container">
+                <!-- Team members will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-carrot mb-6 text-sge-white">Active Projects</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="projects-container">
+                <!-- Projects will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Grants Section -->
+        <section>
+            <h3 class="text-2xl font-carrot mb-6 text-sge-white">Grant Applications</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="grants-container">
+                <!-- Grants will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Load team data
+        async function loadTeamData() {
+            try {
+                const response = await fetch('https://shadow-goose-api.onrender.com/api/v1/users/sge-team');
+                const team = await response.json();
+                
+                const teamContainer = document.getElementById('team-container');
+                teamContainer.innerHTML = team.map(member => `
+                    <div class="team-card rounded-xl p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-sge-forest to-sge-tawny rounded-full flex items-center justify-center">
+                                <span class="text-sge-white font-bold">${member.full_name.split(' ').map(n => n[0]).join('')}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-neue font-semibold text-sge-white">${member.full_name}</h4>
+                                <p class="text-sm text-sge-forest">${member.job_title}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-sge-white/80 mb-3">${member.bio}</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${member.skills.slice(0, 3).map(skill => 
+                                `<span class="px-2 py-1 bg-sge-forest/20 text-xs text-sge-forest rounded">${skill}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="mt-3 flex items-center justify-between">
+                            <span class="text-xs text-sge-white/60">${member.organisation}</span>
+                            <span class="px-2 py-1 text-xs rounded ${member.current_status === 'available' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}">
+                                ${member.current_status}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading team data:', error);
+                document.getElementById('team-container').innerHTML = '<p class="text-sge-white/60">Loading team data...</p>';
+            }
+        }
+
+        // Load projects data
+        async function loadProjectsData() {
+            try {
+                const response = await fetch('https://shadow-goose-api.onrender.com/api/v1/projects');
+                const projects = await response.json();
+                
+                const projectsContainer = document.getElementById('projects-container');
+                projectsContainer.innerHTML = projects.map(project => `
+                    <div class="team-card rounded-xl p-6">
+                        <h4 class="font-neue font-semibold text-sge-white mb-2">${project.title}</h4>
+                        <p class="text-sm text-sge-white/80 mb-4">${project.description}</p>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-sge-white/60">Progress</span>
+                                <span class="text-sge-forest">${project.progress}%</span>
+                            </div>
+                            <div class="w-full bg-sge-black/30 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-sge-forest to-sge-tawny h-2 rounded-full" style="width: ${project.progress}%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-sge-white/60">Impact Score: ${project.impact_score}</span>
+                            <span class="px-2 py-1 text-xs rounded bg-sge-forest/20 text-sge-forest">
+                                ${project.status}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading projects data:', error);
+                document.getElementById('projects-container').innerHTML = '<p class="text-sge-white/60">Loading projects...</p>';
+            }
+        }
+
+        // Load grants data
+        async function loadGrantsData() {
+            try {
+                const response = await fetch('https://shadow-goose-api.onrender.com/api/v1/grants');
+                const grants = await response.json();
+                
+                const grantsContainer = document.getElementById('grants-container');
+                grantsContainer.innerHTML = grants.map(grant => `
+                    <div class="team-card rounded-xl p-6">
+                        <h4 class="font-neue font-semibold text-sge-white mb-2">${grant.title}</h4>
+                        <p class="text-sm text-sge-white/60 mb-2">${grant.organisation}</p>
+                        <div class="mb-4">
+                            <div class="text-2xl font-bold text-sge-forest">£${grant.amount.toLocaleString()}</div>
+                            <div class="text-xs text-sge-white/60">Deadline: ${grant.deadline}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="px-2 py-1 text-xs rounded bg-sge-forest/20 text-sge-forest">
+                                ${grant.status}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading grants data:', error);
+                document.getElementById('grants-container').innerHTML = '<p class="text-sge-white/60">Loading grants...</p>';
+            }
+        }
+
+        // Load all data when page loads
+        window.addEventListener('load', () => {
+            loadTeamData();
+            loadProjectsData();
+            loadGrantsData();
+        });
+    </script>
+</body>
+</html> 
