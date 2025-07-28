@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import {
   GlobeAltIcon,
   ChartBarIcon,
-  TrendingUpIcon,
   UsersIcon,
   HeartIcon,
   EyeIcon,
@@ -36,7 +35,7 @@ const impactMetrics = [
     title: 'Social Impact Score',
     value: '8.7/10',
     change: '+0.3',
-    icon: TrendingUpIcon,
+    icon: ChartBarIcon,
     color: 'bg-purple-500',
     description: 'Measured social impact rating',
   },

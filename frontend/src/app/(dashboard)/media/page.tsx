@@ -12,7 +12,7 @@ import {
   PlayIcon,
   PauseIcon,
   EyeIcon,
-  DownloadIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 
 const mediaItems = [
@@ -191,7 +191,7 @@ export default function MediaPage() {
                               View
                             </Button>
                             <Button size="sm" variant="outline" className="flex-1">
-                              <DownloadIcon className="h-3 w-3 mr-1" />
+                              <ArrowDownTrayIcon className="h-3 w-3 mr-1" />
                               Download
                             </Button>
                           </div>
@@ -266,7 +266,7 @@ export default function MediaPage() {
                     View Gallery
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
-                    <DownloadIcon className="h-4 w-4 mr-2" />
+                    <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
                     Bulk Download
                   </Button>
                 </CardContent>
