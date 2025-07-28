@@ -674,11 +674,67 @@ async def scrape_all_sources(
     db: Session = Depends(get_db)
 ):
     """Trigger scraping of all available grant sources."""
-    return {
-        "status": "disabled",
-        "message": "Grant scraping is currently disabled to reduce dependencies",
-        "available_sources": []
-    }
+    try:
+        from app.core.config import settings
+        
+        if not hasattr(settings, 'ALLOWED_SCRAPER_SOURCES'):
+            raise HTTPException(
+                status_code=500,
+                detail="Scraper configuration not found"
+            )
+        
+        enabled_sources = []
+        for source_id, config in settings.ALLOWED_SCRAPER_SOURCES.items():
+            if config.get("enabled", False):
+                enabled_sources.append(source_id)
+        
+        if not enabled_sources:
+            return {
+                "status": "no_sources",
+                "message": "No enabled scraper sources found",
+                "available_sources": []
+            }
+        
+        # Start scraping for each enabled source
+        started_sources = []
+        for source in enabled_sources:
+            try:
+                # Import and initialize scraper
+                if source == "australian_grants":
+                    from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+                    scraper = AustralianGrantsScraper(db)
+                elif source == "business_gov":
+                    from app.services.scrapers.business_gov import BusinessGovScraper
+                    scraper = BusinessGovScraper(db)
+                elif source == "media_investment":
+                    from app.services.scrapers.media_investment_scraper import MediaInvestmentScraper
+                    scraper = MediaInvestmentScraper(db)
+                else:
+                    logger.warning(f"Skipping {source} - not yet implemented")
+                    continue
+                
+                # Add to background tasks
+                background_tasks.add_task(scraper.scrape)
+                started_sources.append(source)
+                
+            except Exception as e:
+                logger.error(f"Error starting scraper {source}: {str(e)}")
+                # Continue with other sources even if one fails
+        
+        return {
+            "status": "started",
+            "message": f"Started scraping for {len(started_sources)} sources",
+            "started_sources": started_sources,
+            "total_enabled": len(enabled_sources),
+            "estimated_time": "5-10 minutes"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in scrape_all_sources: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error starting scrapers: {str(e)}"
+        )
 
 @router.post("/scrape/{source}")
 async def scrape_specific_source(
@@ -687,20 +743,118 @@ async def scrape_specific_source(
     db: Session = Depends(get_db)
 ):
     """Trigger scraping of a specific grant source."""
-    return {
-        "status": "disabled",
-        "message": f"Grant scraping for {source} is currently disabled to reduce dependencies"
-    }
+    try:
+        from app.core.config import settings
+        
+        # Check if source is allowed
+        if not hasattr(settings, 'ALLOWED_SCRAPER_SOURCES') or source not in settings.ALLOWED_SCRAPER_SOURCES:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Source '{source}' is not allowed or not configured"
+            )
+        
+        source_config = settings.ALLOWED_SCRAPER_SOURCES[source]
+        if not source_config.get("enabled", False):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Source '{source}' is currently disabled"
+            )
+        
+        # Import the appropriate scraper
+        scraper_map = {
+            "australian_grants": "AustralianGrantsScraper",
+            "business_gov": "BusinessGovScraper", 
+            "media_investment": "MediaInvestmentScraper",
+            "grantconnect": "GrantConnectScraper",
+            "philanthropic": "PhilanthropicScraper"
+        }
+        
+        if source not in scraper_map:
+            raise HTTPException(
+                status_code=400,
+                detail=f"No scraper implementation found for source '{source}'"
+            )
+        
+        # Import and initialize scraper
+        try:
+            if source == "australian_grants":
+                from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+                scraper = AustralianGrantsScraper(db)
+            elif source == "business_gov":
+                from app.services.scrapers.business_gov import BusinessGovScraper
+                scraper = BusinessGovScraper(db)
+            elif source == "media_investment":
+                from app.services.scrapers.media_investment_scraper import MediaInvestmentScraper
+                scraper = MediaInvestmentScraper(db)
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Scraper for '{source}' not yet implemented"
+                )
+            
+            # Run scraper in background
+            background_tasks.add_task(scraper.scrape)
+            
+            return {
+                "status": "started",
+                "message": f"Scraping started for {source}",
+                "source": source,
+                "estimated_time": "2-5 minutes"
+            }
+            
+        except ImportError as e:
+            logger.error(f"Import error for scraper {source}: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Scraper module for '{source}' could not be imported"
+            )
+        except Exception as e:
+            logger.error(f"Error initializing scraper {source}: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error initializing scraper: {str(e)}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in scrape_specific_source: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )
 
 @router.get("/sources")
 def get_available_sources(db: Session = Depends(get_db)):
     """Get list of available grant sources with their status."""
-    return {
-        "sources": [],
-        "total": 0,
-        "status": "disabled",
-        "message": "Grant scraping sources are currently disabled to reduce dependencies"
-    }
+    try:
+        from app.core.config import settings
+        
+        sources = []
+        if hasattr(settings, 'ALLOWED_SCRAPER_SOURCES'):
+            for source_id, config in settings.ALLOWED_SCRAPER_SOURCES.items():
+                sources.append({
+                    "id": source_id,
+                    "name": config.get("description", source_id),
+                    "base_url": config.get("base_url", ""),
+                    "enabled": config.get("enabled", False),
+                    "rate_limit": config.get("rate_limit", 1.0)
+                })
+        
+        return {
+            "sources": sources,
+            "total": len(sources),
+            "status": "enabled",
+            "message": "Grant scraping sources are now available"
+        }
+    except Exception as e:
+        logger.error(f"Error getting available sources: {str(e)}")
+        return {
+            "sources": [],
+            "total": 0,
+            "status": "error",
+            "message": f"Error retrieving sources: {str(e)}"
+        }
 
 @router.get("/test")
 def test_grants():
