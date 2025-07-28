@@ -106,7 +106,7 @@ class Settings:
             "rate_limit": 1.0,
             "description": "Screen Australia and Australian government grants"
         },
-        "business_gov": {
+        "business.gov.au": {
             "base_url": "https://business.gov.au",
             "enabled": True,
             "rate_limit": 1.0,
@@ -137,6 +137,26 @@ class Settings:
         "navimpact-api.onrender.com",
         "localhost",
         "127.0.0.1"
+    ]
+    
+    # External domains allowed for scraping
+    ALLOWED_EXTERNAL_DOMAINS: List[str] = [
+        "business.gov.au",
+        "www.screenaustralia.gov.au",
+        "screenaustralia.gov.au",
+        "www.create.nsw.gov.au",
+        "create.nsw.gov.au",
+        "creative.gov.au",
+        "www.abc.net.au",
+        "www.sbs.com.au",
+        "www.grants.gov.au",
+        "www.philanthropy.org.au",
+        "www.nineentertainment.com.au",
+        "www.sevenwestmedia.com.au",
+        "www.10play.com.au",
+        "www.foxtel.com.au",
+        "www.newscorpaustralia.com.au",
+        "www.southerncrossaustereo.com.au"
     ]
     
     # Frontend URL
