@@ -1,6 +1,7 @@
 """
 NavImpact API - Production Ready
 Enhanced with comprehensive security measures for production deployment.
+Updated: 2025-01-27 - Triggering redeployment for grants system
 """
 
 from datetime import datetime
@@ -265,6 +266,7 @@ def create_app() -> FastAPI:
     @app.get("/health")
     async def health_check():
         """Health check endpoint."""
+        # Updated: 2025-01-27 - Triggering redeployment for grants system
         try:
             # Check database health using the correct function
             from app.db.session import health_check as check_db_health
