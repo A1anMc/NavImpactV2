@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,120 +20,143 @@ import {
   FireIcon,
   StarIcon,
 } from '@heroicons/react/24/outline';
+import { grantsApi } from '@/services/grants';
+import { Grant } from '@/types/models';
 
-// Timeline data
-const timelineEvents = [
-  {
-    id: 1,
-    grantId: 1,
-    title: 'Screen Australia Documentary Development',
-    type: 'deadline',
-    date: '2024-02-15',
-    time: '23:59',
-    status: 'upcoming',
-    priority: 'high',
-    description: 'Final submission deadline for documentary development funding.',
-    assignees: ['Alan McCarthy', 'Harry Dog'],
-    reminders: ['2024-02-10', '2024-02-13'],
-    category: 'Documentary'
-  },
-  {
-    id: 2,
-    grantId: 2,
-    title: 'ABC Pitch Initiative',
-    type: 'deadline',
-    date: '2024-01-30',
-    time: '23:59',
-    status: 'completed',
-    priority: 'medium',
-    description: 'Application submitted successfully to ABC.',
-    assignees: ['Alan McCarthy'],
-    reminders: [],
-    category: 'Television'
-  },
-  {
-    id: 3,
-    grantId: 1,
-    title: 'Screen Australia - Team Review',
-    type: 'review',
-    date: '2024-02-10',
-    time: '14:00',
-    status: 'upcoming',
-    priority: 'high',
-    description: 'Final team review before submission with all stakeholders.',
-    assignees: ['Alan McCarthy', 'Harry Dog', 'Clooney Cat'],
-    reminders: ['2024-02-09'],
-    category: 'Documentary'
-  },
-  {
-    id: 4,
-    grantId: 5,
-    title: 'Film Victoria - Budget Review',
-    type: 'review',
-    date: '2024-01-25',
-    time: '10:00',
-    status: 'upcoming',
-    priority: 'medium',
-    description: 'Budget review with production team and financial advisors.',
-    assignees: ['Alan McCarthy', 'Harry Dog'],
-    reminders: ['2024-01-24'],
-    category: 'Feature Film'
-  },
-  {
-    id: 5,
-    grantId: 4,
-    title: 'SBS Content Fund - Draft Deadline',
-    type: 'draft',
-    date: '2024-02-20',
-    time: '17:00',
-    status: 'upcoming',
-    priority: 'medium',
-    description: 'First draft completion for multicultural content funding.',
-    assignees: ['Alan McCarthy', 'Clooney Cat'],
-    reminders: ['2024-02-18'],
-    category: 'Television'
-  },
-  {
-    id: 6,
-    grantId: 3,
-    title: 'Netflix Documentary Fund',
-    type: 'deadline',
-    date: '2024-03-01',
-    time: '23:59',
-    status: 'upcoming',
-    priority: 'high',
-    description: 'Application deadline for global documentary funding.',
-    assignees: ['Alan McCarthy'],
-    reminders: ['2024-02-25', '2024-02-28'],
-    category: 'Documentary'
-  }
-];
-
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
+interface TimelineEvent {
+  id: number;
+  grantId: number;
+  title: string;
+  type: 'deadline' | 'review' | 'draft' | 'submission';
+  date: string;
+  time: string;
+  status: 'upcoming' | 'completed' | 'overdue';
+  priority: 'high' | 'medium' | 'low';
+  description: string;
+  assignees: string[];
+  reminders: string[];
+  category: string;
+}
 
 export default function GrantTimelinePage() {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [viewMode, setViewMode] = useState('timeline'); // 'timeline' or 'calendar'
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'timeline' | 'calendar'>('timeline');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
 
-  const getDaysInMonth = (month, year) => {
+  // Fetch grants and create timeline events
+  useEffect(() => {
+    const fetchGrantsAndCreateTimeline = async () => {
+      try {
+        setLoading(true);
+        const response = await grantsApi.getGrants({ limit: 100 });
+        const grantsData = response.items || [];
+        setGrants(grantsData);
+
+        // Create timeline events from grants
+        const events: TimelineEvent[] = [];
+        let eventId = 1;
+
+        grantsData.forEach((grant) => {
+          if (grant.deadline) {
+            const deadlineDate = new Date(grant.deadline);
+            const now = new Date();
+            
+            events.push({
+              id: eventId++,
+              grantId: grant.id,
+              title: grant.title,
+              type: 'deadline',
+              date: grant.deadline?.toString(),
+              time: '23:59',
+              status: deadlineDate < now ? 'overdue' : 'upcoming',
+              priority: deadlineDate.getTime() - now.getTime() < 7 * 24 * 60 * 60 * 1000 ? 'high' : 'medium',
+              description: `Final submission deadline for ${grant.title}`,
+              assignees: ['Alan McCarthy'],
+              reminders: [
+                new Date(deadlineDate.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                new Date(deadlineDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+              ],
+              category: grant.industry_focus || 'General'
+            });
+
+            // Add review event 5 days before deadline
+            const reviewDate = new Date(deadlineDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+            if (reviewDate > now) {
+              events.push({
+                id: eventId++,
+                grantId: grant.id,
+                title: `${grant.title} - Final Review`,
+                type: 'review',
+                date: reviewDate.toISOString().split('T')[0],
+                time: '14:00',
+                status: 'upcoming',
+                priority: 'high',
+                description: `Final team review before submission for ${grant.title}`,
+                assignees: ['Alan McCarthy', 'Harry Dog'],
+                reminders: [
+                  new Date(reviewDate.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                ],
+                category: grant.industry_focus || 'General'
+              });
+            }
+
+            // Add draft deadline 10 days before final deadline
+            const draftDate = new Date(deadlineDate.getTime() - 10 * 24 * 60 * 60 * 1000);
+            if (draftDate > now) {
+              events.push({
+                id: eventId++,
+                grantId: grant.id,
+                title: `${grant.title} - Draft Deadline`,
+                type: 'draft',
+                date: draftDate.toISOString().split('T')[0],
+                time: '17:00',
+                status: 'upcoming',
+                priority: 'medium',
+                description: `First draft completion for ${grant.title}`,
+                assignees: ['Alan McCarthy'],
+                reminders: [
+                  new Date(draftDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                ],
+                category: grant.industry_focus || 'General'
+              });
+            }
+          }
+        });
+
+        // Sort events by date
+        events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setTimelineEvents(events);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching grants:', err);
+        setError('Failed to load timeline data. Please try again.');
+        setTimelineEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGrantsAndCreateTimeline();
+  }, []);
+
+  const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (month, year) => {
+  const getFirstDayOfMonth = (month: number, year: number) => {
     return new Date(year, month, 1).getDay();
   };
 
   const generateCalendarDays = () => {
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-    const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
+    const daysInMonth = getDaysInMonth(currentDate.getMonth(), currentDate.getFullYear());
+    const firstDay = getFirstDayOfMonth(currentDate.getMonth(), currentDate.getFullYear());
     const days = [];
 
-    // Add empty days for padding
+    // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
@@ -146,292 +169,284 @@ export default function GrantTimelinePage() {
     return days;
   };
 
-  const getEventsForDate = (day) => {
+  const getEventsForDate = (day: number) => {
     if (!day) return [];
-    const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return timelineEvents.filter(event => event.date === date);
+    const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return timelineEvents.filter(event => event.date === dateString);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'upcoming': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'upcoming': return 'bg-blue-100 text-blue-800';
+      case 'overdue': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getPriorityIcon = (priority) => {
+  const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case 'high': return <FireIcon className="h-4 w-4 text-red-500" />;
       case 'medium': return <StarIcon className="h-4 w-4 text-yellow-500" />;
-      case 'low': return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
-      default: return <CheckCircleIcon className="h-4 w-4 text-gray-500" />;
+      case 'low': return <ClockIcon className="h-4 w-4 text-gray-500" />;
+      default: return <ClockIcon className="h-4 w-4 text-gray-500" />;
     }
   };
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'deadline': return <ExclamationTriangleIcon className="h-5 w-5" />;
-      case 'review': return <UserGroupIcon className="h-5 w-5" />;
-      case 'draft': return <PencilIcon className="h-5 w-5" />;
-      default: return <CalendarIcon className="h-5 w-5" />;
+      case 'deadline': return <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />;
+      case 'review': return <UserGroupIcon className="h-4 w-4 text-blue-500" />;
+      case 'draft': return <PencilIcon className="h-4 w-4 text-yellow-500" />;
+      case 'submission': return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
+      default: return <CalendarIcon className="h-4 w-4 text-gray-500" />;
     }
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-AU', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading timeline...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto" />
+            <p className="mt-4 text-red-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Grant Timeline</h1>
-              <p className="text-xl text-gray-600">Track deadlines, reviews, and important dates for your grant applications</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => setViewMode(viewMode === 'timeline' ? 'calendar' : 'timeline')}
-                variant="outline"
-                className="px-6 py-3 text-lg rounded-xl"
-              >
-                {viewMode === 'timeline' ? 'Calendar View' : 'Timeline View'}
-              </Button>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 text-lg rounded-xl">
-                <PlusIcon className="h-5 w-5 mr-2" />
-                Add Event
-              </Button>
-            </div>
+    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Grant Timeline</h1>
+            <p className="text-gray-600 mt-2">
+              Track deadlines, reviews, and important grant milestones
+            </p>
           </div>
-
-          {/* Month Navigation */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (currentMonth === 0) {
-                    setCurrentMonth(11);
-                    setCurrentYear(currentYear - 1);
-                  } else {
-                    setCurrentMonth(currentMonth - 1);
-                  }
-                }}
-                className="p-3 rounded-xl"
-              >
-                <ChevronLeftIcon className="h-5 w-5" />
-              </Button>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {months[currentMonth]} {currentYear}
-              </h2>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (currentMonth === 11) {
-                    setCurrentMonth(0);
-                    setCurrentYear(currentYear + 1);
-                  } else {
-                    setCurrentMonth(currentMonth + 1);
-                  }
-                }}
-                className="p-3 rounded-xl"
-              >
-                <ChevronRightIcon className="h-5 w-5" />
-              </Button>
-            </div>
+          <div className="flex items-center space-x-3">
+            <Button
+              variant={viewMode === 'timeline' ? 'primary' : 'outline'}
+              onClick={() => setViewMode('timeline')}
+            >
+              Timeline
+            </Button>
+            <Button
+              variant={viewMode === 'calendar' ? 'primary' : 'outline'}
+              onClick={() => setViewMode('calendar')}
+            >
+              Calendar
+            </Button>
           </div>
+        </div>
+      </div>
 
-          {viewMode === 'calendar' ? (
-            /* Calendar View */
-            <Card className="bg-white shadow-lg border-0">
-              <CardContent className="p-8">
-                {/* Calendar Header */}
-                <div className="grid grid-cols-7 gap-2 mb-6">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-sm font-semibold text-gray-600 py-3">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-2">
-                  {generateCalendarDays().map((day, index) => (
-                    <div
-                      key={index}
-                      className={`min-h-[120px] p-3 border border-gray-100 rounded-xl ${
-                        day ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'
-                      }`}
-                    >
-                      {day && (
-                        <>
-                          <div className="text-sm font-semibold text-gray-900 mb-2">
-                            {day}
-                          </div>
-                          <div className="space-y-1">
-                            {getEventsForDate(day).map(event => (
-                              <div
-                                key={event.id}
-                                className="text-xs p-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors"
-                                onClick={() => setSelectedEvent(event)}
-                              >
-                                <div className="flex items-center space-x-1 mb-1">
-                                  {getTypeIcon(event.type)}
-                                  <span className="truncate font-medium">{event.title}</span>
-                                </div>
-                                <Badge className={`text-xs ${getStatusColor(event.status)}`}>
-                                  {event.status}
-                                </Badge>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
+      {viewMode === 'timeline' ? (
+        /* Timeline View */
+        <div className="space-y-6">
+          {timelineEvents.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto" />
+                <h3 className="mt-4 text-lg font-medium text-gray-900">No timeline events</h3>
+                <p className="mt-2 text-gray-600">
+                  Timeline events will appear here based on your grant deadlines and milestones.
+                </p>
               </CardContent>
             </Card>
           ) : (
-            /* Timeline View */
-            <div className="space-y-6">
-              {timelineEvents
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                .map(event => (
-                  <Card key={event.id} className="bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
-                    <CardContent className="p-8">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-6">
-                          <div className="flex-shrink-0">
-                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
-                              {getTypeIcon(event.type)}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-4">
-                              <h3 className="text-2xl font-bold text-gray-900">{event.title}</h3>
-                              <Badge className={`${getStatusColor(event.status)} border`}>
-                                {event.status}
-                              </Badge>
-                              <div className="flex items-center space-x-1">
-                                {getPriorityIcon(event.priority)}
-                                <Badge className={`${event.priority === 'high' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200'} border`}>
-                                  {event.priority}
-                                </Badge>
-                              </div>
-                            </div>
-                            <p className="text-gray-600 text-lg mb-4 leading-relaxed">{event.description}</p>
-                            <div className="flex items-center space-x-8 text-sm text-gray-500">
-                              <div className="flex items-center space-x-2">
-                                <CalendarIcon className="h-5 w-5" />
-                                <span className="font-medium">{event.date} at {event.time}</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <UserGroupIcon className="h-5 w-5" />
-                                <span className="font-medium">{event.assignees.join(', ')}</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Badge variant="outline" className="text-xs">{event.category}</Badge>
-                              </div>
-                            </div>
-                            {event.reminders.length > 0 && (
-                              <div className="mt-4 flex items-center space-x-3">
-                                <BellIcon className="h-5 w-5 text-yellow-500" />
-                                <span className="text-sm text-gray-600">
-                                  Reminders: {event.reminders.join(', ')}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Button variant="outline" size="sm" className="rounded-lg">
-                            <EyeIcon className="h-4 w-4 mr-2" />
-                            View
-                          </Button>
-                          <Button variant="outline" size="sm" className="rounded-lg">
-                            <PencilIcon className="h-4 w-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
+            timelineEvents.map((event) => (
+              <Card key={event.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        {getTypeIcon(event.type)}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-          )}
-
-          {/* Event Details Modal */}
-          {selectedEvent && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <Card className="w-full max-w-2xl mx-4 bg-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="text-2xl">{selectedEvent.title}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedEvent(null)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      ×
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Description</h4>
-                    <p className="text-gray-600">{selectedEvent.description}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Date & Time</h4>
-                      <p className="text-gray-600">{selectedEvent.date} at {selectedEvent.time}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Category</h4>
-                      <Badge variant="outline">{selectedEvent.category}</Badge>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Assignees</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedEvent.assignees.map(assignee => (
-                        <Badge key={assignee} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          {assignee}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  {selectedEvent.reminders.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Reminders</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedEvent.reminders.map(reminder => (
-                          <Badge key={reminder} className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                            {reminder}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                          <Badge className={getStatusColor(event.status)}>
+                            {event.status}
                           </Badge>
-                        ))}
+                          <div className="flex items-center">
+                            {getPriorityIcon(event.priority)}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 mb-3">{event.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <CalendarIcon className="h-4 w-4 mr-1" />
+                            {formatDate(event.date)}
+                          </div>
+                          <div className="flex items-center">
+                            <ClockIcon className="h-4 w-4 mr-1" />
+                            {event.time}
+                          </div>
+                          <div className="flex items-center">
+                            <UserGroupIcon className="h-4 w-4 mr-1" />
+                            {event.assignees.join(', ')}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  )}
-                  <div className="flex space-x-3 pt-4">
-                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                      <PencilIcon className="h-4 w-4 mr-2" />
-                      Edit Event
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm">
+                        <EyeIcon className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <PencilIcon className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            ))
           )}
         </div>
-      </div>
+      ) : (
+        /* Calendar View */
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Calendar View</CardTitle>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                >
+                  <ChevronLeftIcon className="h-4 w-4" />
+                </Button>
+                <span className="text-lg font-medium">
+                  {currentDate.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' })}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-1">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                  {day}
+                </div>
+              ))}
+              {generateCalendarDays().map((day, index) => (
+                <div
+                  key={index}
+                  className={`p-2 min-h-[80px] border border-gray-200 ${
+                    day ? 'bg-white' : 'bg-gray-50'
+                  }`}
+                >
+                  {day && (
+                    <>
+                      <div className="text-sm font-medium text-gray-900 mb-1">{day}</div>
+                      <div className="space-y-1">
+                        {getEventsForDate(day).map((event) => (
+                          <div
+                            key={event.id}
+                            className={`text-xs p-1 rounded cursor-pointer ${
+                              event.priority === 'high' ? 'bg-red-100 text-red-800' :
+                              event.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-blue-100 text-blue-800'
+                            }`}
+                            onClick={() => setSelectedEvent(event)}
+                          >
+                            {event.title.substring(0, 20)}...
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>{selectedEvent.title}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedEvent(null)}
+                >
+                  ×
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-900">Description</h4>
+                  <p className="text-sm text-gray-600">{selectedEvent.description}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Date & Time</h4>
+                  <p className="text-sm text-gray-600">
+                    {formatDate(selectedEvent.date)} at {selectedEvent.time}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Assignees</h4>
+                  <p className="text-sm text-gray-600">{selectedEvent.assignees.join(', ')}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Reminders</h4>
+                  <p className="text-sm text-gray-600">
+                    {selectedEvent.reminders.map(date => formatDate(date)).join(', ')}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 } 

@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Enable static export for Render
-  output: 'export',
+  // Disable static export temporarily to allow dynamic routes with live data
+  // output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true,

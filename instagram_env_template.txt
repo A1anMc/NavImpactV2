@@ -1,0 +1,17 @@
+# Instagram API Configuration
+# Add these to your .env file or environment variables
+
+# Instagram Graph API
+INSTAGRAM_ACCESS_TOKEN=your_instagram_access_token_here
+INSTAGRAM_APP_ID=your_facebook_app_id_here
+INSTAGRAM_APP_SECRET=your_facebook_app_secret_here
+INSTAGRAM_BUSINESS_ACCOUNT_ID=your_instagram_business_account_id_here
+
+# Social Media Features
+SOCIAL_MEDIA_ENABLED=true
+SOCIAL_METRICS_CACHE_DURATION=3600
+
+# Optional: Instagram API Settings
+INSTAGRAM_API_BASE_URL=https://graph.instagram.com/v18.0
+INSTAGRAM_API_TIMEOUT=30
+INSTAGRAM_RATE_LIMIT=200

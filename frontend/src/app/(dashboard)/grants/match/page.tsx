@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,9 @@ import {
   GlobeAltIcon,
   CalendarIcon,
 } from '@heroicons/react/24/outline';
+import { grantsApi } from '@/services/grants';
+import { Grant, GrantRecommendation } from '@/types/models';
+import Link from 'next/link';
 
 const projectTypes = [
   { id: 'documentary', name: 'Documentary', icon: '🎬', description: 'Non-fiction storytelling' },
@@ -57,407 +60,409 @@ const budgetRanges = [
   { id: 'enterprise', name: 'Enterprise', range: '$500K+', description: 'Blockbuster projects' },
 ];
 
-const matchedGrants = [
-  {
-    id: 1,
-    title: 'Screen Australia Documentary Development',
-    organisation: 'Screen Australia',
-    amount: '$50,000',
-    matchScore: 95,
-    deadline: '2024-02-15',
-    category: 'Documentary',
-    description: 'Perfect match for your documentary project with social impact focus.',
-    requirements: ['Australian content', 'Social impact', 'Innovative storytelling'],
-    aiInsights: {
-      strengths: ['Strong social impact angle', 'Experienced team', 'Clear budget'],
-      improvements: ['Add more distribution details', 'Strengthen audience engagement'],
-      successRate: '85%'
-    }
-  },
-  {
-    id: 2,
-    title: 'ABC Pitch Initiative',
-    organisation: 'ABC',
-    amount: '$25,000',
-    matchScore: 88,
-    deadline: '2024-01-30',
-    category: 'Television',
-    description: 'Excellent fit for your television project with diverse representation.',
-    requirements: ['Diverse casting', 'Australian stories', 'Innovative format'],
-    aiInsights: {
-      strengths: ['Diverse representation', 'Innovative format', 'Clear objectives'],
-      improvements: ['Add more innovative elements', 'Strengthen multicultural focus'],
-      successRate: '75%'
-    }
-  },
-  {
-    id: 3,
-    title: 'Netflix Documentary Fund',
-    organisation: 'Netflix',
-    amount: '$100,000',
-    matchScore: 82,
-    deadline: '2024-03-01',
-    category: 'Documentary',
-    description: 'Good match for global documentary with human interest angle.',
-    requirements: ['Global appeal', 'Human interest', 'High production value'],
-    aiInsights: {
-      strengths: ['Global appeal', 'Human interest', 'High production quality'],
-      improvements: ['Strengthen global distribution', 'Add more international perspectives'],
-      successRate: '65%'
-    }
-  },
-  {
-    id: 4,
-    title: 'SBS Content Fund',
-    organisation: 'SBS',
-    amount: '$35,000',
-    matchScore: 78,
-    deadline: '2024-02-28',
-    category: 'Television',
-    description: 'Good fit for multicultural content with community focus.',
-    requirements: ['Multicultural focus', 'Australian content', 'Diverse voices'],
-    aiInsights: {
-      strengths: ['Multicultural focus', 'Community engagement', 'Diverse voices'],
-      improvements: ['Strengthen community partnerships', 'Add impact measurement'],
-      successRate: '70%'
-    }
-  }
-];
-
 export default function GrantMatchPage() {
-  const [selectedProjectType, setSelectedProjectType] = useState('');
-  const [selectedImpactArea, setSelectedImpactArea] = useState('');
-  const [selectedTeamExperience, setSelectedTeamExperience] = useState('');
-  const [selectedBudgetRange, setSelectedBudgetRange] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [selectedGrant, setSelectedGrant] = useState(null);
+  const [profile, setProfile] = useState({
+    projectType: '',
+    impactAreas: [],
+    teamExperience: '',
+    budgetRange: '',
+    timeline: '',
+    location: '',
+    description: ''
+  });
+  const [recommendations, setRecommendations] = useState<GrantRecommendation[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAnalyze = () => {
-    if (!selectedProjectType || !selectedImpactArea || !selectedTeamExperience || !selectedBudgetRange) {
+  const handleAnalyze = async () => {
+    if (!profile.projectType || !profile.teamExperience || !profile.budgetRange) {
+      setError('Please complete your project profile before analysis.');
       return;
     }
-    
-    setIsAnalyzing(true);
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setShowResults(true);
-    }, 3000);
+
+    setAnalyzing(true);
+    setError(null);
+
+    try {
+      // Convert profile to AI recommendation request
+      const request = {
+        user_id: 1, // Mock user ID
+        project_tags: [
+          profile.projectType,
+          ...profile.impactAreas,
+          profile.teamExperience,
+          profile.budgetRange
+        ],
+        industry_focus: profile.projectType,
+        location: profile.location,
+        org_type: 'media',
+        budget_range: {
+          min: profile.budgetRange === 'small' ? 1000 : 
+               profile.budgetRange === 'medium' ? 25000 :
+               profile.budgetRange === 'large' ? 100000 : 500000,
+          max: profile.budgetRange === 'small' ? 25000 :
+               profile.budgetRange === 'medium' ? 100000 :
+               profile.budgetRange === 'large' ? 500000 : 1000000
+        },
+        timeline: profile.timeline,
+        max_results: 10
+      };
+
+      const result = await grantsApi.getAIRecommendations(request);
+      setRecommendations(result.recommendations);
+    } catch (err) {
+      console.error('Error getting recommendations:', err);
+      setError('Failed to get AI recommendations. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
-  const getMatchScoreColor = (score) => {
-    if (score >= 90) return 'bg-green-500';
-    if (score >= 80) return 'bg-blue-500';
-    if (score >= 70) return 'bg-yellow-500';
-    return 'bg-red-500';
+  const getMatchScoreColor = (score: number) => {
+    if (score >= 90) return 'text-green-600';
+    if (score >= 80) return 'text-blue-600';
+    if (score >= 70) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  const getMatchScoreText = (score) => {
+  const getMatchScoreText = (score: number) => {
     if (score >= 90) return 'Excellent Match';
-    if (score >= 80) return 'Very Good Match';
+    if (score >= 80) return 'Great Match';
     if (score >= 70) return 'Good Match';
     return 'Fair Match';
   };
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-AU', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          
-          {/* Header */}
-          <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-3xl p-8 text-white shadow-2xl">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative max-w-4xl">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <SparklesIcon className="h-10 w-10" />
+    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">AI Grant Matching</h1>
+            <p className="text-gray-600 mt-2">
+              Build your project profile and get AI-powered grant recommendations
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Button variant="outline">
+              <DocumentTextIcon className="h-4 w-4 mr-2" />
+              Save Profile
+            </Button>
+            <Button>
+              <SparklesIcon className="h-4 w-4 mr-2" />
+              Quick Match
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Project Profile Builder */}
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <UserGroupIcon className="h-5 w-5 mr-2" />
+                Project Profile Builder
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Project Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Project Type *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {projectTypes.map((type) => (
+                    <button
+                      key={type.id}
+                      onClick={() => setProfile({ ...profile, projectType: type.id })}
+                      className={`p-3 border rounded-lg text-left transition-colors ${
+                        profile.projectType === type.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-2xl mb-1">{type.icon}</div>
+                      <div className="font-medium text-sm">{type.name}</div>
+                      <div className="text-xs text-gray-600">{type.description}</div>
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
-                    AI Grant Matching
-                  </h1>
-                  <p className="text-xl text-purple-100 leading-relaxed">
-                    Tell us about your project and let AI find the perfect funding opportunities for you.
+              </div>
+
+              {/* Impact Areas */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Impact Areas (Select multiple)
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {impactAreas.map((area) => (
+                    <button
+                      key={area.id}
+                      onClick={() => {
+                        const newAreas = profile.impactAreas.includes(area.id)
+                          ? profile.impactAreas.filter(id => id !== area.id)
+                          : [...profile.impactAreas, area.id];
+                        setProfile({ ...profile, impactAreas: newAreas });
+                      }}
+                      className={`p-3 border rounded-lg text-left transition-colors ${
+                        profile.impactAreas.includes(area.id)
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-2xl mb-1">{area.icon}</div>
+                      <div className="font-medium text-sm">{area.name}</div>
+                      <div className="text-xs text-gray-600">{area.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Team Experience */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Team Experience *
+                </label>
+                <div className="space-y-2">
+                  {teamExperience.map((exp) => (
+                    <button
+                      key={exp.id}
+                      onClick={() => setProfile({ ...profile, teamExperience: exp.id })}
+                      className={`w-full p-3 border rounded-lg text-left transition-colors ${
+                        profile.teamExperience === exp.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">{exp.name}</div>
+                          <div className="text-sm text-gray-600">{exp.description}</div>
+                        </div>
+                        <div className="text-sm text-gray-500">{exp.years}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Budget Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Budget Range *
+                </label>
+                <div className="space-y-2">
+                  {budgetRanges.map((budget) => (
+                    <button
+                      key={budget.id}
+                      onClick={() => setProfile({ ...profile, budgetRange: budget.id })}
+                      className={`w-full p-3 border rounded-lg text-left transition-colors ${
+                        profile.budgetRange === budget.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">{budget.name}</div>
+                          <div className="text-sm text-gray-600">{budget.description}</div>
+                        </div>
+                        <div className="text-sm font-medium text-green-600">{budget.range}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Timeline
+                </label>
+                <select
+                  value={profile.timeline}
+                  onChange={(e) => setProfile({ ...profile, timeline: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select timeline</option>
+                  <option value="1-3 months">1-3 months</option>
+                  <option value="3-6 months">3-6 months</option>
+                  <option value="6-12 months">6-12 months</option>
+                  <option value="12+ months">12+ months</option>
+                </select>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Sydney, NSW"
+                  value={profile.location}
+                  onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Project Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Project Description
+                </label>
+                <textarea
+                  placeholder="Describe your project concept, goals, and unique aspects..."
+                  value={profile.description}
+                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+
+              <Button
+                onClick={handleAnalyze}
+                disabled={analyzing || !profile.projectType || !profile.teamExperience || !profile.budgetRange}
+                className="w-full"
+              >
+                {analyzing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    Get AI Recommendations
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AI Recommendations */}
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <SparklesIcon className="h-5 w-5 mr-2" />
+                AI Recommendations
+                {recommendations.length > 0 && (
+                  <Badge className="ml-2">{recommendations.length} matches</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recommendations.length === 0 ? (
+                <div className="text-center py-12">
+                  <SparklesIcon className="h-12 w-12 text-gray-400 mx-auto" />
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">No recommendations yet</h3>
+                  <p className="mt-2 text-gray-600">
+                    Complete your project profile and click "Get AI Recommendations" to find matching grants.
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-lg font-semibold">95% accuracy rate</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
-                  <span className="text-lg font-semibold">Real-time matching</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {!showResults ? (
-            /* Project Form */
-            <div className="space-y-8">
-              <Card className="bg-white shadow-lg border-0">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                    <SparklesIcon className="h-8 w-8 text-purple-600" />
-                    <span>Project Profile</span>
-                  </CardTitle>
-                  <p className="text-gray-600 text-lg">Help us understand your project to find the best matches</p>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  
-                  {/* Project Type */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">What type of project are you working on?</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {projectTypes.map((type) => (
-                        <div
-                          key={type.id}
-                          onClick={() => setSelectedProjectType(type.id)}
-                          className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                            selectedProjectType === type.id
-                              ? 'border-purple-500 bg-purple-50 shadow-lg'
-                              : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                          }`}
-                        >
-                          <div className="text-3xl mb-3">{type.icon}</div>
-                          <h4 className="font-semibold text-gray-900 mb-1">{type.name}</h4>
-                          <p className="text-sm text-gray-600">{type.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Impact Area */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">What's your primary impact focus?</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {impactAreas.map((area) => (
-                        <div
-                          key={area.id}
-                          onClick={() => setSelectedImpactArea(area.id)}
-                          className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                            selectedImpactArea === area.id
-                              ? 'border-purple-500 bg-purple-50 shadow-lg'
-                              : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                          }`}
-                        >
-                          <div className="text-3xl mb-3">{area.icon}</div>
-                          <h4 className="font-semibold text-gray-900 mb-1">{area.name}</h4>
-                          <p className="text-sm text-gray-600">{area.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Team Experience */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">What's your team's experience level?</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {teamExperience.map((experience) => (
-                        <div
-                          key={experience.id}
-                          onClick={() => setSelectedTeamExperience(experience.id)}
-                          className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                            selectedTeamExperience === experience.id
-                              ? 'border-purple-500 bg-purple-50 shadow-lg'
-                              : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-1">{experience.name}</h4>
-                              <p className="text-sm text-gray-600 mb-2">{experience.description}</p>
-                              <p className="text-xs text-purple-600 font-medium">{experience.years}</p>
+              ) : (
+                <div className="space-y-4">
+                  {recommendations.map((recommendation) => (
+                    <Card key={recommendation.grant.id} className="border-l-4 border-l-blue-500">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">{recommendation.grant.title}</h3>
+                            <p className="text-sm text-gray-600">{recommendation.grant.source}</p>
+                          </div>
+                          <div className="text-right">
+                            <div className={`text-2xl font-bold ${getMatchScoreColor(recommendation.match_score)}`}>
+                              {recommendation.match_score}%
                             </div>
-                            <UserGroupIcon className="h-8 w-8 text-gray-400" />
+                            <div className="text-xs text-gray-500">{getMatchScoreText(recommendation.match_score)}</div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Budget Range */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">What's your funding requirement?</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {budgetRanges.map((budget) => (
-                        <div
-                          key={budget.id}
-                          onClick={() => setSelectedBudgetRange(budget.id)}
-                          className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                            selectedBudgetRange === budget.id
-                              ? 'border-purple-500 bg-purple-50 shadow-lg'
-                              : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-1">{budget.name}</h4>
-                              <p className="text-lg font-bold text-green-600 mb-1">{budget.range}</p>
-                              <p className="text-sm text-gray-600">{budget.description}</p>
+                        <p className="text-sm text-gray-700 mb-3">{recommendation.grant.description}</p>
+
+                        <div className="grid grid-cols-2 gap-4 mb-3">
+                          <div className="flex items-center text-sm">
+                            <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
+                            <span>
+                              {recommendation.grant.min_amount && recommendation.grant.max_amount 
+                                ? `${formatCurrency(recommendation.grant.min_amount)} - ${formatCurrency(recommendation.grant.max_amount)}`
+                                : 'Amount not specified'
+                              }
+                            </span>
+                          </div>
+                          {recommendation.grant.deadline && (
+                            <div className="flex items-center text-sm">
+                              <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
+                              <span>{formatDate(recommendation.grant.deadline?.toString())}</span>
                             </div>
-                            <CurrencyDollarIcon className="h-8 w-8 text-gray-400" />
-                          </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Analyze Button */}
-                  <div className="flex justify-center pt-8">
-                    <Button
-                      onClick={handleAnalyze}
-                      disabled={!selectedProjectType || !selectedImpactArea || !selectedTeamExperience || !selectedBudgetRange || isAnalyzing}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 text-xl font-semibold rounded-2xl shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isAnalyzing ? (
-                        <>
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <SparklesIcon className="h-6 w-6 mr-3" />
-                          Find My Matches
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            /* Results */
-            <div className="space-y-8">
-              {/* Analysis Summary */}
-              <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-0 shadow-lg">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6">
-                      <div className="p-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl shadow-lg">
-                        <SparklesIcon className="h-8 w-8 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">AI Analysis Complete</h3>
-                        <p className="text-gray-600 text-lg">Found {matchedGrants.length} perfect matches for your project</p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => setShowResults(false)}
-                      variant="outline"
-                      className="px-6 py-3 text-lg rounded-xl"
-                    >
-                      Start Over
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Matched Grants */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {matchedGrants.map((grant) => (
-                  <Card key={grant.id} className="bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-3">
-                            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                              {grant.category}
-                            </Badge>
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-3 h-3 rounded-full ${getMatchScoreColor(grant.matchScore)}`}></div>
-                              <span className="text-sm font-medium text-gray-600">
-                                {getMatchScoreText(grant.matchScore)}
-                              </span>
-                            </div>
-                          </div>
-                          <CardTitle className="text-xl font-bold text-gray-900 mb-2 leading-tight">
-                            {grant.title}
-                          </CardTitle>
-                          <p className="text-gray-600 font-medium">{grant.organisation}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-3xl font-bold text-green-600">{grant.amount}</p>
-                          <div className="flex items-center space-x-1 justify-end">
-                            <StarIcon className="h-4 w-4 text-yellow-500" />
-                            <span className="text-sm font-medium text-gray-600">{grant.matchScore}% match</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-6 leading-relaxed">{grant.description}</p>
-                      
-                      {/* AI Insights */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                        <div className="flex items-center space-x-3 mb-4">
-                          <LightBulbIcon className="h-5 w-5 text-purple-600" />
-                          <span className="font-semibold text-gray-900">AI Insights</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center">
-                              <CheckCircleIcon className="h-4 w-4 mr-1" />
-                              Strengths
-                            </h5>
-                            <ul className="text-xs text-gray-600 space-y-1">
-                              {grant.aiInsights.strengths.map((strength, index) => (
-                                <li key={index} className="flex items-start space-x-1">
-                                  <span className="text-green-500 mt-1">•</span>
-                                  <span>{strength}</span>
+                        {recommendation.reasons.length > 0 && (
+                          <div className="mb-3">
+                            <h4 className="text-sm font-medium text-gray-700 mb-2">Why this matches:</h4>
+                            <ul className="space-y-1">
+                              {recommendation.reasons.slice(0, 3).map((reason, index) => (
+                                <li key={index} className="text-sm text-gray-600 flex items-start">
+                                  <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                                  {reason}
                                 </li>
                               ))}
                             </ul>
                           </div>
-                          
-                          <div>
-                            <h5 className="text-sm font-semibold text-blue-700 mb-2 flex items-center">
-                              <LightBulbIcon className="h-4 w-4 mr-1" />
-                              Improvements
-                            </h5>
-                            <ul className="text-xs text-gray-600 space-y-1">
-                              {grant.aiInsights.improvements.map((improvement, index) => (
-                                <li key={index} className="flex items-start space-x-1">
-                                  <span className="text-blue-500 mt-1">•</span>
-                                  <span>{improvement}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
+                        )}
 
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-6">
+                        <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <CalendarIcon className="h-5 w-5 text-gray-400" />
-                            <span className="text-sm font-medium text-gray-600">Deadline: {grant.deadline}</span>
+                            <Badge variant="outline">{recommendation.priority}</Badge>
+                            {recommendation.success_probability && (
+                              <Badge variant="outline">
+                                {Math.round(recommendation.success_probability * 100)}% success
+                              </Badge>
+                            )}
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <ChartBarIcon className="h-5 w-5 text-gray-400" />
-                            <span className="text-sm font-medium text-gray-600">{grant.aiInsights.successRate} success rate</span>
-                          </div>
+                          <Link href={`/grants/apply/${recommendation.grant.id}`}>
+                            <Button size="sm">
+                              <ArrowRightIcon className="h-4 w-4 mr-1" />
+                              Apply Now
+                            </Button>
+                          </Link>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <Button variant="outline" size="sm" className="rounded-lg">
-                            <EyeIcon className="h-4 w-4 mr-2" />
-                            View
-                          </Button>
-                          <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg">
-                            <ArrowRightIcon className="h-4 w-4 mr-2" />
-                            Apply
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

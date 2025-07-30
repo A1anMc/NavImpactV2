@@ -1,0 +1,65 @@
+{
+  "test_date": "2025-07-29T19:55:41.495473",
+  "okr_tracking": {
+    "okr_id": "4.1",
+    "objective": "Increase Following on Social Media by 400% over 4 months",
+    "baseline": {
+      "date": "2024-12-27",
+      "platforms": {
+        "instagram": 1250,
+        "youtube": 3400,
+        "linkedin": 890,
+        "twitter": 650,
+        "facebook": 2100
+      },
+      "total_followers": 8290
+    },
+    "current": {
+      "date": "2025-01-27",
+      "platforms": {
+        "instagram": 1800,
+        "youtube": 4200,
+        "linkedin": 1200,
+        "twitter": 850,
+        "facebook": 2800
+      },
+      "total_followers": 10850,
+      "monthly_growth": 2560
+    },
+    "target": {
+      "date": "2025-04-27",
+      "total_followers": 33160,
+      "monthly_growth_target": 6217
+    },
+    "progress_percentage": 10.293526336952151,
+    "on_track": false,
+    "months_remaining": 3
+  },
+  "grant_application": {
+    "grant_id": "sa-doc-2025-001",
+    "project": "Season 2 of Forging Friendships",
+    "amount": "$500,000",
+    "due_date": "2025-09-29",
+    "days_remaining": 61,
+    "progress": 35,
+    "current_step": 3,
+    "total_steps": 6,
+    "completed_steps": 2,
+    "in_progress_steps": 1,
+    "pending_steps": 3,
+    "on_schedule": true,
+    "impact_metrics": {
+      "audience_reach": "500,000+ viewers",
+      "social_media_engagement": "15,000+ followers",
+      "industry_recognition": "2 awards nominations",
+      "community_impact": "Positive feedback from 95% of viewers"
+    }
+  },
+  "system_integration": {
+    "integration_points": 4,
+    "cross_system_validation": true,
+    "data_flow": "Bidirectional",
+    "impact_tracking": "Unified"
+  },
+  "overall_status": "NEEDS_ATTENTION"
+}

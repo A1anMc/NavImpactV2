@@ -162,6 +162,22 @@ class Settings:
     # Frontend URL
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
     
+    # Social Media API Configuration
+    # Instagram API
+    INSTAGRAM_ACCESS_TOKEN: Optional[str] = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+    INSTAGRAM_APP_ID: Optional[str] = os.getenv("INSTAGRAM_APP_ID")
+    INSTAGRAM_APP_SECRET: Optional[str] = os.getenv("INSTAGRAM_APP_SECRET")
+    INSTAGRAM_BUSINESS_ACCOUNT_ID: Optional[str] = os.getenv("INSTAGRAM_BUSINESS_ACCOUNT_ID")
+    
+    # Instagram API Settings
+    INSTAGRAM_API_BASE_URL: str = "https://graph.instagram.com/v18.0"
+    INSTAGRAM_API_TIMEOUT: int = 30
+    INSTAGRAM_RATE_LIMIT: int = 200  # requests per hour
+    
+    # Social Media Metrics Configuration
+    SOCIAL_MEDIA_ENABLED: bool = os.getenv("SOCIAL_MEDIA_ENABLED", "false").lower() == "true"
+    SOCIAL_METRICS_CACHE_DURATION: int = int(os.getenv("SOCIAL_METRICS_CACHE_DURATION", "3600"))  # 1 hour
+
     def __init__(self):
         # Parse CORS origins from environment
         cors_origins_str = os.getenv("CORS_ORIGINS", "")

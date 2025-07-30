@@ -126,6 +126,112 @@ def get_grants(
             detail=f"Error fetching grants: {str(e)}"
         )
 
+@router.get("/{grant_id}", response_model=GrantResponse)
+def get_grant(grant_id: int, db: Session = Depends(get_db)):
+    """Get a specific grant by ID."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        
+        if not grant:
+            raise HTTPException(status_code=404, detail="Grant not found")
+        
+        return {
+            "id": grant.id,
+            "title": grant.title,
+            "description": grant.description,
+            "source": grant.source,
+            "source_url": grant.source_url,
+            "application_url": grant.application_url,
+            "contact_email": grant.contact_email,
+            "min_amount": float(grant.min_amount) if grant.min_amount else None,
+            "max_amount": float(grant.max_amount) if grant.max_amount else None,
+            "open_date": grant.open_date.isoformat() if grant.open_date else None,
+            "deadline": grant.deadline.isoformat() if grant.deadline else None,
+            "industry_focus": grant.industry_focus,
+            "location_eligibility": grant.location_eligibility,
+            "org_type_eligible": grant.org_type_eligible,
+            "status": grant.status,
+            "created_at": grant.created_at.isoformat() if grant.created_at else None,
+            "updated_at": grant.updated_at.isoformat() if grant.updated_at else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting grant {grant_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        db.close()
+
+@router.post("/", response_model=GrantResponse)
+def create_grant(grant_data: GrantCreate, db: Session = Depends(get_db)):
+    """Create a new grant."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        from datetime import datetime
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        # Create new grant
+        new_grant = Grant(
+            title=grant_data.title,
+            description=grant_data.description,
+            source=grant_data.source,
+            source_url=grant_data.source_url,
+            application_url=grant_data.application_url,
+            contact_email=grant_data.contact_email,
+            min_amount=Decimal(str(grant_data.min_amount)) if grant_data.min_amount else None,
+            max_amount=Decimal(str(grant_data.max_amount)) if grant_data.max_amount else None,
+            open_date=datetime.fromisoformat(grant_data.open_date) if grant_data.open_date else None,
+            deadline=datetime.fromisoformat(grant_data.deadline) if grant_data.deadline else None,
+            industry_focus=grant_data.industry_focus,
+            location_eligibility=grant_data.location_eligibility,
+            org_type_eligible=grant_data.org_type_eligible,
+            status=grant_data.status or "active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        
+        db.add(new_grant)
+        db.commit()
+        db.refresh(new_grant)
+        
+        return {
+            "id": new_grant.id,
+            "title": new_grant.title,
+            "description": new_grant.description,
+            "source": new_grant.source,
+            "source_url": new_grant.source_url,
+            "application_url": new_grant.application_url,
+            "contact_email": new_grant.contact_email,
+            "min_amount": float(new_grant.min_amount) if new_grant.min_amount else None,
+            "max_amount": float(new_grant.max_amount) if new_grant.max_amount else None,
+            "open_date": new_grant.open_date.isoformat() if new_grant.open_date else None,
+            "deadline": new_grant.deadline.isoformat() if new_grant.deadline else None,
+            "industry_focus": new_grant.industry_focus,
+            "location_eligibility": new_grant.location_eligibility,
+            "org_type_eligible": new_grant.org_type_eligible,
+            "status": new_grant.status,
+            "created_at": new_grant.created_at.isoformat() if new_grant.created_at else None,
+            "updated_at": new_grant.updated_at.isoformat() if new_grant.updated_at else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating grant: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        db.close()
+
 # New AI-Powered Endpoints
 
 @router.post("/ai/recommendations", response_model=AIRecommendationResponse)
@@ -763,7 +869,7 @@ async def scrape_specific_source(
         # Import the appropriate scraper
         scraper_map = {
             "australian_grants": "AustralianGrantsScraper",
-            "business_gov": "BusinessGovScraper", 
+            "business.gov.au": "BusinessGovScraper", 
             "media_investment": "MediaInvestmentScraper",
             "grantconnect": "GrantConnectScraper",
             "philanthropic": "PhilanthropicScraper"
@@ -976,8 +1082,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=45),
             "industry_focus": "technology",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "nonprofit"],
             "funding_purpose": ["Digital Media", "Innovation"],
             "audience_tags": ["Digital Creators", "Tech Startups"],
             "status": "open",
@@ -995,8 +1101,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=30),
             "industry_focus": "services",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Indigenous Business", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["indigenous organisation", "nonprofit"],
             "funding_purpose": ["Film Production", "Cultural Preservation"],
             "audience_tags": ["Indigenous Communities", "Filmmakers"],
             "status": "open",
@@ -1014,8 +1120,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=75),
             "industry_focus": "healthcare",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Nonprofit", "Healthcare Provider"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["nonprofit", "healthcare provider"],
             "funding_purpose": ["Mental Health", "Youth Services"],
             "audience_tags": ["Youth", "Mental Health Professionals"],
             "status": "open",
@@ -1033,8 +1139,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=30),
             "industry_focus": "services",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Social Enterprise", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["social enterprise", "nonprofit"],
             "funding_purpose": ["Social Enterprise", "Business Development"],
             "audience_tags": ["Social Entrepreneurs", "Nonprofits"],
             "status": "open",
@@ -1052,8 +1158,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=120),
             "industry_focus": "technology",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Research Institution"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "research institution"],
             "funding_purpose": ["Renewable Energy", "Innovation"],
             "audience_tags": ["Energy Companies", "Researchers"],
             "status": "open",
@@ -1071,8 +1177,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=75),
             "industry_focus": "manufacturing",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "nonprofit"],
             "funding_purpose": ["Circular Economy", "Waste Reduction"],
             "audience_tags": ["Manufacturers", "Sustainability Experts"],
             "status": "open",
@@ -1090,8 +1196,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=90),
             "industry_focus": "agriculture",
-            "location_eligibility": "Regional",
-            "org_type_eligible": ["SME", "Farmer", "Research Institution"],
+            "location_eligibility": "regional",
+            "org_type_eligible": ["sme", "farmer", "research institution"],
             "funding_purpose": ["Sustainable Agriculture", "Innovation"],
             "audience_tags": ["Farmers", "Agricultural Researchers"],
             "status": "active",
@@ -1109,8 +1215,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=45),
             "industry_focus": "environment",
-            "location_eligibility": "Coastal",
-            "org_type_eligible": ["Nonprofit", "Research Institution"],
+            "location_eligibility": "coastal",
+            "org_type_eligible": ["nonprofit", "research institution"],
             "funding_purpose": ["Marine Conservation", "Biodiversity"],
             "audience_tags": ["Marine Biologists", "Conservationists"],
             "status": "open",

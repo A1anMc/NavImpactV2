@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,401 +23,388 @@ import {
   ClockIcon,
   CalendarIcon,
   CurrencyDollarIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { grantsApi } from '@/services/grants';
+import { Grant } from '@/types/models';
 
-const pastApplications = [
-  {
-    id: 1,
-    grantTitle: 'Screen Australia Documentary Development',
-    submissionDate: '2023-11-01',
-    outcome: 'Won',
-    amount: '$50,000',
-    feedback: 'Strong narrative, clear impact statement. Budget was well-justified.',
-    aiDebrief: {
-      strengths: ['Compelling story', 'Strong team experience', 'Clear budget'],
-      weaknesses: ['Limited distribution plan'],
-      improvements: ['Expand distribution strategy', 'Highlight audience engagement'],
-    },
-    category: 'Documentary',
-    organisation: 'Screen Australia',
-    teamMembers: ['Alan McCarthy', 'Harry Dog'],
-    timeToDecision: '45 days',
-    successFactors: ['Strong narrative', 'Clear budget', 'Experienced team']
-  },
-  {
-    id: 2,
-    grantTitle: 'ABC Pitch Initiative',
-    submissionDate: '2023-10-15',
-    outcome: 'Lost',
-    amount: '$25,000',
-    feedback: 'Good concept but lacked innovation. Consider more diverse representation.',
-    aiDebrief: {
-      strengths: ['Good concept', 'Clear objectives'],
-      weaknesses: ['Lacked innovation', 'Limited diversity'],
-      improvements: ['Add innovative elements', 'Include diverse perspectives'],
-    },
-    category: 'Television',
-    organisation: 'ABC',
-    teamMembers: ['Alan McCarthy'],
-    timeToDecision: '30 days',
-    successFactors: ['Innovation', 'Diversity', 'Clear objectives']
-  },
-  {
-    id: 3,
-    grantTitle: 'Netflix Documentary Fund',
-    submissionDate: '2023-09-20',
-    outcome: 'Won',
-    amount: '$100,000',
-    feedback: 'Excellent global appeal and production quality. Strong human interest angle.',
-    aiDebrief: {
-      strengths: ['Global appeal', 'High production quality', 'Human interest'],
-      weaknesses: ['Could strengthen distribution plan'],
-      improvements: ['Enhance distribution strategy', 'Add more global perspectives'],
-    },
-    category: 'Documentary',
-    organisation: 'Netflix',
-    teamMembers: ['Alan McCarthy', 'Clooney Cat'],
-    timeToDecision: '60 days',
-    successFactors: ['Global appeal', 'Production quality', 'Human interest']
-  },
-  {
-    id: 4,
-    grantTitle: 'SBS Content Fund',
-    submissionDate: '2023-08-10',
-    outcome: 'Lost',
-    amount: '$35,000',
-    feedback: 'Good multicultural focus but needs stronger community engagement.',
-    aiDebrief: {
-      strengths: ['Multicultural focus', 'Good concept'],
-      weaknesses: ['Weak community engagement', 'Limited impact measurement'],
-      improvements: ['Strengthen community partnerships', 'Add impact measurement'],
-    },
-    category: 'Television',
-    organisation: 'SBS',
-    teamMembers: ['Alan McCarthy', 'Clooney Cat'],
-    timeToDecision: '25 days',
-    successFactors: ['Community engagement', 'Impact measurement', 'Multicultural focus']
-  },
-  {
-    id: 5,
-    grantTitle: 'Film Victoria Production Investment',
-    submissionDate: '2023-07-05',
-    outcome: 'Won',
-    amount: '$200,000',
-    feedback: 'Strong commercial potential and Victorian production focus. Excellent budget breakdown.',
-    aiDebrief: {
-      strengths: ['Commercial potential', 'Victorian focus', 'Clear budget'],
-      weaknesses: ['Could strengthen marketing strategy'],
-      improvements: ['Enhance marketing plan', 'Add more commercial elements'],
-    },
-    category: 'Feature Film',
-    organisation: 'Film Victoria',
-    teamMembers: ['Alan McCarthy', 'Harry Dog', 'Clooney Cat'],
-    timeToDecision: '75 days',
-    successFactors: ['Commercial potential', 'Local focus', 'Clear budget']
-  }
-];
-
-const outcomes = [
-  { name: 'All Outcomes', value: 'all' },
-  { name: 'Won', value: 'Won' },
-  { name: 'Lost', value: 'Lost' },
-  { name: 'Pending', value: 'Pending' },
-];
-
-const categories = [
-  { name: 'All Categories', value: 'all' },
-  { name: 'Documentary', value: 'Documentary' },
-  { name: 'Television', value: 'Television' },
-  { name: 'Feature Film', value: 'Feature Film' },
-];
+interface GrantFeedback {
+  id: number;
+  grantTitle: string;
+  submissionDate: string;
+  outcome: 'Won' | 'Lost' | 'Pending' | 'Withdrawn';
+  amount: string;
+  feedback: string;
+  aiDebrief: {
+    strengths: string[];
+    weaknesses: string[];
+    improvements: string[];
+  };
+  category: string;
+  organisation: string;
+  teamMembers: string[];
+  timeToDecision: string;
+  successFactors: string[];
+}
 
 export default function GrantFeedbackPage() {
-  const [selectedOutcome, setSelectedOutcome] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [feedbackEntries, setFeedbackEntries] = useState<GrantFeedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState('all');
 
-  const filteredApplications = pastApplications.filter(app => {
-    const matchesOutcome = selectedOutcome === 'all' || app.outcome === selectedOutcome;
-    const matchesCategory = selectedCategory === 'all' || app.category === selectedCategory;
-    const matchesSearch = app.grantTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.organisation.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesOutcome && matchesCategory && matchesSearch;
+  // Fetch grants and create feedback entries
+  useEffect(() => {
+    const fetchGrantsAndCreateFeedback = async () => {
+      try {
+        setLoading(true);
+        const response = await grantsApi.getGrants({ limit: 100 });
+        const grantsData = response.items || [];
+        setGrants(grantsData);
+
+        // Create mock feedback entries based on grants
+        const feedback: GrantFeedback[] = grantsData.slice(0, 10).map((grant, index) => {
+          const outcomes: ('Won' | 'Lost' | 'Pending' | 'Withdrawn')[] = ['Won', 'Lost', 'Pending'];
+          const outcome = outcomes[index % outcomes.length];
+          const submissionDate = new Date();
+          submissionDate.setDate(submissionDate.getDate() - (index + 1) * 30);
+
+          return {
+            id: index + 1,
+            grantTitle: grant.title,
+            submissionDate: submissionDate.toISOString().split('T')[0],
+            outcome,
+            amount: grant.max_amount ? `$${grant.max_amount.toLocaleString()}` : 'Amount not specified',
+            feedback: outcome === 'Won' 
+              ? 'Strong application with clear objectives and well-justified budget.'
+              : outcome === 'Lost'
+              ? 'Good concept but needs improvement in specific areas.'
+              : 'Application is under review.',
+            aiDebrief: {
+              strengths: ['Clear objectives', 'Strong team', 'Good budget'],
+              weaknesses: ['Could improve distribution plan', 'Needs more innovation'],
+              improvements: ['Enhance distribution strategy', 'Add innovative elements'],
+            },
+            category: grant.industry_focus || 'General',
+            organisation: grant.source,
+            teamMembers: ['Alan McCarthy', 'Harry Dog'],
+            timeToDecision: `${30 + Math.floor(Math.random() * 30)} days`,
+            successFactors: ['Clear objectives', 'Strong team', 'Good budget']
+          };
+        });
+
+        setFeedbackEntries(feedback);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching grants:', err);
+        setError('Failed to load feedback data. Please try again.');
+        setFeedbackEntries([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGrantsAndCreateFeedback();
+  }, []);
+
+  const filteredFeedback = feedbackEntries.filter(entry => {
+    if (filter === 'all') return true;
+    if (filter === 'won') return entry.outcome === 'Won';
+    if (filter === 'lost') return entry.outcome === 'Lost';
+    if (filter === 'pending') return entry.outcome === 'Pending';
+    return true;
   });
 
-  const getOutcomeColor = (outcome) => {
+  const successRate = feedbackEntries.length > 0 
+    ? (feedbackEntries.filter(entry => entry.outcome === 'Won').length / feedbackEntries.length * 100).toFixed(1)
+    : '0';
+
+  const averageDecisionTime = feedbackEntries.length > 0
+    ? Math.round(feedbackEntries.reduce((sum, entry) => {
+        const days = parseInt(entry.timeToDecision.split(' ')[0]);
+        return sum + days;
+      }, 0) / feedbackEntries.length)
+    : 0;
+
+  const getOutcomeColor = (outcome: string) => {
     switch (outcome) {
-      case 'Won': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Lost': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'Won': return 'bg-green-100 text-green-800';
+      case 'Lost': return 'bg-red-100 text-red-800';
+      case 'Pending': return 'bg-yellow-100 text-yellow-800';
+      case 'Withdrawn': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getOutcomeIcon = (outcome) => {
+  const getOutcomeIcon = (outcome: string) => {
     switch (outcome) {
-      case 'Won': return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
-      case 'Lost': return <XCircleIcon className="h-5 w-5 text-red-600" />;
-      case 'Pending': return <ClockIcon className="h-5 w-5 text-yellow-600" />;
-      default: return <ClockIcon className="h-5 w-5 text-gray-600" />;
+      case 'Won': return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+      case 'Lost': return <XCircleIcon className="h-5 w-5 text-red-500" />;
+      case 'Pending': return <ClockIcon className="h-5 w-5 text-yellow-500" />;
+      case 'Withdrawn': return <TrashIcon className="h-5 w-5 text-gray-500" />;
+      default: return <ClockIcon className="h-5 w-5 text-gray-500" />;
     }
   };
 
-  const successRate = (pastApplications.filter(app => app.outcome === 'Won').length / pastApplications.length * 100).toFixed(1);
-  const totalAmount = pastApplications.filter(app => app.outcome === 'Won').reduce((sum, app) => sum + parseInt(app.amount.replace(/[^0-9]/g, '')), 0);
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-AU', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          
-          {/* Header */}
-          <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 rounded-3xl p-8 text-white shadow-2xl">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative max-w-4xl">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <ChatBubbleLeftRightIcon className="h-10 w-10" />
-                </div>
-                <div>
-                  <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
-                    Grant Feedback & Insights
-                  </h1>
-                  <p className="text-xl text-purple-100 leading-relaxed">
-                    Learn from past applications and improve your success rate with AI-powered insights.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-lg font-semibold">{successRate}% success rate</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-300 rounded-full animate-pulse"></div>
-                  <span className="text-lg font-semibold">${totalAmount.toLocaleString()} total won</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">Success Rate</p>
-                    <p className="text-3xl font-bold text-green-600">{successRate}%</p>
-                  </div>
-                  <div className="p-3 bg-green-100 rounded-xl">
-                    <CheckCircleIcon className="h-8 w-8 text-green-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">Total Won</p>
-                    <p className="text-3xl font-bold text-blue-600">${totalAmount.toLocaleString()}</p>
-                  </div>
-                  <div className="p-3 bg-blue-100 rounded-xl">
-                    <CurrencyDollarIcon className="h-8 w-8 text-blue-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">Applications</p>
-                    <p className="text-3xl font-bold text-gray-900">{pastApplications.length}</p>
-                  </div>
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <ClipboardDocumentListIcon className="h-8 w-8 text-purple-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">Avg Decision Time</p>
-                    <p className="text-3xl font-bold text-gray-900">47 days</p>
-                  </div>
-                  <div className="p-3 bg-orange-100 rounded-xl">
-                    <ClockIcon className="h-8 w-8 text-orange-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex flex-col lg:flex-row gap-6">
-              <div className="flex-1">
-                <div className="relative">
-                  <ChatBubbleLeftRightIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search applications by title, organisation, or keywords..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <select
-                  value={selectedOutcome}
-                  onChange={(e) => setSelectedOutcome(e.target.value)}
-                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg bg-white"
-                >
-                  {outcomes.map((outcome) => (
-                    <option key={outcome.value} value={outcome.value}>
-                      {outcome.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-6 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg bg-white"
-                >
-                  {categories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Applications Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {filteredApplications.map((app) => (
-              <Card key={app.id} className="bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <Badge className={`${getOutcomeColor(app.outcome)} border`}>
-                          {app.outcome}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs font-medium">
-                          {app.category}
-                        </Badge>
-                        <div className="flex items-center space-x-1">
-                          {getOutcomeIcon(app.outcome)}
-                        </div>
-                      </div>
-                      <CardTitle className="text-xl font-bold text-gray-900 mb-2 leading-tight">
-                        {app.grantTitle}
-                      </CardTitle>
-                      <p className="text-gray-600 font-medium">{app.organisation}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-3xl font-bold text-green-600">{app.amount}</p>
-                      <p className="text-sm text-gray-500 font-medium">{app.timeToDecision}</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{app.feedback}</p>
-                  
-                  {/* AI Insights */}
-                  <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <SparklesIcon className="h-5 w-5 text-purple-600" />
-                      <span className="font-semibold text-gray-900">AI Insights</span>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center">
-                          <CheckCircleIcon className="h-4 w-4 mr-1" />
-                          Strengths
-                        </h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          {app.aiDebrief.strengths.map((strength, index) => (
-                            <li key={index} className="flex items-start space-x-1">
-                              <span className="text-green-500 mt-1">•</span>
-                              <span>{strength}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <h5 className="text-sm font-semibold text-red-700 mb-2 flex items-center">
-                          <XCircleIcon className="h-4 w-4 mr-1" />
-                          Weaknesses
-                        </h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          {app.aiDebrief.weaknesses.map((weakness, index) => (
-                            <li key={index} className="flex items-start space-x-1">
-                              <span className="text-red-500 mt-1">•</span>
-                              <span>{weakness}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <h5 className="text-sm font-semibold text-blue-700 mb-2 flex items-center">
-                          <LightBulbIcon className="h-4 w-4 mr-1" />
-                          Improvements
-                        </h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          {app.aiDebrief.improvements.map((improvement, index) => (
-                            <li key={index} className="flex items-start space-x-1">
-                              <span className="text-blue-500 mt-1">•</span>
-                              <span>{improvement}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Team and Details */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2">
-                        <UserGroupIcon className="h-5 w-5 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-600">{app.teamMembers.join(', ')}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <CalendarIcon className="h-5 w-5 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-600">{app.submissionDate}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Button variant="outline" size="sm" className="rounded-lg">
-                        <EyeIcon className="h-4 w-4 mr-2" />
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm" className="rounded-lg">
-                        <PencilIcon className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading feedback data...</p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto" />
+            <p className="mt-4 text-red-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Grant Feedback & Analytics</h1>
+            <p className="text-gray-600 mt-2">
+              Track application outcomes and learn from AI-powered insights
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Button variant="outline">
+              <ClipboardDocumentListIcon className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+            <Button>
+              <SparklesIcon className="h-4 w-4 mr-2" />
+              AI Insights
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Analytics Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <CheckCircleIcon className="h-8 w-8 text-green-500" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                <p className="text-2xl font-bold text-gray-900">{successRate}%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-600">Total Applications</p>
+                <p className="text-2xl font-bold text-gray-900">{feedbackEntries.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <ClockIcon className="h-8 w-8 text-yellow-500" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-600">Avg Decision Time</p>
+                <p className="text-2xl font-bold text-gray-900">{averageDecisionTime} days</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-8 w-8 text-purple-500" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-600">Total Funding Won</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${feedbackEntries
+                    .filter(entry => entry.outcome === 'Won')
+                    .reduce((sum, entry) => {
+                      const amount = parseInt(entry.amount.replace(/[^0-9]/g, ''));
+                      return sum + (isNaN(amount) ? 0 : amount);
+                    }, 0)
+                    .toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="mb-6">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant={filter === 'all' ? 'primary' : 'outline'}
+            onClick={() => setFilter('all')}
+          >
+            All ({feedbackEntries.length})
+          </Button>
+          <Button
+            variant={filter === 'won' ? 'primary' : 'outline'}
+            onClick={() => setFilter('won')}
+          >
+            Won ({feedbackEntries.filter(entry => entry.outcome === 'Won').length})
+          </Button>
+          <Button
+            variant={filter === 'lost' ? 'primary' : 'outline'}
+            onClick={() => setFilter('lost')}
+          >
+            Lost ({feedbackEntries.filter(entry => entry.outcome === 'Lost').length})
+          </Button>
+          <Button
+            variant={filter === 'pending' ? 'primary' : 'outline'}
+            onClick={() => setFilter('pending')}
+          >
+            Pending ({feedbackEntries.filter(entry => entry.outcome === 'Pending').length})
+          </Button>
+        </div>
+      </div>
+
+      {/* Feedback Entries */}
+      <div className="space-y-6">
+        {filteredFeedback.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <ChatBubbleLeftRightIcon className="h-12 w-12 text-gray-400 mx-auto" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No feedback entries</h3>
+              <p className="mt-2 text-gray-600">
+                Feedback entries will appear here as you submit grant applications.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredFeedback.map((entry) => (
+            <Card key={entry.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">
+                      {getOutcomeIcon(entry.outcome)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{entry.grantTitle}</h3>
+                        <Badge className={getOutcomeColor(entry.outcome)}>
+                          {entry.outcome}
+                        </Badge>
+                        <Badge variant="outline">{entry.category}</Badge>
+                      </div>
+                      <p className="text-gray-600 mb-3">{entry.feedback}</p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <CalendarIcon className="h-4 w-4 mr-1" />
+                          {formatDate(entry.submissionDate)}
+                        </div>
+                        <div className="flex items-center">
+                          <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+                          {entry.amount}
+                        </div>
+                        <div className="flex items-center">
+                          <UserGroupIcon className="h-4 w-4 mr-1" />
+                          {entry.teamMembers.join(', ')}
+                        </div>
+                        <div className="flex items-center">
+                          <ClockIcon className="h-4 w-4 mr-1" />
+                          {entry.timeToDecision}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm">
+                      <EyeIcon className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <PencilIcon className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                  </div>
+                </div>
+
+                {/* AI Debrief */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <SparklesIcon className="h-4 w-4 text-yellow-500 mr-2" />
+                    <h4 className="font-medium text-gray-900">AI Debrief</h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <h5 className="text-sm font-medium text-green-700 mb-2">Strengths</h5>
+                      <ul className="space-y-1">
+                        {entry.aiDebrief.strengths.map((strength, index) => (
+                          <li key={index} className="text-sm text-green-600 flex items-start">
+                            <CheckCircleIcon className="h-4 w-4 mr-1 mt-0.5" />
+                            {strength}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-medium text-red-700 mb-2">Areas for Improvement</h5>
+                      <ul className="space-y-1">
+                        {entry.aiDebrief.weaknesses.map((weakness, index) => (
+                          <li key={index} className="text-sm text-red-600 flex items-start">
+                            <XCircleIcon className="h-4 w-4 mr-1 mt-0.5" />
+                            {weakness}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-medium text-blue-700 mb-2">Recommendations</h5>
+                      <ul className="space-y-1">
+                        {entry.aiDebrief.improvements.map((improvement, index) => (
+                          <li key={index} className="text-sm text-blue-600 flex items-start">
+                            <LightBulbIcon className="h-4 w-4 mr-1 mt-0.5" />
+                            {improvement}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
