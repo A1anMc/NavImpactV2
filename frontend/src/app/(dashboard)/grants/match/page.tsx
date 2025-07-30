@@ -15,121 +15,113 @@ import {
   ExclamationTriangleIcon,
   LightBulbIcon,
   ArrowRightIcon,
-  PlayIcon,
-  PauseIcon,
   EyeIcon,
   DocumentTextIcon,
   StarIcon,
   FireIcon,
   GlobeAltIcon,
   CalendarIcon,
+  FunnelIcon,
 } from '@heroicons/react/24/outline';
 import { grantsApi } from '@/services/grants';
-import { Grant, GrantRecommendation } from '@/types/models';
+import { Grant } from '@/types/models';
 import Link from 'next/link';
 
-const projectTypes = [
-  { id: 'documentary', name: 'Documentary', icon: '🎬', description: 'Non-fiction storytelling' },
-  { id: 'feature-film', name: 'Feature Film', icon: '🎭', description: 'Narrative feature films' },
-  { id: 'television', name: 'Television', icon: '📺', description: 'TV series and content' },
-  { id: 'short-film', name: 'Short Film', icon: '🎥', description: 'Short format content' },
-  { id: 'animation', name: 'Animation', icon: '🎨', description: 'Animated content' },
-  { id: 'web-series', name: 'Web Series', icon: '💻', description: 'Digital content' },
-];
-
-const impactAreas = [
-  { id: 'social-impact', name: 'Social Impact', icon: '🌍', description: 'Community and social change' },
-  { id: 'cultural-diversity', name: 'Cultural Diversity', icon: '🌈', description: 'Multicultural representation' },
-  { id: 'environmental', name: 'Environmental', icon: '🌱', description: 'Environmental awareness' },
-  { id: 'education', name: 'Education', icon: '📚', description: 'Educational content' },
-  { id: 'entertainment', name: 'Entertainment', icon: '🎪', description: 'Pure entertainment' },
-  { id: 'innovation', name: 'Innovation', icon: '🚀', description: 'Innovative storytelling' },
-];
-
-const teamExperience = [
-  { id: 'beginner', name: 'Beginner', description: 'New to the industry', years: '0-2 years' },
-  { id: 'intermediate', name: 'Intermediate', description: 'Some experience', years: '3-5 years' },
-  { id: 'experienced', name: 'Experienced', description: 'Well established', years: '5-10 years' },
-  { id: 'expert', name: 'Expert', description: 'Industry veteran', years: '10+ years' },
-];
-
-const budgetRanges = [
-  { id: 'small', name: 'Small Budget', range: '$1K - $25K', description: 'Independent projects' },
-  { id: 'medium', name: 'Medium Budget', range: '$25K - $100K', description: 'Mid-range productions' },
-  { id: 'large', name: 'Large Budget', range: '$100K - $500K', description: 'Major productions' },
-  { id: 'enterprise', name: 'Enterprise', range: '$500K+', description: 'Blockbuster projects' },
-];
-
 export default function GrantMatchPage() {
-  const [profile, setProfile] = useState({
-    projectType: '',
-    impactAreas: [],
-    teamExperience: '',
-    budgetRange: '',
-    timeline: '',
-    location: '',
-    description: ''
-  });
-  const [recommendations, setRecommendations] = useState<GrantRecommendation[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [filteredGrants, setFilteredGrants] = useState<Grant[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIndustry, setSelectedIndustry] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-  const handleAnalyze = async () => {
-    if (!profile.projectType || !profile.teamExperience || !profile.budgetRange) {
-      setError('Please complete your project profile before analysis.');
-      return;
+  // Fetch all grants
+  useEffect(() => {
+    const fetchGrants = async () => {
+      try {
+        setLoading(true);
+        const response = await grantsApi.getGrants({ limit: 100 });
+        const grantsData = response.items || [];
+        setGrants(grantsData);
+        setFilteredGrants(grantsData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching grants:', err);
+        setError('Failed to load grants. Please try again.');
+        setGrants([]);
+        setFilteredGrants([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGrants();
+  }, []);
+
+  // Filter grants based on search and filters
+  useEffect(() => {
+    let filtered = grants;
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(grant => 
+        grant.title.toLowerCase().includes(searchLower) ||
+        grant.description.toLowerCase().includes(searchLower) ||
+        grant.source.toLowerCase().includes(searchLower) ||
+        (grant.industry_focus && grant.industry_focus.toLowerCase().includes(searchLower))
+      );
     }
 
-    setAnalyzing(true);
-    setError(null);
-
-    try {
-      // Convert profile to AI recommendation request
-      const request = {
-        user_id: 1, // Mock user ID
-        project_tags: [
-          profile.projectType,
-          ...profile.impactAreas,
-          profile.teamExperience,
-          profile.budgetRange
-        ],
-        industry_focus: profile.projectType,
-        location: profile.location,
-        org_type: 'media',
-        budget_range: {
-          min: profile.budgetRange === 'small' ? 1000 : 
-               profile.budgetRange === 'medium' ? 25000 :
-               profile.budgetRange === 'large' ? 100000 : 500000,
-          max: profile.budgetRange === 'small' ? 25000 :
-               profile.budgetRange === 'medium' ? 100000 :
-               profile.budgetRange === 'large' ? 500000 : 1000000
-        },
-        timeline: profile.timeline,
-        max_results: 10
-      };
-
-      const result = await grantsApi.getAIRecommendations(request);
-      setRecommendations(result.recommendations);
-    } catch (err) {
-      console.error('Error getting recommendations:', err);
-      setError('Failed to get AI recommendations. Please try again.');
-    } finally {
-      setAnalyzing(false);
+    // Industry filter
+    if (selectedIndustry) {
+      filtered = filtered.filter(grant => 
+        grant.industry_focus === selectedIndustry
+      );
     }
+
+    // Status filter
+    if (selectedStatus) {
+      filtered = filtered.filter(grant => 
+        grant.status === selectedStatus
+      );
+    }
+
+    setFilteredGrants(filtered);
+  }, [grants, searchTerm, selectedIndustry, selectedStatus]);
+
+  const calculateMatchScore = (grant: Grant) => {
+    let score = 50; // Base score
+
+    // Boost score for open grants
+    if (grant.status === 'open') score += 20;
+    if (grant.status === 'closing_soon') score += 10;
+
+    // Boost score for media-related grants
+    if (grant.industry_focus === 'media') score += 15;
+    if (grant.industry_focus === 'technology') score += 10;
+
+    // Boost score for grants with deadlines
+    if (grant.deadline) score += 10;
+
+    // Boost score for grants with higher amounts
+    if (grant.max_amount && grant.max_amount > 50000) score += 10;
+
+    return Math.min(score, 100);
   };
 
   const getMatchScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 80) return 'text-blue-600';
-    if (score >= 70) return 'text-yellow-600';
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-blue-600';
+    if (score >= 40) return 'text-yellow-600';
     return 'text-red-600';
   };
 
   const getMatchScoreText = (score: number) => {
-    if (score >= 90) return 'Excellent Match';
-    if (score >= 80) return 'Great Match';
-    if (score >= 70) return 'Good Match';
+    if (score >= 80) return 'Excellent Match';
+    if (score >= 60) return 'Great Match';
+    if (score >= 40) return 'Good Match';
     return 'Fair Match';
   };
 
@@ -150,6 +142,53 @@ export default function GrantMatchPage() {
     });
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'open': return 'bg-green-100 text-green-800';
+      case 'closed': return 'bg-red-100 text-red-800';
+      case 'draft': return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-blue-100 text-blue-800';
+      case 'closing_soon': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Get unique industries for filter
+  const industries = [...new Set(grants.map(g => g.industry_focus).filter(Boolean))];
+  const statuses = [...new Set(grants.map(g => g.status))];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading grants...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto" />
+            <p className="mt-4 text-red-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 p-6">
       {/* Header */}
@@ -158,13 +197,13 @@ export default function GrantMatchPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">AI Grant Matching</h1>
             <p className="text-gray-600 mt-2">
-              Build your project profile and get AI-powered grant recommendations
+              Find the best grants for your projects with smart filtering
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <Button variant="outline">
-              <DocumentTextIcon className="h-4 w-4 mr-2" />
-              Save Profile
+              <FunnelIcon className="h-4 w-4 mr-2" />
+              Advanced Filters
             </Button>
             <Button>
               <SparklesIcon className="h-4 w-4 mr-2" />
@@ -174,297 +213,149 @@ export default function GrantMatchPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Project Profile Builder */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <UserGroupIcon className="h-5 w-5 mr-2" />
-                Project Profile Builder
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Project Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Project Type *
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {projectTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setProfile({ ...profile, projectType: type.id })}
-                      className={`p-3 border rounded-lg text-left transition-colors ${
-                        profile.projectType === type.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="text-2xl mb-1">{type.icon}</div>
-                      <div className="font-medium text-sm">{type.name}</div>
-                      <div className="text-xs text-gray-600">{type.description}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Impact Areas */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Impact Areas (Select multiple)
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {impactAreas.map((area) => (
-                    <button
-                      key={area.id}
-                      onClick={() => {
-                        const newAreas = profile.impactAreas.includes(area.id)
-                          ? profile.impactAreas.filter(id => id !== area.id)
-                          : [...profile.impactAreas, area.id];
-                        setProfile({ ...profile, impactAreas: newAreas });
-                      }}
-                      className={`p-3 border rounded-lg text-left transition-colors ${
-                        profile.impactAreas.includes(area.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="text-2xl mb-1">{area.icon}</div>
-                      <div className="font-medium text-sm">{area.name}</div>
-                      <div className="text-xs text-gray-600">{area.description}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Team Experience */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Team Experience *
-                </label>
-                <div className="space-y-2">
-                  {teamExperience.map((exp) => (
-                    <button
-                      key={exp.id}
-                      onClick={() => setProfile({ ...profile, teamExperience: exp.id })}
-                      className={`w-full p-3 border rounded-lg text-left transition-colors ${
-                        profile.teamExperience === exp.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium">{exp.name}</div>
-                          <div className="text-sm text-gray-600">{exp.description}</div>
-                        </div>
-                        <div className="text-sm text-gray-500">{exp.years}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Budget Range */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Budget Range *
-                </label>
-                <div className="space-y-2">
-                  {budgetRanges.map((budget) => (
-                    <button
-                      key={budget.id}
-                      onClick={() => setProfile({ ...profile, budgetRange: budget.id })}
-                      className={`w-full p-3 border rounded-lg text-left transition-colors ${
-                        profile.budgetRange === budget.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium">{budget.name}</div>
-                          <div className="text-sm text-gray-600">{budget.description}</div>
-                        </div>
-                        <div className="text-sm font-medium text-green-600">{budget.range}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Timeline */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Timeline
-                </label>
-                <select
-                  value={profile.timeline}
-                  onChange={(e) => setProfile({ ...profile, timeline: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select timeline</option>
-                  <option value="1-3 months">1-3 months</option>
-                  <option value="3-6 months">3-6 months</option>
-                  <option value="6-12 months">6-12 months</option>
-                  <option value="12+ months">12+ months</option>
-                </select>
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., Sydney, NSW"
-                  value={profile.location}
-                  onChange={(e) => setProfile({ ...profile, location: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Project Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Project Description
-                </label>
-                <textarea
-                  placeholder="Describe your project concept, goals, and unique aspects..."
-                  value={profile.description}
-                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
-                  rows={4}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
-
-              <Button
-                onClick={handleAnalyze}
-                disabled={analyzing || !profile.projectType || !profile.teamExperience || !profile.budgetRange}
-                className="w-full"
-              >
-                {analyzing ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <SparklesIcon className="h-4 w-4 mr-2" />
-                    Get AI Recommendations
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* AI Recommendations */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <SparklesIcon className="h-5 w-5 mr-2" />
-                AI Recommendations
-                {recommendations.length > 0 && (
-                  <Badge className="ml-2">{recommendations.length} matches</Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {recommendations.length === 0 ? (
-                <div className="text-center py-12">
-                  <SparklesIcon className="h-12 w-12 text-gray-400 mx-auto" />
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">No recommendations yet</h3>
-                  <p className="mt-2 text-gray-600">
-                    Complete your project profile and click "Get AI Recommendations" to find matching grants.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recommendations.map((recommendation) => (
-                    <Card key={recommendation.grant.id} className="border-l-4 border-l-blue-500">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{recommendation.grant.title}</h3>
-                            <p className="text-sm text-gray-600">{recommendation.grant.source}</p>
-                          </div>
-                          <div className="text-right">
-                            <div className={`text-2xl font-bold ${getMatchScoreColor(recommendation.match_score)}`}>
-                              {recommendation.match_score}%
-                            </div>
-                            <div className="text-xs text-gray-500">{getMatchScoreText(recommendation.match_score)}</div>
-                          </div>
-                        </div>
-
-                        <p className="text-sm text-gray-700 mb-3">{recommendation.grant.description}</p>
-
-                        <div className="grid grid-cols-2 gap-4 mb-3">
-                          <div className="flex items-center text-sm">
-                            <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
-                            <span>
-                              {recommendation.grant.min_amount && recommendation.grant.max_amount 
-                                ? `${formatCurrency(recommendation.grant.min_amount)} - ${formatCurrency(recommendation.grant.max_amount)}`
-                                : 'Amount not specified'
-                              }
-                            </span>
-                          </div>
-                          {recommendation.grant.deadline && (
-                            <div className="flex items-center text-sm">
-                              <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
-                              <span>{formatDate(recommendation.grant.deadline?.toString())}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {recommendation.reasons.length > 0 && (
-                          <div className="mb-3">
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">Why this matches:</h4>
-                            <ul className="space-y-1">
-                              {recommendation.reasons.slice(0, 3).map((reason, index) => (
-                                <li key={index} className="text-sm text-gray-600 flex items-start">
-                                  <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                                  {reason}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline">{recommendation.priority}</Badge>
-                            {recommendation.success_probability && (
-                              <Badge variant="outline">
-                                {Math.round(recommendation.success_probability * 100)}% success
-                              </Badge>
-                            )}
-                          </div>
-                          <Link href={`/grants/apply/${recommendation.grant.id}`}>
-                            <Button size="sm">
-                              <ArrowRightIcon className="h-4 w-4 mr-1" />
-                              Apply Now
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+      {/* Simple Search and Filters */}
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search grants by title, description, or organization..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value)}
+            >
+              <option value="">All Industries</option>
+              {industries.map(industry => (
+                <option key={industry} value={industry}>{industry}</option>
+              ))}
+            </select>
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="">All Status</option>
+              {statuses.map(status => (
+                <option key={status} value={status}>{status.replace('_', ' ')}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
+
+      {/* Results Summary */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <p className="text-gray-600">
+            Found {filteredGrants.length} grants matching your criteria
+          </p>
+          <div className="flex items-center space-x-2">
+            <SparklesIcon className="h-4 w-4 text-yellow-500" />
+            <span className="text-sm text-gray-600">AI-powered matching</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Grants Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredGrants.map((grant) => {
+          const matchScore = calculateMatchScore(grant);
+          return (
+            <Card key={grant.id} className="hover:shadow-lg transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                      {grant.title}
+                    </CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">{grant.source}</p>
+                  </div>
+                  <div className="flex flex-col items-end space-y-2">
+                    <Badge className={getStatusColor(grant.status)}>
+                      {grant.status.replace('_', ' ')}
+                    </Badge>
+                    <div className="text-right">
+                      <div className={`text-lg font-bold ${getMatchScoreColor(matchScore)}`}>
+                        {matchScore}%
+                      </div>
+                      <div className="text-xs text-gray-500">{getMatchScoreText(matchScore)}</div>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                  {grant.description}
+                </p>
+                
+                <div className="space-y-3">
+                  {/* Amount */}
+                  <div className="flex items-center text-sm">
+                    <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
+                    <span className="font-medium">
+                      {grant.min_amount && grant.max_amount 
+                        ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
+                        : 'Amount not specified'
+                      }
+                    </span>
+                  </div>
+
+                  {/* Deadline */}
+                  {grant.deadline && (
+                    <div className="flex items-center text-sm">
+                      <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
+                      <span>Deadline: {formatDate(grant.deadline.toString())}</span>
+                    </div>
+                  )}
+
+                  {/* Industry */}
+                  {grant.industry_focus && (
+                    <div className="flex items-center text-sm">
+                      <GlobeAltIcon className="h-4 w-4 text-blue-500 mr-2" />
+                      <span className="capitalize">{grant.industry_focus}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm">
+                      <EyeIcon className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </div>
+                  <Link href={`/grants/apply/${grant.id}`}>
+                    <Button size="sm">
+                      <ArrowRightIcon className="h-4 w-4 mr-1" />
+                      Apply
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {filteredGrants.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto" />
+          <h3 className="mt-4 text-lg font-medium text-gray-900">No grants found</h3>
+          <p className="mt-2 text-gray-600">
+            Try adjusting your search criteria or filters.
+          </p>
+        </div>
+      )}
     </div>
   );
 } 
