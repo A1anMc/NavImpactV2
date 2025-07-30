@@ -1,7 +1,7 @@
 """
 NavImpact API - Production Ready
 Enhanced with comprehensive security measures for production deployment.
-Updated: 2025-01-27 - Triggering redeployment for grants system
+Updated: 2025-01-27 - Full production deployment for grants system
 """
 
 from datetime import datetime
@@ -257,16 +257,18 @@ def create_app() -> FastAPI:
     async def read_root():
         """Root endpoint with basic information."""
         return {
-            "message": "NavImpact API",
-            "version": "1.0.0",
+            "message": "NavImpact Production API - High-Grade Grant System",
+            "version": "2.0.0",
             "environment": settings.ENV,
-            "status": "running"
+            "status": "production_ready",
+            "features": ["grants", "ai_matching", "production_management", "team_collaboration"],
+            "deployment": "2025-01-27-full-production"
         }
     
     @app.get("/health")
     async def health_check():
         """Health check endpoint."""
-        # Updated: 2025-01-27 - Triggering redeployment for grants system
+        # Updated: 2025-01-27 - Full production deployment for grants system
         try:
             # Check database health using the correct function
             from app.db.session import health_check as check_db_health
@@ -274,6 +276,7 @@ def create_app() -> FastAPI:
             
             return {
                 "status": "healthy",
+                "message": "NavImpact Production API is running on Render",
                 "database": "connected" if db_healthy else "disconnected",
                 "timestamp": datetime.utcnow().isoformat(),
                 "environment": settings.ENV,
