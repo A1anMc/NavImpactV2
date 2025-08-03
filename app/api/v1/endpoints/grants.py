@@ -126,6 +126,112 @@ def get_grants(
             detail=f"Error fetching grants: {str(e)}"
         )
 
+@router.get("/{grant_id}", response_model=GrantResponse)
+def get_grant(grant_id: int, db: Session = Depends(get_db)):
+    """Get a specific grant by ID."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        grant = db.query(Grant).filter(Grant.id == grant_id).first()
+        
+        if not grant:
+            raise HTTPException(status_code=404, detail="Grant not found")
+        
+        return {
+            "id": grant.id,
+            "title": grant.title,
+            "description": grant.description,
+            "source": grant.source,
+            "source_url": grant.source_url,
+            "application_url": grant.application_url,
+            "contact_email": grant.contact_email,
+            "min_amount": float(grant.min_amount) if grant.min_amount else None,
+            "max_amount": float(grant.max_amount) if grant.max_amount else None,
+            "open_date": grant.open_date.isoformat() if grant.open_date else None,
+            "deadline": grant.deadline.isoformat() if grant.deadline else None,
+            "industry_focus": grant.industry_focus,
+            "location_eligibility": grant.location_eligibility,
+            "org_type_eligible": grant.org_type_eligible,
+            "status": grant.status,
+            "created_at": grant.created_at.isoformat() if grant.created_at else None,
+            "updated_at": grant.updated_at.isoformat() if grant.updated_at else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting grant {grant_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        db.close()
+
+@router.post("/", response_model=GrantResponse)
+def create_grant(grant_data: GrantCreate, db: Session = Depends(get_db)):
+    """Create a new grant."""
+    try:
+        from app.db.session import get_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.models.grant import Grant
+        from datetime import datetime
+        
+        engine = get_engine()
+        SessionLocal = sessionmaker(bind=engine)
+        db = SessionLocal()
+        
+        # Create new grant
+        new_grant = Grant(
+            title=grant_data.title,
+            description=grant_data.description,
+            source=grant_data.source,
+            source_url=grant_data.source_url,
+            application_url=grant_data.application_url,
+            contact_email=grant_data.contact_email,
+            min_amount=Decimal(str(grant_data.min_amount)) if grant_data.min_amount else None,
+            max_amount=Decimal(str(grant_data.max_amount)) if grant_data.max_amount else None,
+            open_date=datetime.fromisoformat(grant_data.open_date) if grant_data.open_date else None,
+            deadline=datetime.fromisoformat(grant_data.deadline) if grant_data.deadline else None,
+            industry_focus=grant_data.industry_focus,
+            location_eligibility=grant_data.location_eligibility,
+            org_type_eligible=grant_data.org_type_eligible,
+            status=grant_data.status or "active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        
+        db.add(new_grant)
+        db.commit()
+        db.refresh(new_grant)
+        
+        return {
+            "id": new_grant.id,
+            "title": new_grant.title,
+            "description": new_grant.description,
+            "source": new_grant.source,
+            "source_url": new_grant.source_url,
+            "application_url": new_grant.application_url,
+            "contact_email": new_grant.contact_email,
+            "min_amount": float(new_grant.min_amount) if new_grant.min_amount else None,
+            "max_amount": float(new_grant.max_amount) if new_grant.max_amount else None,
+            "open_date": new_grant.open_date.isoformat() if new_grant.open_date else None,
+            "deadline": new_grant.deadline.isoformat() if new_grant.deadline else None,
+            "industry_focus": new_grant.industry_focus,
+            "location_eligibility": new_grant.location_eligibility,
+            "org_type_eligible": new_grant.org_type_eligible,
+            "status": new_grant.status,
+            "created_at": new_grant.created_at.isoformat() if new_grant.created_at else None,
+            "updated_at": new_grant.updated_at.isoformat() if new_grant.updated_at else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating grant: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        db.close()
+
 # New AI-Powered Endpoints
 
 @router.post("/ai/recommendations", response_model=AIRecommendationResponse)
@@ -674,11 +780,67 @@ async def scrape_all_sources(
     db: Session = Depends(get_db)
 ):
     """Trigger scraping of all available grant sources."""
-    return {
-        "status": "disabled",
-        "message": "Grant scraping is currently disabled to reduce dependencies",
-        "available_sources": []
-    }
+    try:
+        from app.core.config import settings
+        
+        if not hasattr(settings, 'ALLOWED_SCRAPER_SOURCES'):
+            raise HTTPException(
+                status_code=500,
+                detail="Scraper configuration not found"
+            )
+        
+        enabled_sources = []
+        for source_id, config in settings.ALLOWED_SCRAPER_SOURCES.items():
+            if config.get("enabled", False):
+                enabled_sources.append(source_id)
+        
+        if not enabled_sources:
+            return {
+                "status": "no_sources",
+                "message": "No enabled scraper sources found",
+                "available_sources": []
+            }
+        
+        # Start scraping for each enabled source
+        started_sources = []
+        for source in enabled_sources:
+            try:
+                # Import and initialize scraper
+                if source == "australian_grants":
+                    from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+                    scraper = AustralianGrantsScraper(db)
+                elif source == "business_gov":
+                    from app.services.scrapers.business_gov import BusinessGovScraper
+                    scraper = BusinessGovScraper(db)
+                elif source == "media_investment":
+                    from app.services.scrapers.media_investment_scraper import MediaInvestmentScraper
+                    scraper = MediaInvestmentScraper(db)
+                else:
+                    logger.warning(f"Skipping {source} - not yet implemented")
+                    continue
+                
+                # Add to background tasks
+                background_tasks.add_task(scraper.scrape)
+                started_sources.append(source)
+                
+            except Exception as e:
+                logger.error(f"Error starting scraper {source}: {str(e)}")
+                # Continue with other sources even if one fails
+        
+        return {
+            "status": "started",
+            "message": f"Started scraping for {len(started_sources)} sources",
+            "started_sources": started_sources,
+            "total_enabled": len(enabled_sources),
+            "estimated_time": "5-10 minutes"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in scrape_all_sources: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error starting scrapers: {str(e)}"
+        )
 
 @router.post("/scrape/{source}")
 async def scrape_specific_source(
@@ -687,20 +849,118 @@ async def scrape_specific_source(
     db: Session = Depends(get_db)
 ):
     """Trigger scraping of a specific grant source."""
-    return {
-        "status": "disabled",
-        "message": f"Grant scraping for {source} is currently disabled to reduce dependencies"
-    }
+    try:
+        from app.core.config import settings
+        
+        # Check if source is allowed
+        if not hasattr(settings, 'ALLOWED_SCRAPER_SOURCES') or source not in settings.ALLOWED_SCRAPER_SOURCES:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Source '{source}' is not allowed or not configured"
+            )
+        
+        source_config = settings.ALLOWED_SCRAPER_SOURCES[source]
+        if not source_config.get("enabled", False):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Source '{source}' is currently disabled"
+            )
+        
+        # Import the appropriate scraper
+        scraper_map = {
+            "australian_grants": "AustralianGrantsScraper",
+            "business.gov.au": "BusinessGovScraper", 
+            "media_investment": "MediaInvestmentScraper",
+            "grantconnect": "GrantConnectScraper",
+            "philanthropic": "PhilanthropicScraper"
+        }
+        
+        if source not in scraper_map:
+            raise HTTPException(
+                status_code=400,
+                detail=f"No scraper implementation found for source '{source}'"
+            )
+        
+        # Import and initialize scraper
+        try:
+            if source == "australian_grants":
+                from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+                scraper = AustralianGrantsScraper(db)
+            elif source == "business_gov":
+                from app.services.scrapers.business_gov import BusinessGovScraper
+                scraper = BusinessGovScraper(db)
+            elif source == "media_investment":
+                from app.services.scrapers.media_investment_scraper import MediaInvestmentScraper
+                scraper = MediaInvestmentScraper(db)
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Scraper for '{source}' not yet implemented"
+                )
+            
+            # Run scraper in background
+            background_tasks.add_task(scraper.scrape)
+            
+            return {
+                "status": "started",
+                "message": f"Scraping started for {source}",
+                "source": source,
+                "estimated_time": "2-5 minutes"
+            }
+            
+        except ImportError as e:
+            logger.error(f"Import error for scraper {source}: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Scraper module for '{source}' could not be imported"
+            )
+        except Exception as e:
+            logger.error(f"Error initializing scraper {source}: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error initializing scraper: {str(e)}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in scrape_specific_source: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )
 
 @router.get("/sources")
 def get_available_sources(db: Session = Depends(get_db)):
     """Get list of available grant sources with their status."""
-    return {
-        "sources": [],
-        "total": 0,
-        "status": "disabled",
-        "message": "Grant scraping sources are currently disabled to reduce dependencies"
-    }
+    try:
+        from app.core.config import settings
+        
+        sources = []
+        if hasattr(settings, 'ALLOWED_SCRAPER_SOURCES'):
+            for source_id, config in settings.ALLOWED_SCRAPER_SOURCES.items():
+                sources.append({
+                    "id": source_id,
+                    "name": config.get("description", source_id),
+                    "base_url": config.get("base_url", ""),
+                    "enabled": config.get("enabled", False),
+                    "rate_limit": config.get("rate_limit", 1.0)
+                })
+        
+        return {
+            "sources": sources,
+            "total": len(sources),
+            "status": "enabled",
+            "message": "Grant scraping sources are now available"
+        }
+    except Exception as e:
+        logger.error(f"Error getting available sources: {str(e)}")
+        return {
+            "sources": [],
+            "total": 0,
+            "status": "error",
+            "message": f"Error retrieving sources: {str(e)}"
+        }
 
 @router.get("/test")
 def test_grants():
@@ -822,8 +1082,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=45),
             "industry_focus": "technology",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "nonprofit"],
             "funding_purpose": ["Digital Media", "Innovation"],
             "audience_tags": ["Digital Creators", "Tech Startups"],
             "status": "open",
@@ -841,8 +1101,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=30),
             "industry_focus": "services",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Indigenous Business", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["indigenous organisation", "nonprofit"],
             "funding_purpose": ["Film Production", "Cultural Preservation"],
             "audience_tags": ["Indigenous Communities", "Filmmakers"],
             "status": "open",
@@ -860,8 +1120,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=75),
             "industry_focus": "healthcare",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Nonprofit", "Healthcare Provider"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["nonprofit", "healthcare provider"],
             "funding_purpose": ["Mental Health", "Youth Services"],
             "audience_tags": ["Youth", "Mental Health Professionals"],
             "status": "open",
@@ -879,8 +1139,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=30),
             "industry_focus": "services",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Social Enterprise", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["social enterprise", "nonprofit"],
             "funding_purpose": ["Social Enterprise", "Business Development"],
             "audience_tags": ["Social Entrepreneurs", "Nonprofits"],
             "status": "open",
@@ -898,8 +1158,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=120),
             "industry_focus": "technology",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Research Institution"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "research institution"],
             "funding_purpose": ["Renewable Energy", "Innovation"],
             "audience_tags": ["Energy Companies", "Researchers"],
             "status": "open",
@@ -917,8 +1177,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=75),
             "industry_focus": "manufacturing",
-            "location_eligibility": "National",
-            "org_type_eligible": ["Startup", "SME", "Nonprofit"],
+            "location_eligibility": "national",
+            "org_type_eligible": ["startup", "sme", "nonprofit"],
             "funding_purpose": ["Circular Economy", "Waste Reduction"],
             "audience_tags": ["Manufacturers", "Sustainability Experts"],
             "status": "open",
@@ -936,8 +1196,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=90),
             "industry_focus": "agriculture",
-            "location_eligibility": "Regional",
-            "org_type_eligible": ["SME", "Farmer", "Research Institution"],
+            "location_eligibility": "regional",
+            "org_type_eligible": ["sme", "farmer", "research institution"],
             "funding_purpose": ["Sustainable Agriculture", "Innovation"],
             "audience_tags": ["Farmers", "Agricultural Researchers"],
             "status": "active",
@@ -955,8 +1215,8 @@ def seed_simple_grants():
             "open_date": datetime.now(),
             "deadline": datetime.now() + timedelta(days=45),
             "industry_focus": "environment",
-            "location_eligibility": "Coastal",
-            "org_type_eligible": ["Nonprofit", "Research Institution"],
+            "location_eligibility": "coastal",
+            "org_type_eligible": ["nonprofit", "research institution"],
             "funding_purpose": ["Marine Conservation", "Biodiversity"],
             "audience_tags": ["Marine Biologists", "Conservationists"],
             "status": "open",

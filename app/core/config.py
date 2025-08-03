@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, Any
 from dotenv import load_dotenv
 import json
 
@@ -97,6 +97,40 @@ class Settings:
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "100" if os.getenv("ENVIRONMENT", "development") == "development" else "60"))
     RATE_LIMIT_REQUESTS_PER_HOUR: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_HOUR", "10000" if os.getenv("ENVIRONMENT", "development") == "development" else "1000"))
     REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
+
+    # Grant Scrapers Configuration
+    ALLOWED_SCRAPER_SOURCES: Dict[str, Dict[str, Any]] = {
+        "australian_grants": {
+            "base_url": "https://www.screenaustralia.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "Screen Australia and Australian government grants"
+        },
+        "business.gov.au": {
+            "base_url": "https://business.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "Australian government business grants"
+        },
+        "media_investment": {
+            "base_url": "https://www.abc.net.au",
+            "enabled": True,
+            "rate_limit": 0.5,
+            "description": "Media and entertainment industry grants"
+        },
+        "grantconnect": {
+            "base_url": "https://www.grants.gov.au",
+            "enabled": True,
+            "rate_limit": 1.0,
+            "description": "GrantConnect.gov.au integration"
+        },
+        "philanthropic": {
+            "base_url": "https://www.philanthropy.org.au",
+            "enabled": True,
+            "rate_limit": 0.5,
+            "description": "Philanthropic funding sources"
+        }
+    }
     
     # Trusted Hosts (for production)
     TRUSTED_HOSTS: List[str] = [
@@ -105,9 +139,45 @@ class Settings:
         "127.0.0.1"
     ]
     
+    # External domains allowed for scraping
+    ALLOWED_EXTERNAL_DOMAINS: List[str] = [
+        "business.gov.au",
+        "www.screenaustralia.gov.au",
+        "screenaustralia.gov.au",
+        "www.create.nsw.gov.au",
+        "create.nsw.gov.au",
+        "creative.gov.au",
+        "www.abc.net.au",
+        "www.sbs.com.au",
+        "www.grants.gov.au",
+        "www.philanthropy.org.au",
+        "www.nineentertainment.com.au",
+        "www.sevenwestmedia.com.au",
+        "www.10play.com.au",
+        "www.foxtel.com.au",
+        "www.newscorpaustralia.com.au",
+        "www.southerncrossaustereo.com.au"
+    ]
+    
     # Frontend URL
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
     
+    # Social Media API Configuration
+    # Instagram API
+    INSTAGRAM_ACCESS_TOKEN: Optional[str] = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+    INSTAGRAM_APP_ID: Optional[str] = os.getenv("INSTAGRAM_APP_ID")
+    INSTAGRAM_APP_SECRET: Optional[str] = os.getenv("INSTAGRAM_APP_SECRET")
+    INSTAGRAM_BUSINESS_ACCOUNT_ID: Optional[str] = os.getenv("INSTAGRAM_BUSINESS_ACCOUNT_ID")
+    
+    # Instagram API Settings
+    INSTAGRAM_API_BASE_URL: str = "https://graph.instagram.com/v18.0"
+    INSTAGRAM_API_TIMEOUT: int = 30
+    INSTAGRAM_RATE_LIMIT: int = 200  # requests per hour
+    
+    # Social Media Metrics Configuration
+    SOCIAL_MEDIA_ENABLED: bool = os.getenv("SOCIAL_MEDIA_ENABLED", "false").lower() == "true"
+    SOCIAL_METRICS_CACHE_DURATION: int = int(os.getenv("SOCIAL_METRICS_CACHE_DURATION", "3600"))  # 1 hour
+
     def __init__(self):
         # Parse CORS origins from environment
         cors_origins_str = os.getenv("CORS_ORIGINS", "")

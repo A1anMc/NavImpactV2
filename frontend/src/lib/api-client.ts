@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 // Create axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://shadow-goose-api.onrender.com',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

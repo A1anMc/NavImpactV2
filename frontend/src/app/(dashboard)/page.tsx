@@ -1,407 +1,354 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import {
-  ChartBarIcon,
-  FolderIcon,
-  DocumentMagnifyingGlassIcon,
-  ClipboardDocumentListIcon,
-  PhotoIcon,
+  PlayIcon,
   ClockIcon,
-  CircleStackIcon,
-  ShieldCheckIcon,
+  UserGroupIcon,
+  FilmIcon,
+  CameraIcon,
+  MegaphoneIcon,
+  GlobeAltIcon,
+  TrophyIcon,
   PlusIcon,
   ArrowRightIcon,
-  ArrowTrendingUpIcon,
+  CalendarIcon,
+  ChartBarIcon,
   CheckCircleIcon,
-  UserCircleIcon,
-  PlayIcon,
-  UsersIcon,
-  SparklesIcon,
+  ExclamationTriangleIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
 export default function DashboardPage() {
+  const projects = [
+    {
+      id: 1,
+      name: 'Wild Hearts',
+      description: 'Cinematic documentary exploring human resilience',
+      progress: 85,
+      status: 'In Production',
+      category: 'Documentary',
+      team: ['Ursula Searle', 'Shamita Siva'],
+      budget: '$125,000',
+      timeline: 'Q2 2025',
+      impact: 'High',
+      color: 'from-blue-500 to-purple-600',
+    },
+    {
+      id: 2,
+      name: 'Around the Table',
+      description: 'Community storytelling through shared meals',
+      progress: 65,
+      status: 'Pre-Production',
+      category: 'Series',
+      team: ['Ash Dorman', 'Mish Rep'],
+      budget: '$85,000',
+      timeline: 'Q3 2025',
+      impact: 'Medium',
+      color: 'from-green-500 to-emerald-600',
+    },
+    {
+      id: 3,
+      name: 'The Last Line',
+      description: 'Environmental conservation narrative',
+      progress: 45,
+      status: 'Development',
+      category: 'Feature',
+      team: ['Alan McCarthy', 'Kiara Holt'],
+      budget: '$200,000',
+      timeline: 'Q4 2025',
+      impact: 'High',
+      color: 'from-orange-500 to-red-600',
+    },
+  ];
+
+  const metrics = [
+    {
+      title: 'Active Projects',
+      value: '3',
+      change: '+1',
+      icon: FilmIcon,
+      color: 'bg-blue-500',
+      trend: 'up',
+    },
+    {
+      title: 'Production Hours',
+      value: '1,247',
+      change: '+23%',
+      icon: ClockIcon,
+      color: 'bg-green-500',
+      trend: 'up',
+    },
+    {
+      title: 'Team Members',
+      value: '6',
+      change: '+1',
+      icon: UserGroupIcon,
+      color: 'bg-purple-500',
+      trend: 'up',
+    },
+    {
+      title: 'Impact Score',
+      value: '94%',
+      change: '+8%',
+      icon: TrophyIcon,
+      color: 'bg-orange-500',
+      trend: 'up',
+    },
+  ];
+
+  const recentActivity = [
+    {
+      id: 1,
+      action: 'Production milestone reached',
+      project: 'Wild Hearts',
+      user: 'Ursula Searle',
+      time: '2 hours ago',
+      type: 'milestone',
+      icon: CheckCircleIcon,
+      color: 'text-green-500',
+    },
+    {
+      id: 2,
+      action: 'New grant application submitted',
+      project: 'Around the Table',
+      user: 'Ash Dorman',
+      time: '4 hours ago',
+      type: 'grant',
+      icon: ChartBarIcon,
+      color: 'text-blue-500',
+    },
+    {
+      id: 3,
+      action: 'Script review completed',
+      project: 'The Last Line',
+      user: 'Shamita Siva',
+      time: '6 hours ago',
+      type: 'review',
+      icon: StarIcon,
+      color: 'text-purple-500',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-green-600/10 to-blue-600/10"></div>
-        <div className="relative p-8 max-w-7xl mx-auto">
-          <div className="mb-12">
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="relative">
-                <div className="p-4 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 rounded-2xl shadow-2xl">
-                  <svg className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                  </svg>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Image
+                    src="/SGE_Main_Logo_White.svg"
+                    alt="SGE Logo"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
+                  />
                 </div>
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                  <SparklesIcon className="h-3 w-3 text-yellow-900" />
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Shadow Goose Entertainment</h1>
+                  <p className="text-sm text-gray-500">Production Dashboard</p>
                 </div>
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-2">
-                  Shadow Goose Entertainment
-                </h1>
-                <p className="text-xl text-gray-600 font-medium">
-                  Media Impact & Project Management Platform
-                </p>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-8 text-sm">
-              <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-medium text-gray-700">System Online</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
-                <UsersIcon className="h-4 w-4 text-blue-600" />
-                <span className="font-medium text-gray-700">6 Team Members</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
-                <PlayIcon className="h-4 w-4 text-green-600" />
-                <span className="font-medium text-gray-700">4 Active Projects</span>
-              </div>
+            <div className="flex items-center space-x-4">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <PlusIcon className="h-4 w-4 mr-2" />
+                New Project
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-8 max-w-7xl mx-auto -mt-8">
-        {/* Enhanced Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Media Projects</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">4</p>
-                  <p className="text-xs text-green-600 font-medium mt-1">Active & Thriving</p>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <PhotoIcon className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Team Members</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">6</p>
-                  <p className="text-xs text-blue-600 font-medium mt-1">Including 1 Intern</p>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <UserCircleIcon className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Grants Available</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">12</p>
-                  <p className="text-xs text-amber-600 font-medium mt-1">Matching SGE</p>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <DocumentMagnifyingGlassIcon className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Impact Stories</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">8</p>
-                  <p className="text-xs text-purple-600 font-medium mt-1">Documented</p>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <ChartBarIcon className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Featured Projects Section */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Featured Media Projects</h2>
-              <p className="text-gray-600">Our flagship productions making real impact</p>
-            </div>
-            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-              View All Projects
-              <ArrowRightIcon className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-600/20"></div>
-                <CardContent className="p-8 relative">
-                  <div className="flex items-start space-x-6">
-                    <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <PhotoIcon className="h-8 w-8 text-white" />
+          {/* Welcome Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="max-w-3xl">
+              <h2 className="text-3xl font-bold mb-4">Welcome back, Team</h2>
+              <p className="text-blue-100 text-lg mb-6">
+                Track your productions, manage your team, and drive meaningful impact through cinematic storytelling.
+              </p>
+              <div className="flex items-center space-x-4">
+                <Button className="bg-white text-blue-600 hover:bg-gray-100">
+                  View All Projects
+                </Button>
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+                  Team Overview
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {metrics.map((metric, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 mb-1">{metric.title}</p>
+                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                      <div className="flex items-center mt-2">
+                        <span className="text-sm text-green-600 font-medium">{metric.change}</span>
+                        <span className="text-sm text-gray-500 ml-1">from last month</span>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xl font-bold text-gray-900">Wild Hearts</h3>
-                        <Badge className="bg-green-100 text-green-800 border-0 px-3 py-1 font-medium">In Production</Badge>
-                      </div>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
-                        Environmental conservation documentary exploring the intersection of human connection and nature preservation.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Progress</span>
-                          <span className="text-sm font-semibold text-green-600">75% Complete</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full transition-all duration-500" style={{ width: '75%' }}></div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>Shamita (Creative)</span>
-                          <span>•</span>
-                          <span>Ursula (Strategy)</span>
-                        </div>
-                      </div>
+                    <div className={`p-3 ${metric.color} rounded-xl`}>
+                      <metric.icon className="h-6 w-6 text-white" />
                     </div>
                   </div>
                 </CardContent>
-              </div>
-            </Card>
-
-            <Card className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-600/20"></div>
-                <CardContent className="p-8 relative">
-                  <div className="flex items-start space-x-6">
-                    <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <PhotoIcon className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xl font-bold text-gray-900">Around the Table</h3>
-                        <Badge className="bg-amber-100 text-amber-800 border-0 px-3 py-1 font-medium">Planning</Badge>
-                      </div>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
-                        Community engagement series fostering dialogue and connection through shared experiences and storytelling.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Progress</span>
-                          <span className="text-sm font-semibold text-amber-600">25% Complete</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full transition-all duration-500" style={{ width: '25%' }}></div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>Mish (Operations)</span>
-                          <span>•</span>
-                          <span>Ash (Partnerships)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </div>
-            </Card>
-          </div>
-        </div>
-
-        {/* Quick Actions & Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <SparklesIcon className="h-5 w-5 mr-2 text-green-600" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-auto p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <PlusIcon className="h-5 w-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">New Project</div>
-                        <div className="text-sm opacity-90">Start a new media project</div>
-                      </div>
-                    </div>
-                  </Button>
-
-                  <Button className="group bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-auto p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <DocumentMagnifyingGlassIcon className="h-5 w-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">Find Grants</div>
-                        <div className="text-sm opacity-90">Discover funding opportunities</div>
-                      </div>
-                    </div>
-                  </Button>
-
-                  <Button className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-auto p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <UsersIcon className="h-5 w-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">Team Overview</div>
-                        <div className="text-sm opacity-90">View team collaboration</div>
-                      </div>
-                    </div>
-                  </Button>
-
-                  <Button className="group bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-auto p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <ChartBarIcon className="h-5 w-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">Impact Report</div>
-                        <div className="text-sm opacity-90">Generate impact analytics</div>
-                      </div>
-                    </div>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <ClockIcon className="h-5 w-5 mr-2 text-blue-600" />
-                  Recent Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Kiara updated learning progress</p>
-                      <p className="text-xs text-gray-500">2 hours ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Shamita assigned new project tasks</p>
-                      <p className="text-xs text-gray-500">4 hours ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Ursula scheduled team meeting</p>
-                      <p className="text-xs text-gray-500">6 hours ago</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </Card>
+            ))}
           </div>
 
-          {/* Sidebar */}
+          {/* Projects Section */}
           <div className="space-y-6">
-            {/* Team Status */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <UsersIcon className="h-5 w-5 mr-2 text-green-600" />
-                  Team Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">US</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Ursula Searle</p>
-                        <p className="text-xs text-gray-500">Managing Director</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-green-100 text-green-800 border-0 text-xs">Available</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">SS</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Shamita Siva</p>
-                        <p className="text-xs text-gray-500">Creative Director</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Active Productions</h2>
+                <p className="text-gray-600 mt-1">Track progress and manage your current projects</p>
+              </div>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <PlusIcon className="h-4 w-4 mr-2" />
+                New Project
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <Card key={project.id} className="hover:shadow-lg transition-all duration-200 hover:scale-105">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className={`w-3 h-3 bg-gradient-to-r ${project.color} rounded-full`}></div>
+                          <Badge className={`${
+                            project.status === 'In Production' ? 'bg-green-100 text-green-800' :
+                            project.status === 'Pre-Production' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {project.status}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg text-gray-900">{project.name}</CardTitle>
+                        <p className="text-sm text-gray-600 mt-1">{project.description}</p>
                       </div>
                     </div>
-                    <Badge className="bg-amber-100 text-amber-800 border-0 text-xs">Busy</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">KH</span>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Progress</span>
+                        <span className="font-medium text-gray-900">{project.progress}%</span>
+                      </div>
+                      <Progress value={project.progress} className="h-2">
+                        <div className={`h-full bg-gradient-to-r ${project.color} rounded-full transition-all duration-300`} 
+                             style={{ width: `${project.progress}%` }}></div>
+                      </Progress>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600">Category</p>
+                        <p className="font-medium text-gray-900">{project.category}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Kiara Holt</p>
-                        <p className="text-xs text-gray-500">Intern</p>
+                        <p className="text-gray-600">Budget</p>
+                        <p className="font-medium text-gray-900">{project.budget}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Timeline</p>
+                        <p className="font-medium text-gray-900">{project.timeline}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Impact</p>
+                        <p className="font-medium text-gray-900">{project.impact}</p>
                       </div>
                     </div>
-                    <Badge className="bg-green-100 text-green-800 border-0 text-xs">Available</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-xs text-gray-600 mb-2">Team</p>
+                      <div className="flex flex-wrap gap-1">
+                        {project.team.map((member, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {member}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <Button className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200">
+                      View Details
+                      <ArrowRightIcon className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
 
-            {/* Quick Stats */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
-                  <ChartBarIcon className="h-5 w-5 mr-2 text-purple-600" />
-                  Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          {/* Recent Activity */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+              <p className="text-gray-600 mt-1">Latest updates from your team</p>
+            </div>
+            <Card>
+              <CardContent className="p-6">
                 <div className="space-y-4">
-                  <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                    <p className="text-2xl font-bold text-green-600">87%</p>
-                    <p className="text-sm text-gray-600">Grant Success Rate</p>
-                  </div>
-                  <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                    <p className="text-2xl font-bold text-blue-600">92%</p>
-                    <p className="text-sm text-gray-600">Project Completion</p>
-                  </div>
-                  <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <p className="text-2xl font-bold text-purple-600">95%</p>
-                    <p className="text-sm text-gray-600">Team Satisfaction</p>
-                  </div>
+                  {recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className={`p-2 rounded-lg bg-gray-100 ${activity.color}`}>
+                        <activity.icon className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{activity.action}</p>
+                        <p className="text-sm text-gray-600">{activity.project} • {activity.user}</p>
+                      </div>
+                      <span className="text-sm text-gray-500">{activity.time}</span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
+              <p className="text-gray-600 mt-1">Common tasks and workflows</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <PlayIcon className="h-6 w-6 text-blue-600" />
+                <span className="text-sm font-medium text-gray-900">Start Production</span>
+              </Button>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <CameraIcon className="h-6 w-6 text-green-600" />
+                <span className="text-sm font-medium text-gray-900">Schedule Shoot</span>
+              </Button>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <MegaphoneIcon className="h-6 w-6 text-purple-600" />
+                <span className="text-sm font-medium text-gray-900">Marketing</span>
+              </Button>
+              <Button className="h-20 flex flex-col items-center justify-center space-y-2 bg-white hover:bg-gray-50 border border-gray-200">
+                <GlobeAltIcon className="h-6 w-6 text-orange-600" />
+                <span className="text-sm font-medium text-gray-900">Distribution</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
