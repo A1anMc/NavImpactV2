@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, sge_media, sge_media_health, debug, notion, social_media
+from app.api.v1.endpoints import auth, users, projects, tasks, grants, tags, scraper_status, comments, health, impact, media, time_logs, settings, sge_media, sge_media_health, debug, notion, social_media, sprints
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -27,3 +27,4 @@ api_router.include_router(notion.router, prefix="/notion", tags=["notion"])
 
 # Social Media Integration
 api_router.include_router(social_media.router, prefix="/social-media", tags=["social-media"])
+api_router.include_router(sprints.router, prefix="/sprints", tags=["sprints"])
