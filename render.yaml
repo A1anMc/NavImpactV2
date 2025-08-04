@@ -15,7 +15,7 @@ services:
       echo "Running fresh database migrations..."
       alembic upgrade head
       echo "Starting gunicorn with app.main:app..."
-      gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
+      gunicorn app.sge_main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
