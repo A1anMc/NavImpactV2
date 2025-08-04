@@ -1,14 +1,14 @@
 services:
-  # Backend API Service
+  # Backend API Service for SGE
   - type: web
-    name: navimpact-api
+    name: shadow-goose-api
     env: python
     pythonVersion: "3.11.9"
     buildCommand: |
       pip install --upgrade pip
       pip install --no-cache-dir --only-binary::all: --prefer-binary -r requirements.txt
     startCommand: |
-      echo "Starting backend deployment..."
+      echo "Starting SGE backend deployment..."
       echo "Database URL: $DATABASE_URL"
       echo "Running fresh database migrations..."
       alembic upgrade head
@@ -23,9 +23,9 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: "https://navimpact-web.onrender.com"
+        value: "https://shadow-goose-dashboard.onrender.com"
       - key: ALLOWED_HOSTS
-        value: "navimpact-api.onrender.com,localhost,127.0.0.1"
+        value: "shadow-goose-api.onrender.com,localhost,127.0.0.1"
       - key: LOG_LEVEL
         value: INFO
       - key: EMAIL_ENABLED
@@ -43,9 +43,9 @@ services:
       - key: DATABASE_POOL_RECYCLE
         value: "1800"
 
-  # Frontend Service
+  # Frontend Service for SGE
   - type: web
-    name: navimpact-web
+    name: shadow-goose-dashboard
     env: node
     nodeVersion: "20.x"
     buildCommand: |
@@ -57,7 +57,7 @@ services:
       npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://navimpact-api.onrender.com
+        value: https://shadow-goose-api.onrender.com
       - key: NODE_ENV
         value: production
       - key: NEXT_TELEMETRY_DISABLED
@@ -66,6 +66,6 @@ services:
         value: "3000"
 
 databases:
-  - name: NavImpact-dbV2
+  - name: NavImpact-dbV3
     databaseName: navimpact
     user: navimpact 
