@@ -1,0 +1,71 @@
+services:
+  # Backend API Service
+  - type: web
+    name: navimpact-api
+    env: python
+    pythonVersion: "3.11.9"
+    buildCommand: |
+      pip install --upgrade pip
+      pip install --no-cache-dir --only-binary::all: --prefer-binary -r requirements.txt
+    startCommand: |
+      echo "Starting backend deployment..."
+      echo "Database URL: $DATABASE_URL"
+      echo "Running fresh database migrations..."
+      alembic upgrade head
+      gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DATABASE_URL
+        value: postgresql://navimpact_dbv3_user:EY0Vd5QcTEoY7ZM0CrKCWfsFVHcYIZ8V@dpg-d21hvsvfte5s73fkk140-a/navimpact_dbv3
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: "https://navimpact-web.onrender.com"
+      - key: ALLOWED_HOSTS
+        value: "navimpact-api.onrender.com,localhost,127.0.0.1"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: EMAIL_ENABLED
+        value: "false"
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: MAX_REQUESTS_PER_MINUTE
+        value: "60"
+      - key: DATABASE_POOL_SIZE
+        value: "5"
+      - key: DATABASE_MAX_OVERFLOW
+        value: "10"
+      - key: DATABASE_POOL_TIMEOUT
+        value: "30"
+      - key: DATABASE_POOL_RECYCLE
+        value: "1800"
+
+  # Frontend Service
+  - type: web
+    name: navimpact-web
+    env: node
+    nodeVersion: "20.x"
+    buildCommand: |
+      cd frontend
+      npm ci
+      npm run build
+    startCommand: |
+      cd frontend
+      npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://navimpact-api.onrender.com
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: PORT
+        value: "3000"
+
+databases:
+  - name: NavImpact-dbV2
+    databaseName: navimpact
+    user: navimpact 
