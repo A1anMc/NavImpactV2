@@ -299,4 +299,4 @@ def create_app() -> FastAPI:
     return app
 
 # Create the app
-app = create_app() 
+app = create_app() # Force deployment update
