@@ -96,8 +96,46 @@ class Settings:
     RATE_LIMIT_ENABLED: bool = os.getenv("RATE_LIMIT_ENABLED", "false" if os.getenv("ENVIRONMENT", "development") == "development" else "true").lower() == "true"
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "100" if os.getenv("ENVIRONMENT", "development") == "development" else "60"))
     RATE_LIMIT_REQUESTS_PER_HOUR: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_HOUR", "10000" if os.getenv("ENVIRONMENT", "development") == "development" else "1000"))
-    REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
+    REDIS_PASSWORD: Optional[str] = os.getenv("REDIS_PASSWORD")
 
+    # Analytics Configuration
+    # Google Analytics
+    GOOGLE_ANALYTICS_KEY_FILE: Optional[str] = os.getenv("GOOGLE_ANALYTICS_KEY_FILE")
+    GOOGLE_ANALYTICS_VIEW_ID: Optional[str] = os.getenv("GOOGLE_ANALYTICS_VIEW_ID")
+    GOOGLE_ANALYTICS_PROPERTY_ID: Optional[str] = os.getenv("GOOGLE_ANALYTICS_PROPERTY_ID")
+    
+    # Instagram Analytics
+    INSTAGRAM_USER_ID: Optional[str] = os.getenv("INSTAGRAM_USER_ID")
+    
+    # Notion Integration
+    NOTION_TOKEN: Optional[str] = os.getenv("NOTION_TOKEN")
+    NOTION_SPRINT_DATABASE_ID: Optional[str] = os.getenv("NOTION_SPRINT_DATABASE_ID")
+    NOTION_TASK_DATABASE_ID: Optional[str] = os.getenv("NOTION_TASK_DATABASE_ID")
+    NOTION_PROJECT_DATABASE_ID: Optional[str] = os.getenv("NOTION_PROJECT_DATABASE_ID")
+    NOTION_TEAM_DATABASE_ID: Optional[str] = os.getenv("NOTION_TEAM_DATABASE_ID")
+    
+    # Grant APIs
+    SCREEN_AUSTRALIA_API_KEY: Optional[str] = os.getenv("SCREEN_AUSTRALIA_API_KEY")
+    BUSINESS_GOV_API_KEY: Optional[str] = os.getenv("BUSINESS_GOV_API_KEY")
+    GRANT_CONNECT_API_KEY: Optional[str] = os.getenv("GRANT_CONNECT_API_KEY")
+    
+    # Media APIs
+    YOUTUBE_API_KEY: Optional[str] = os.getenv("YOUTUBE_API_KEY")
+    YOUTUBE_CHANNEL_ID: Optional[str] = os.getenv("YOUTUBE_CHANNEL_ID")
+    VIMEO_ACCESS_TOKEN: Optional[str] = os.getenv("VIMEO_ACCESS_TOKEN")
+    VIMEO_USER_ID: Optional[str] = os.getenv("VIMEO_USER_ID")
+    
+    # WebSocket
+    SOCKET_IO_SECRET: str = os.getenv("SOCKET_IO_SECRET", "your-socket-io-secret")
+    
+    # Caching
+    CACHE_TTL_SECONDS: int = int(os.getenv("CACHE_TTL_SECONDS", "300"))
+    ANALYTICS_CACHE_TTL_SECONDS: int = int(os.getenv("ANALYTICS_CACHE_TTL_SECONDS", "60"))
+    
+    # Monitoring
+    LOGTAIL_TOKEN: Optional[str] = os.getenv("LOGTAIL_TOKEN")
+    
     # Grant Scrapers Configuration
     ALLOWED_SCRAPER_SOURCES: Dict[str, Dict[str, Any]] = {
         "australian_grants": {

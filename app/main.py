@@ -36,6 +36,7 @@ from app.api.v1.api import api_router
 from app.db.session import get_engine, close_database
 from app.core.config import settings
 from app.core.error_handlers import setup_error_handlers
+from app.core.error_handling import setup_error_handling, error_handler
 from app.db.init_db import init_db, get_db_info, validate_database_config
 
 # Configure logging with production-safe format
@@ -125,14 +126,21 @@ async def lifespan(app: FastAPI):
         from app.db.session import health_check
         if health_check():
             logger.info("Database health check passed.")
+            error_handler.update_health_status("database", "healthy")
         else:
             logger.warning("Database health check failed.")
+            error_handler.update_health_status("database", "unhealthy")
         
-        # Error handlers are set up during app creation, not during startup
+        # Initialize bulletproof error handling
+        logger.info("Initializing bulletproof error handling...")
+        setup_error_handling(app)
+        logger.info("Error handling initialized successfully.")
+        
         logger.info("Application startup completed successfully.")
         
     except Exception as e:
         logger.error(f"Failed to initialize application: {str(e)}")
+        error_handler.log_error(e, "Application startup")
         # Report to Sentry if available
         if settings.SENTRY_DSN:
             try:
@@ -148,8 +156,10 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down NavImpact API...")
     try:
         close_database()
+        logger.info("Database connection closed.")
     except Exception as e:
         logger.error(f"Error during shutdown: {str(e)}")
+        error_handler.log_error(e, "Application shutdown")
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application with comprehensive security."""
@@ -196,6 +206,8 @@ def create_app() -> FastAPI:
             logger.error(
                 f"{method} {path} - ERROR - {duration:.3f}s - {str(e)}"
             )
+            # Log error with bulletproof error handler
+            error_handler.log_error(e, f"HTTP {method} {path}", request)
             # Re-raise the exception
             raise
     
@@ -261,29 +273,33 @@ def create_app() -> FastAPI:
             "version": "2.0.0",
             "environment": settings.ENV,
             "status": "production_ready",
-            "features": ["grants", "ai_matching", "production_management", "team_collaboration"],
+            "features": ["grants", "ai_matching", "production_management", "team_collaboration", "bulletproof_analytics"],
             "deployment": "2025-01-27-full-production"
         }
     
     @app.get("/health")
     async def health_check():
-        """Health check endpoint."""
-        # Updated: 2025-01-27 - Full production deployment for grants system
+        """Health check endpoint with bulletproof error handling."""
         try:
             # Check database health using the correct function
             from app.db.session import health_check as check_db_health
             db_healthy = check_db_health()
             
+            # Get system health from bulletproof error handler
+            system_health = error_handler.get_system_health()
+            
             return {
                 "status": "healthy",
                 "message": "NavImpact Production API is running on Render",
                 "database": "connected" if db_healthy else "disconnected",
+                "system_health": system_health,
                 "timestamp": datetime.utcnow().isoformat(),
                 "environment": settings.ENV,
                 "version": "1.0.0"
             }
         except Exception as e:
             logger.error(f"Health check failed: {str(e)}")
+            error_handler.log_error(e, "Health check endpoint")
             return JSONResponse(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 content={

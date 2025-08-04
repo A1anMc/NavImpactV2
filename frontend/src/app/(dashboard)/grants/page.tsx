@@ -3,449 +3,571 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  MagnifyingGlassIcon,
-  FunnelIcon,
-  SparklesIcon,
-  CurrencyDollarIcon,
-  CalendarIcon,
-  UserGroupIcon,
-  ChartBarIcon,
-  LightBulbIcon,
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
   StarIcon,
-  TrophyIcon,
-  GlobeAltIcon,
+  CalendarIcon,
   ClockIcon,
-  EyeIcon,
-  ArrowRightIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  ChartBarIcon,
+  BoltIcon,
+  FireIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  PlayIcon,
+  PauseIcon,
+  StopIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  UserGroupIcon,
+  GlobeAltIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/outline';
-import { grantsApi } from '@/services/grants';
-import { Grant } from '@/types/models';
-import Link from 'next/link';
 
-// High-Grade Production Grants Data
-const HIGH_GRADE_GRANTS: Grant[] = [
+// Mock grants data
+const mockGrants = [
   {
     id: 1,
-    title: "Screen Australia Documentary Production Funding",
-    description: "Comprehensive funding for documentary production by Australian practitioners. Supports creative development, production, and post-production phases.",
-    source: "Screen Australia",
-    source_url: "https://www.screenaustralia.gov.au/funding-and-support/documentary",
-    application_url: "https://www.screenaustralia.gov.au/funding-and-support/documentary/apply",
-    contact_email: "funding@screenaustralia.gov.au",
-    min_amount: 50000,
-    max_amount: 500000,
-    open_date: new Date("2024-01-01"),
-    deadline: new Date("2025-03-31"),
-    industry_focus: "media",
-    location_eligibility: "national",
-    org_type_eligible: ["startup", "sme", "enterprise", "nonprofit"],
-    funding_purpose: ["production", "development", "post_production"],
-    audience_tags: ["documentary", "australian", "screen"],
-    status: "open",
-    notes: "High-profile documentary funding opportunity with strong industry support",
-    created_at: new Date(),
-    updated_at: new Date(),
-    created_by_id: null
+    title: 'Screen Australia Documentary Funding',
+    amount: '$50,000',
+    status: 'in_progress',
+    match_score: 92,
+    deadline: '2024-09-15',
+    category: 'Documentary',
+    source: 'Screen Australia',
+    description: 'Funding for documentary film production and development',
+    requirements: [
+      'Australian citizen or permanent resident',
+      'Previous filmmaking experience',
+      'Detailed project proposal',
+      'Budget breakdown'
+    ],
+    team_members: [
+      { name: 'Ursula', role: 'Lead', avatar: '/avatars/ursula.jpg' },
+      { name: 'Kiara', role: 'Producer', avatar: '/avatars/kiara.jpg' }
+    ],
+    progress: 75,
+    documents: [
+      { name: 'Project Proposal', status: 'completed' },
+      { name: 'Budget Breakdown', status: 'completed' },
+      { name: 'Team CVs', status: 'in_progress' },
+      { name: 'Supporting Materials', status: 'pending' }
+    ],
+    metrics: {
+      application_strength: 85,
+      competition_level: 'medium',
+      success_probability: 78,
+      time_to_deadline: 42
+    }
   },
   {
     id: 2,
-    title: "Creative Australia Arts Projects for Organisations",
-    description: "Support for innovative arts projects with strong community engagement and cultural impact.",
-    source: "Creative Australia",
-    source_url: "https://creative.gov.au/funding",
-    application_url: "https://creative.gov.au/apply",
-    contact_email: "arts@creative.gov.au",
-    min_amount: 10000,
-    max_amount: 100000,
-    open_date: new Date("2024-01-01"),
-    deadline: new Date("2025-04-15"),
-    industry_focus: "arts",
-    location_eligibility: "national",
-    org_type_eligible: ["nonprofit", "community group", "academic"],
-    funding_purpose: ["development", "production", "exhibition"],
-    audience_tags: ["arts", "community", "cultural"],
-    status: "open",
-    notes: "Arts and culture focus with community engagement requirements",
-    created_at: new Date(),
-    updated_at: new Date(),
-    created_by_id: null
+    title: 'Business.gov.au Innovation Grant',
+    amount: '$25,000',
+    status: 'researching',
+    match_score: 78,
+    deadline: '2024-10-01',
+    category: 'Innovation',
+    source: 'Business.gov.au',
+    description: 'Support for innovative business projects and digital transformation',
+    requirements: [
+      'Registered Australian business',
+      'Innovation component',
+      'Economic impact assessment',
+      'Digital transformation plan'
+    ],
+    team_members: [
+      { name: 'Alan', role: 'Lead', avatar: '/avatars/alan.jpg' },
+      { name: 'Kiara', role: 'Analyst', avatar: '/avatars/kiara.jpg' }
+    ],
+    progress: 30,
+    documents: [
+      { name: 'Business Plan', status: 'in_progress' },
+      { name: 'Innovation Strategy', status: 'pending' },
+      { name: 'Financial Projections', status: 'pending' },
+      { name: 'Impact Assessment', status: 'pending' }
+    ],
+    metrics: {
+      application_strength: 65,
+      competition_level: 'high',
+      success_probability: 45,
+      time_to_deadline: 58
+    }
   },
   {
     id: 3,
-    title: "Netflix Documentary Fund",
-    description: "Premium funding for documentary projects with global appeal and innovative storytelling approaches.",
-    source: "Netflix",
-    source_url: "https://netflix.com/funding",
-    application_url: "https://netflix.com/apply",
-    contact_email: "funding@netflix.com",
-    min_amount: 100000,
-    max_amount: 500000,
-    open_date: new Date("2024-01-01"),
-    deadline: new Date("2025-05-30"),
-    industry_focus: "media",
-    location_eligibility: "international",
-    org_type_eligible: ["startup", "sme", "enterprise"],
-    funding_purpose: ["production", "development", "distribution"],
-    audience_tags: ["global", "documentary", "streaming"],
-    status: "open",
-    notes: "High-profile documentary funding opportunity with global reach",
-    created_at: new Date(),
-    updated_at: new Date(),
-    created_by_id: null
-  },
-  {
-    id: 4,
-    title: "ABC Pitch Initiative",
-    description: "Support for innovative television content with diverse representation and Australian stories.",
-    source: "ABC",
-    source_url: "https://abc.net.au/funding",
-    application_url: "https://abc.net.au/apply",
-    contact_email: "pitch@abc.net.au",
-    min_amount: 25000,
-    max_amount: 100000,
-    open_date: new Date("2024-01-01"),
-    deadline: new Date("2025-02-28"),
-    industry_focus: "media",
-    location_eligibility: "national",
-    org_type_eligible: ["startup", "sme", "enterprise"],
-    funding_purpose: ["development", "production"],
-    audience_tags: ["australian", "television", "diversity"],
-    status: "open",
-    notes: "Australian content development with diversity focus",
-    created_at: new Date(),
-    updated_at: new Date(),
-    created_by_id: null
-  },
-  {
-    id: 5,
-    title: "YouTube Creator Fund",
-    description: "Funding for digital content creators with innovative storytelling and strong audience engagement.",
-    source: "YouTube",
-    source_url: "https://youtube.com/funding",
-    application_url: "https://youtube.com/apply",
-    contact_email: "creator@youtube.com",
-    min_amount: 10000,
-    max_amount: 50000,
-    open_date: new Date("2024-01-01"),
-    deadline: new Date("2025-06-30"),
-    industry_focus: "media",
-    location_eligibility: "international",
-    org_type_eligible: ["startup", "sme", "enterprise"],
-    funding_purpose: ["production", "development", "marketing"],
-    audience_tags: ["digital", "creator", "online"],
-    status: "open",
-    notes: "Digital content creation with audience growth focus",
-    created_at: new Date(),
-    updated_at: new Date(),
-    created_by_id: null
+    title: 'Victorian Creative Industries Grant',
+    amount: '$35,000',
+    status: 'completed',
+    match_score: 88,
+    deadline: '2024-07-30',
+    category: 'Creative Industries',
+    source: 'Victorian Government',
+    description: 'Support for creative industry projects and cultural development',
+    requirements: [
+      'Victorian-based project',
+      'Cultural significance',
+      'Community engagement plan',
+      'Sustainability strategy'
+    ],
+    team_members: [
+      { name: 'Ursula', role: 'Lead', avatar: '/avatars/ursula.jpg' },
+      { name: 'Alan', role: 'Coordinator', avatar: '/avatars/alan.jpg' }
+    ],
+    progress: 100,
+    documents: [
+      { name: 'Project Proposal', status: 'completed' },
+      { name: 'Cultural Impact Assessment', status: 'completed' },
+      { name: 'Community Engagement Plan', status: 'completed' },
+      { name: 'Final Report', status: 'completed' }
+    ],
+    metrics: {
+      application_strength: 92,
+      competition_level: 'medium',
+      success_probability: 85,
+      time_to_deadline: 0
+    }
   }
 ];
 
 export default function GrantsPage() {
-  const [grants, setGrants] = useState<Grant[]>([]);
-  const [filteredGrants, setFilteredGrants] = useState<Grant[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedIndustry, setSelectedIndustry] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-
-  // Use high-grade grants data for production
-  useEffect(() => {
-    setLoading(true);
-    try {
-      // Try to fetch from API first
-      grantsApi.getGrants().then(data => {
-        if (data && data.items && data.items.length > 0) {
-          setGrants(data.items);
-          setFilteredGrants(data.items);
-        } else {
-          // Fall back to high-grade production data
-          console.log('Using high-grade production data - API returned no grants');
-          setGrants(HIGH_GRADE_GRANTS);
-          setFilteredGrants(HIGH_GRADE_GRANTS);
-        }
-        setLoading(false);
-      }).catch(err => {
-        console.log('API error, using high-grade production data:', err);
-        setGrants(HIGH_GRADE_GRANTS);
-        setFilteredGrants(HIGH_GRADE_GRANTS);
-        setLoading(false);
-      });
-    } catch (err) {
-      console.log('Using high-grade production data due to error:', err);
-      setGrants(HIGH_GRADE_GRANTS);
-      setFilteredGrants(HIGH_GRADE_GRANTS);
-      setLoading(false);
-    }
-  }, []);
-
-  // Filter grants based on search and filters
-  useEffect(() => {
-    let filtered = grants;
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(grant =>
-        grant.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        grant.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        grant.source.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Industry filter
-    if (selectedIndustry !== 'all') {
-      filtered = filtered.filter(grant => grant.industry_focus === selectedIndustry);
-    }
-
-    // Status filter
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(grant => grant.status === selectedStatus);
-    }
-
-    setFilteredGrants(filtered);
-  }, [grants, searchQuery, selectedIndustry, selectedStatus]);
-
-  const calculateMatchScore = (grant: Grant): number => {
-    let score = 0;
-    
-    // Base score for open grants
-    if (grant.status === 'open') score += 25;
-    
-    // Industry match (media focus for SGE)
-    if (grant.industry_focus === 'media') score += 30;
-    else if (grant.industry_focus === 'arts') score += 20;
-    
-    // Deadline proximity (higher score for closer deadlines)
-    if (grant.deadline) {
-      const daysUntilDeadline = Math.ceil((grant.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-      if (daysUntilDeadline > 0 && daysUntilDeadline <= 30) score += 25;
-      else if (daysUntilDeadline > 30 && daysUntilDeadline <= 90) score += 20;
-      else if (daysUntilDeadline > 90) score += 15;
-    }
-    
-    // Amount range (prefer medium to high amounts for production)
-    if (grant.min_amount && grant.max_amount) {
-      const avgAmount = (grant.min_amount + grant.max_amount) / 2;
-      if (avgAmount >= 50000 && avgAmount <= 200000) score += 20;
-      else if (avgAmount > 200000) score += 15;
-      else if (avgAmount >= 25000) score += 10;
-      else score += 5;
-    }
-    
-    return Math.min(score, 100);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-AU', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  const [grants, setGrants] = useState(mockGrants);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedGrant, setSelectedGrant] = useState(mockGrants[0]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-green-100 text-green-800';
-      case 'closed': return 'bg-red-100 text-red-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'active': return 'bg-blue-100 text-blue-800';
-      case 'closing_soon': return 'bg-yellow-100 text-yellow-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'researching': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'submitted': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading high-grade grants...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getMatchScoreColor = (score: number) => {
+    if (score >= 90) return 'bg-green-500';
+    if (score >= 75) return 'bg-blue-500';
+    if (score >= 60) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const getProgressColor = (progress: number) => {
+    if (progress >= 80) return 'bg-green-500';
+    if (progress >= 60) return 'bg-blue-500';
+    if (progress >= 40) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const calculateTotalValue = () => {
+    return grants.reduce((sum, grant) => {
+      const amount = parseInt(grant.amount.replace(/[^0-9]/g, ''));
+      return sum + amount;
+    }, 0);
+  };
+
+  const calculateSuccessRate = () => {
+    const completed = grants.filter(g => g.status === 'completed').length;
+    return Math.round((completed / grants.length) * 100);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 mb-8 text-white">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">High-Grade Grant Opportunities</h1>
-          <p className="text-xl mb-6">
-            Discover premium funding opportunities for professional production work. 
-            Our AI-powered system matches you with the best grants for your projects.
-          </p>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <TrophyIcon className="h-6 w-6 mr-2" />
-              <span>Premium Grants</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                Grants Dashboard
+              </h1>
+              <p className="text-slate-600 mt-1">Track applications, manage deadlines, and maximize funding opportunities</p>
             </div>
-            <div className="flex items-center">
-              <SparklesIcon className="h-6 w-6 mr-2" />
-              <span>AI Matching</span>
-            </div>
-            <div className="flex items-center">
-              <StarIcon className="h-6 w-6 mr-2" />
-              <span>Enterprise Ready</span>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" className="border-slate-200">
+                <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
+                Find Grants
+              </Button>
+              <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0">
+                <PlusIcon className="w-4 h-4 mr-2" />
+                New Application
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search grants by title, description, or organization..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button>
-            <SparklesIcon className="h-4 w-4 mr-2" />
-            AI Match
-          </Button>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <select
-            value={selectedIndustry}
-            onChange={(e) => setSelectedIndustry(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Industries</option>
-            <option value="media">Media</option>
-            <option value="arts">Arts</option>
-            <option value="technology">Technology</option>
-          </select>
-          
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Status</option>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="draft">Draft</option>
-          </select>
-        </div>
-      </div>
+      {/* Main Content */}
+      <div className="p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <ChartBarIcon className="w-4 h-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="active" className="flex items-center space-x-2">
+              <PlayIcon className="w-4 h-4" />
+              <span>Active</span>
+            </TabsTrigger>
+            <TabsTrigger value="researching" className="flex items-center space-x-2">
+              <MagnifyingGlassIcon className="w-4 h-4" />
+              <span>Researching</span>
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="flex items-center space-x-2">
+              <CheckCircleIcon className="w-4 h-4" />
+              <span>Completed</span>
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Results Summary */}
-      <div className="mb-6">
-        <p className="text-gray-600">
-          Found {filteredGrants.length} high-grade grants matching your criteria
-        </p>
-      </div>
-
-      {/* Grants Grid */}
-      {filteredGrants.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="text-center">
-            <ChartBarIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No grants found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGrants.map((grant) => {
-            const matchScore = calculateMatchScore(grant);
-            return (
-              <Card key={grant.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{grant.title}</CardTitle>
-                      <p className="text-sm text-gray-600 mb-2">{grant.source}</p>
-                      <div className="flex items-center space-x-2 flex-wrap">
-                        <Badge className={getStatusColor(grant.status)}>
-                          {grant.status.replace('_', ' ')}
-                        </Badge>
-                        <Badge className="bg-blue-100 text-blue-800">
-                          {matchScore}% Match
-                        </Badge>
-                        {matchScore >= 80 && (
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            <TrophyIcon className="h-3 w-3 mr-1" />
-                            Premium
-                          </Badge>
-                        )}
-                      </div>
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-yellow-500 to-orange-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-yellow-100 text-sm font-medium">Total Value</p>
+                      <p className="text-3xl font-bold">${calculateTotalValue().toLocaleString()}</p>
+                      <p className="text-yellow-200 text-sm">Across all grants</p>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 mb-4 line-clamp-3">
-                    {grant.description}
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
-                      <span className="text-sm text-gray-600">
-                        {grant.min_amount && grant.max_amount 
-                          ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
-                          : 'Amount not specified'
-                        }
-                      </span>
+                    <div className="bg-yellow-400/20 p-3 rounded-full">
+                      <CurrencyDollarIcon className="w-6 h-6" />
                     </div>
-                    
-                    {grant.deadline && (
-                      <div className="flex items-center">
-                        <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          Deadline: {formatDate(grant.deadline)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {grant.industry_focus && (
-                      <div className="flex items-center">
-                        <UserGroupIcon className="h-4 w-4 text-blue-500 mr-2" />
-                        <span className="text-sm text-gray-600 capitalize">
-                          {grant.industry_focus}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="mt-4 flex items-center justify-between">
-                    <Button variant="outline" size="sm">
-                      <EyeIcon className="h-4 w-4 mr-1" />
-                      View Details
-                    </Button>
-                    <Link href={`/grants/apply/${grant.id}`}>
-                      <Button size="sm">
-                        <ArrowRightIcon className="h-4 w-4 mr-1" />
-                        Apply Now
-                      </Button>
-                    </Link>
                   </div>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
-      )}
+
+              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-100 text-sm font-medium">Success Rate</p>
+                      <p className="text-3xl font-bold">{calculateSuccessRate()}%</p>
+                      <p className="text-green-200 text-sm">Applications won</p>
+                    </div>
+                    <div className="bg-green-400/20 p-3 rounded-full">
+                      <CheckCircleIcon className="w-6 h-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-100 text-sm font-medium">Active Applications</p>
+                      <p className="text-3xl font-bold">{grants.filter(g => g.status === 'in_progress').length}</p>
+                      <p className="text-blue-200 text-sm">Currently working on</p>
+                    </div>
+                    <div className="bg-blue-400/20 p-3 rounded-full">
+                      <PlayIcon className="w-6 h-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-100 text-sm font-medium">Avg Match Score</p>
+                      <p className="text-3xl font-bold">
+                        {Math.round(grants.reduce((sum, g) => sum + g.match_score, 0) / grants.length)}%
+                      </p>
+                      <p className="text-purple-200 text-sm">Application strength</p>
+                    </div>
+                    <div className="bg-purple-400/20 p-3 rounded-full">
+                      <StarIcon className="w-6 h-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Grant Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {grants.map((grant) => (
+                <Card 
+                  key={grant.id} 
+                  className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 cursor-pointer"
+                  onClick={() => setSelectedGrant(grant)}
+                >
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Badge className={getStatusColor(grant.status)}>
+                            {grant.status.replace('_', ' ')}
+                          </Badge>
+                          <Badge variant="outline" className="bg-green-50 text-green-700">
+                            {grant.amount}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg">{grant.title}</CardTitle>
+                        <p className="text-sm text-slate-600 mt-1">{grant.source}</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-500">Match Score</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-semibold">{grant.match_score}%</span>
+                        <div className={`w-3 h-3 rounded-full ${getMatchScoreColor(grant.match_score)}`}></div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Progress</span>
+                        <span>{grant.progress}%</span>
+                      </div>
+                      <Progress value={grant.progress} className="h-2" />
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm text-slate-500">
+                      <span>Deadline</span>
+                      <span className="font-medium">{grant.deadline}</span>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-slate-500">Team:</span>
+                      <div className="flex -space-x-2">
+                        {grant.team_members.slice(0, 3).map((member, index) => (
+                          <Avatar key={index} className="w-6 h-6 border-2 border-white">
+                            <AvatarImage src={member.avatar} />
+                            <AvatarFallback className="text-xs">{member.name[0]}</AvatarFallback>
+                          </Avatar>
+                        ))}
+                        {grant.team_members.length > 3 && (
+                          <div className="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center">
+                            <span className="text-xs text-slate-600">+{grant.team_members.length - 3}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="text-center p-2 bg-blue-50 rounded">
+                        <p className="font-semibold text-blue-600">{grant.metrics.success_probability}%</p>
+                        <p className="text-blue-600">Success</p>
+                      </div>
+                      <div className="text-center p-2 bg-green-50 rounded">
+                        <p className="font-semibold text-green-600">{grant.metrics.application_strength}%</p>
+                        <p className="text-green-600">Strength</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Active Grants Tab */}
+          <TabsContent value="active" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {grants.filter(g => g.status === 'in_progress').map((grant) => (
+                <Card key={grant.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <PlayIcon className="w-5 h-5 text-blue-500" />
+                        <span>{grant.title}</span>
+                      </CardTitle>
+                      <Badge variant="outline" className="bg-green-50 text-green-700">
+                        {grant.amount}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <p className="text-slate-600">{grant.description}</p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Progress</span>
+                        <span>{grant.progress}%</span>
+                      </div>
+                      <Progress value={grant.progress} className="h-2" />
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Required Documents</h4>
+                      {grant.documents.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                          <div className="flex items-center space-x-2">
+                            <DocumentTextIcon className="w-4 h-4 text-slate-500" />
+                            <span className="text-sm">{doc.name}</span>
+                          </div>
+                          <Badge className={
+                            doc.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            doc.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }>
+                            {doc.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Requirements</h4>
+                      {grant.requirements.map((req, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                          <span className="text-sm text-slate-700">{req}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <p className="text-lg font-bold text-blue-600">{grant.metrics.success_probability}%</p>
+                        <p className="text-xs text-blue-600">Success Probability</p>
+                      </div>
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <p className="text-lg font-bold text-green-600">{grant.metrics.application_strength}%</p>
+                        <p className="text-xs text-green-600">Application Strength</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Researching Grants Tab */}
+          <TabsContent value="researching" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {grants.filter(g => g.status === 'researching').map((grant) => (
+                <Card key={grant.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <MagnifyingGlassIcon className="w-5 h-5 text-yellow-500" />
+                        <span>{grant.title}</span>
+                      </CardTitle>
+                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+                        {grant.amount}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-slate-600">{grant.description}</p>
+                    
+                    <div className="flex items-center justify-between text-sm text-slate-500">
+                      <span>Deadline</span>
+                      <span className="font-medium">{grant.deadline}</span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Requirements</h4>
+                      {grant.requirements.map((req, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-slate-300 rounded-full" />
+                          <span className="text-sm text-slate-700">{req}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Assigned Team</h4>
+                      {grant.team_members.map((member, index) => (
+                        <div key={index} className="flex items-center space-x-2 p-2 bg-slate-50 rounded">
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src={member.avatar} />
+                            <AvatarFallback className="text-xs">{member.name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium">{member.name}</p>
+                            <p className="text-xs text-slate-500">{member.role}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                        <p className="text-lg font-bold text-yellow-600">{grant.metrics.success_probability}%</p>
+                        <p className="text-xs text-yellow-600">Success Probability</p>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <p className="text-lg font-bold text-blue-600">{grant.metrics.competition_level}</p>
+                        <p className="text-xs text-blue-600">Competition</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Completed Grants Tab */}
+          <TabsContent value="completed" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {grants.filter(g => g.status === 'completed').map((grant) => (
+                <Card key={grant.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                        <span>{grant.title}</span>
+                      </CardTitle>
+                      <Badge className="bg-green-100 text-green-800">
+                        Completed
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-slate-600">{grant.description}</p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Final Progress</span>
+                        <span>{grant.progress}%</span>
+                      </div>
+                      <Progress value={grant.progress} className="h-2" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <p className="text-lg font-bold text-green-600">{grant.metrics.success_probability}%</p>
+                        <p className="text-xs text-green-600">Success Rate</p>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <p className="text-lg font-bold text-blue-600">{grant.metrics.application_strength}%</p>
+                        <p className="text-xs text-blue-600">Application Strength</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Completed Documents</h4>
+                      {grant.documents.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-green-50 rounded">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                            <span className="text-sm">{doc.name}</span>
+                          </div>
+                          <Badge className="bg-green-100 text-green-800">
+                            {doc.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 } 

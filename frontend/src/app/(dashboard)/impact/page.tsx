@@ -1,180 +1,459 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   ChartBarIcon,
   CheckCircleIcon,
   GlobeAltIcon,
+  TagIcon,
+  ArrowTrendingUpIcon,
+  LightBulbIcon,
+  UsersIcon,
+  CalendarIcon,
+  PlusIcon,
+  PencilIcon,
+  EyeIcon,
+  ExclamationTriangleIcon,
+  CheckIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
-// OKR 4.1: Social Media Following Tracking
-const okr4_1 = {
-  objective: "Increase Following on Social Media by 400% over 4 months",
-  baseline: {
-    date: "2024-12-27", // 30 days ago
-    platforms: {
-      instagram: 1250,
-      youtube: 3400,
-      linkedin: 890,
-      twitter: 650,
-      facebook: 2100
-    },
-    total_followers: 8290
-  },
-  target: {
-    date: "2025-04-27", // 4 months from baseline
-    total_followers: 33160, // 400% increase
-    monthly_growth_target: 6217 // (33160 - 8290) / 4
-  },
-  current_progress: {
-    date: "2025-01-27", // Current date
-    platforms: {
-      instagram: 1800, // +44% from baseline
-      youtube: 4200,   // +23.5% from baseline
-      linkedin: 1200,  // +34.8% from baseline
-      twitter: 850,    // +30.8% from baseline
-      facebook: 2800   // +33.3% from baseline
-    },
-    total_followers: 10850, // +30.9% from baseline
-    monthly_growth: 2560    // Current monthly growth
-  },
-  progress_percentage: 30.9, // (10850 - 8290) / (33160 - 8290) * 100
-  on_track: true,
-  months_remaining: 3
-};
+interface MissionGoal {
+  id: string;
+  title: string;
+  description: string;
+  category: 'social_impact' | 'environmental' | 'economic' | 'cultural' | 'innovation';
+  target_date: string;
+  current_progress: number;
+  target_value: number;
+  current_value: number;
+  unit: string;
+  status: 'on_track' | 'at_risk' | 'behind' | 'completed';
+  kpis: KPIMetric[];
+  last_updated: string;
+}
 
-// Screen Australia Grant Test Data
-const screenAustraliaGrant = {
-  id: "sa-doc-2025-001",
-  title: "Documentary Production Funding - Screen Australia",
-  project: "Season 2 of Forging Friendships",
-  due_date: "2025-09-29",
-  amount: "$500,000",
-  status: "in_progress",
-  progress: 35,
-  steps: [
-    { id: 1, name: "Project Overview", status: "completed", completed_at: "2025-01-20" },
-    { id: 2, name: "Budget Planning", status: "completed", completed_at: "2025-01-22" },
-    { id: 3, name: "Creative Treatment", status: "in_progress", started_at: "2025-01-25" },
-    { id: 4, name: "Team Bios", status: "pending" },
-    { id: 5, name: "Market Analysis", status: "pending" },
-    { id: 6, name: "Distribution Strategy", status: "pending" }
-  ],
-  key_requirements: [
-    "Australian documentary content",
-    "Season 2 continuation of successful series",
-    "Strong audience engagement from Season 1",
-    "Clear distribution strategy",
-    "Experienced production team"
-  ],
-  impact_metrics: {
-    audience_reach: "500,000+ viewers",
-    social_media_engagement: "15,000+ followers",
-    industry_recognition: "2 awards nominations",
-    community_impact: "Positive feedback from 95% of viewers"
-  }
-};
+interface KPIMetric {
+  id: string;
+  name: string;
+  current_value: number;
+  target_value: number;
+  unit: string;
+  weight: number; // 0-1, how much this KPI contributes to the goal
+}
+
+interface ImpactStory {
+  id: string;
+  title: string;
+  description: string;
+  related_goal: string;
+  date: string;
+  impact_score: number;
+  evidence: string;
+}
+
+// Sample data - in real app this would come from API
+const sampleGoals: MissionGoal[] = [
+  {
+    id: '1',
+    title: 'Increase Social Media Reach by 400%',
+    description: 'Expand our digital presence to reach more audiences and amplify our impact stories',
+    category: 'social_impact',
+    target_date: '2025-04-27',
+    current_progress: 30.9,
+    target_value: 33160,
+    current_value: 10850,
+    unit: 'followers',
+    status: 'on_track',
+    kpis: [
+      { id: '1-1', name: 'Instagram Followers', current_value: 1800, target_value: 5000, unit: 'followers', weight: 0.3 },
+      { id: '1-2', name: 'YouTube Subscribers', current_value: 4200, target_value: 12000, unit: 'subscribers', weight: 0.4 },
+      { id: '1-3', name: 'LinkedIn Connections', current_value: 1200, target_value: 3000, unit: 'connections', weight: 0.2 },
+      { id: '1-4', name: 'Engagement Rate', current_value: 8.5, target_value: 12, unit: '%', weight: 0.1 },
+    ],
+    last_updated: '2025-01-27',
+  },
+  {
+    id: '2',
+    title: 'Complete 3 Impact Documentaries',
+    description: 'Produce and distribute three documentaries that drive social change and awareness',
+    category: 'cultural',
+    target_date: '2025-12-31',
+    current_progress: 66.7,
+    target_value: 3,
+    current_value: 2,
+    unit: 'documentaries',
+    status: 'on_track',
+    kpis: [
+      { id: '2-1', name: 'Documentaries Completed', current_value: 2, target_value: 3, unit: 'films', weight: 0.6 },
+      { id: '2-2', name: 'Audience Reach', current_value: 250000, target_value: 500000, unit: 'viewers', weight: 0.3 },
+      { id: '2-3', name: 'Social Impact Score', current_value: 85, target_value: 90, unit: 'points', weight: 0.1 },
+    ],
+    last_updated: '2025-01-25',
+  },
+  {
+    id: '3',
+    title: 'Achieve Carbon Neutral Operations',
+    description: 'Reduce our environmental footprint and achieve carbon neutrality across all operations',
+    category: 'environmental',
+    target_date: '2025-06-30',
+    current_progress: 45.2,
+    target_value: 0,
+    current_value: -45.2,
+    unit: 'tons CO2',
+    status: 'at_risk',
+    kpis: [
+      { id: '3-1', name: 'Carbon Footprint', current_value: 54.8, target_value: 0, unit: 'tons CO2', weight: 0.5 },
+      { id: '3-2', name: 'Renewable Energy Usage', current_value: 65, target_value: 100, unit: '%', weight: 0.3 },
+      { id: '3-3', name: 'Waste Reduction', current_value: 75, target_value: 90, unit: '%', weight: 0.2 },
+    ],
+    last_updated: '2025-01-20',
+  },
+];
+
+const sampleImpactStories: ImpactStory[] = [
+  {
+    id: '1',
+    title: 'Forging Friendships Season 2 Success',
+    description: 'Our documentary series reached 200,000 viewers and sparked community discussions about friendship and mental health',
+    related_goal: '2',
+    date: '2025-01-15',
+    impact_score: 85,
+    evidence: 'Viewer surveys showed 78% reported increased awareness of mental health issues',
+  },
+  {
+    id: '2',
+    title: 'Social Media Campaign Impact',
+    description: 'Instagram campaign on environmental awareness gained 500 new followers and 200+ shares',
+    related_goal: '1',
+    date: '2025-01-20',
+    impact_score: 72,
+    evidence: 'Engagement rate increased from 6.2% to 8.5% over the campaign period',
+  },
+];
 
 export default function ImpactPage() {
-  const [activeTab, setActiveTab] = useState('okr-tracking');
-  const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [goals, setGoals] = useState<MissionGoal[]>(sampleGoals);
+  const [impactStories, setImpactStories] = useState<ImpactStory[]>(sampleImpactStories);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showAddGoal, setShowAddGoal] = useState(false);
+  const [showAddStory, setShowAddStory] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<MissionGoal | null>(null);
 
-  const calculateGrowth = (current: number, baseline: number) => {
-    return ((current - baseline) / baseline * 100).toFixed(1);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'on_track': return 'text-green-600 bg-green-50 border-green-200';
+      case 'at_risk': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'behind': return 'text-red-600 bg-red-50 border-red-200';
+      case 'completed': return 'text-blue-600 bg-blue-50 border-blue-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
   };
 
-  const getGrowthColor = (growth: number) => {
-    return growth >= 0 ? 'text-green-600' : 'text-red-600';
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'social_impact': return <UsersIcon className="h-5 w-5" />;
+      case 'environmental': return <GlobeAltIcon className="h-5 w-5" />;
+      case 'economic': return <ArrowTrendingUpIcon className="h-5 w-5" />;
+      case 'cultural': return <LightBulbIcon className="h-5 w-5" />;
+      case 'innovation': return <TagIcon className="h-5 w-5" />;
+      default: return <TagIcon className="h-5 w-5" />;
+    }
   };
 
-  const renderOKRTracking = () => (
+  const calculateOverallProgress = () => {
+    if (goals.length === 0) return 0;
+    const totalProgress = goals.reduce((sum, goal) => sum + goal.current_progress, 0);
+    return totalProgress / goals.length;
+  };
+
+  const getGoalsByStatus = (status: string) => {
+    return goals.filter(goal => goal.status === status);
+  };
+
+  const renderOverview = () => (
     <div className="space-y-6">
-      {/* OKR Header */}
+      {/* Mission Alignment Header */}
+      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold">Mission Alignment Dashboard</CardTitle>
+              <p className="text-blue-100 mt-2">
+                Track progress against your organisational goals and measure real impact
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold">{calculateOverallProgress().toFixed(1)}%</div>
+              <div className="text-blue-100 text-sm">Overall Progress</div>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{goals.length}</div>
+              <div className="text-sm text-gray-600">Active Goals</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {getGoalsByStatus('on_track').length}
+              </div>
+              <div className="text-sm text-gray-600">On Track</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-600">
+                {getGoalsByStatus('at_risk').length}
+              </div>
+              <div className="text-sm text-gray-600">At Risk</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">{impactStories.length}</div>
+              <div className="text-sm text-gray-600">Impact Stories</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Goals Overview */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center space-x-2">
+              <TagIcon className="h-5 w-5" />
+              <span>Mission Goals</span>
+            </CardTitle>
+            <Dialog open={showAddGoal} onOpenChange={setShowAddGoal}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center space-x-2">
+                  <PlusIcon className="h-4 w-4" />
+                  <span>Add Goal</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add New Mission Goal</DialogTitle>
+                </DialogHeader>
+                <AddGoalForm onClose={() => setShowAddGoal(false)} onAdd={(goal) => {
+                  setGoals([...goals, goal]);
+                  setShowAddGoal(false);
+                }} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {goals.map((goal) => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      {getCategoryIcon(goal.category)}
+                      <h3 className="font-semibold text-lg">{goal.title}</h3>
+                      <Badge className={getStatusColor(goal.status)}>
+                        {goal.status.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    <p className="text-gray-600 mb-3">{goal.description}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Progress:</span>
+                        <div className="font-semibold">{goal.current_progress.toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Current:</span>
+                        <div className="font-semibold">{goal.current_value.toLocaleString()} {goal.unit}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Target:</span>
+                        <div className="font-semibold">{goal.target_value.toLocaleString()} {goal.unit}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Due:</span>
+                        <div className="font-semibold">{new Date(goal.target_date).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedGoal(goal)}
+                    >
+                      <EyeIcon className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Progress value={goal.current_progress} className="w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Impact Stories */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center space-x-2">
+              <LightBulbIcon className="h-5 w-5" />
+              <span>Recent Impact Stories</span>
+            </CardTitle>
+            <Dialog open={showAddStory} onOpenChange={setShowAddStory}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Story
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Impact Story</DialogTitle>
+                </DialogHeader>
+                <AddImpactStoryForm onClose={() => setShowAddStory(false)} onAdd={(story) => {
+                  setImpactStories([...impactStories, story]);
+                  setShowAddStory(false);
+                }} goals={goals} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {impactStories.slice(0, 3).map((story) => (
+              <div key={story.id} className="border rounded-lg p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-2">{story.title}</h4>
+                    <p className="text-gray-600 text-sm mb-2">{story.description}</p>
+                    <div className="flex items-center space-x-4 text-sm">
+                      <span className="text-gray-500">Impact Score: {story.impact_score}/100</span>
+                      <span className="text-gray-500">{new Date(story.date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="ml-2">
+                    {goals.find(g => g.id === story.related_goal)?.title || 'Unknown Goal'}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderGoalDetail = (goal: MissionGoal) => (
+    <div className="space-y-6">
+      {/* Goal Header */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
-                OKR 4.1: Social Media Following
-              </CardTitle>
-              <p className="text-gray-600 mt-2">
-                Target: 400% increase over 4 months (Baseline: {okr4_1.baseline.total_followers.toLocaleString()} followers)
-              </p>
+              <div className="flex items-center space-x-2 mb-2">
+                {getCategoryIcon(goal.category)}
+                <CardTitle className="text-2xl font-bold">{goal.title}</CardTitle>
+                <Badge className={getStatusColor(goal.status)}>
+                  {goal.status.replace('_', ' ')}
+                </Badge>
+              </div>
+              <p className="text-gray-600">{goal.description}</p>
             </div>
             <div className="text-right">
-              <Badge variant={okr4_1.on_track ? "success" : "danger"}>
-                {okr4_1.on_track ? "On Track" : "Behind Schedule"}
-              </Badge>
-              <p className="text-sm text-gray-500 mt-1">
-                {okr4_1.months_remaining} months remaining
-              </p>
+              <div className="text-3xl font-bold text-blue-600">{goal.current_progress.toFixed(1)}%</div>
+              <div className="text-sm text-gray-500">Progress</div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
-                {okr4_1.current_progress.total_followers.toLocaleString()}
+              <p className="text-2xl font-bold text-green-600">
+                {goal.current_value.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-600">Current Followers</p>
+              <p className="text-sm text-gray-600">Current {goal.unit}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">
-                +{okr4_1.current_progress.total_followers - okr4_1.baseline.total_followers}
+              <p className="text-2xl font-bold text-blue-600">
+                {goal.target_value.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-600">Growth</p>
+              <p className="text-sm text-gray-600">Target {goal.unit}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-600">
-                {okr4_1.progress_percentage.toFixed(1)}%
+                {new Date(goal.target_date).toLocaleDateString()}
               </p>
-              <p className="text-sm text-gray-600">Target Progress</p>
+              <p className="text-sm text-gray-600">Due Date</p>
             </div>
           </div>
           <div className="mt-4">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
               <span>Progress to Target</span>
-              <span>{okr4_1.progress_percentage.toFixed(1)}%</span>
+              <span>{goal.current_progress.toFixed(1)}%</span>
             </div>
-            <Progress value={okr4_1.progress_percentage} className="w-full" />
+            <Progress value={goal.current_progress} className="w-full" />
           </div>
         </CardContent>
       </Card>
 
-      {/* Platform Breakdown */}
+      {/* KPI Breakdown */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <GlobeAltIcon className="h-5 w-5" />
-            <span>Platform Performance</span>
+            <ChartBarIcon className="h-5 w-5" />
+            <span>KPI Performance</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {Object.entries(okr4_1.current_progress.platforms).map(([platform, current]) => {
-              const baseline = okr4_1.baseline.platforms[platform as keyof typeof okr4_1.baseline.platforms];
-              const growth = calculateGrowth(current, baseline);
-              const growthNumber = parseFloat(growth);
-              
+          <div className="space-y-4">
+            {goal.kpis.map((kpi) => {
+              const progress = (kpi.current_value / kpi.target_value) * 100;
               return (
-                <div key={platform} className="text-center p-4 border rounded-lg">
-                  <div className="flex justify-center mb-2">
-                    {platform === 'instagram' && <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-pink-500"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0-3 3V6a3 3 0 1 0 3-3h12a3 3 0 1 0-3 3"/></svg>}
-                    {platform === 'youtube' && <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-red-500"><path d="M21 10V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>}
-                    {platform === 'linkedin' && <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-600"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6"/></svg>}
-                    {platform === 'twitter' && <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-400"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C7 10.3 23 3.6 22 4"/><path d="M14 10h-3v5h3v-5z"/><path d="M14 15h-3v5h3v-5z"/></svg>}
-                    {platform === 'facebook' && <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-blue-700"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>}
+                <div key={kpi.id} className="border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <h4 className="font-semibold">{kpi.name}</h4>
+                      <p className="text-sm text-gray-600">
+                        {kpi.current_value.toLocaleString()} / {kpi.target_value.toLocaleString()} {kpi.unit}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold">{progress.toFixed(1)}%</div>
+                      <div className="text-sm text-gray-500">Weight: {(kpi.weight * 100).toFixed(0)}%</div>
+                    </div>
                   </div>
-                  <p className="font-semibold text-lg">{current.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 capitalize">{platform}</p>
-                  <p className={`text-sm font-medium ${getGrowthColor(growthNumber)}`}>
-                    {growthNumber >= 0 ? '+' : ''}{growth}%
-                  </p>
+                  <Progress value={progress} className="w-full" />
                 </div>
               );
             })}
@@ -182,182 +461,33 @@ export default function ImpactPage() {
         </CardContent>
       </Card>
 
-      {/* Monthly Growth Tracking */}
+      {/* Related Impact Stories */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-green-600"><path d="M13 10V3L4 14.5 13 3v7"/><path d="M21 10H10"/><path d="M21 14H10"/><path d="M21 18H10"/></svg>
-            <span>Monthly Growth Tracking</span>
+            <LightBulbIcon className="h-5 w-5" />
+            <span>Related Impact Stories</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Current Monthly Growth</span>
-              <span className="text-lg font-bold text-green-600">
-                +{okr4_1.current_progress.monthly_growth.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Target Monthly Growth</span>
-              <span className="text-lg font-bold text-blue-600">
-                +{okr4_1.target.monthly_growth_target.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Performance vs Target</span>
-              <span className={`text-lg font-bold ${okr4_1.current_progress.monthly_growth >= okr4_1.target.monthly_growth_target ? 'text-green-600' : 'text-red-600'}`}>
-                {okr4_1.current_progress.monthly_growth >= okr4_1.target.monthly_growth_target ? 'Ahead' : 'Behind'}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderGrantTest = () => (
-    <div className="space-y-6">
-      {/* Grant Test Header */}
-      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
-                Screen Australia Grant Test
-              </CardTitle>
-              <p className="text-gray-600 mt-2">
-                Season 2 of Forging Friendships - Documentary Production Funding
-              </p>
-            </div>
-            <div className="text-right">
-              <Badge variant="outline" className="text-green-700 border-green-300">
-                Due: {screenAustraliaGrant.due_date}
-              </Badge>
-              <p className="text-sm text-gray-500 mt-1">
-                {screenAustraliaGrant.amount} available
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">
-                {screenAustraliaGrant.progress}%
-              </p>
-              <p className="text-sm text-gray-600">Application Progress</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
-                {screenAustraliaGrant.steps.filter(s => s.status === 'completed').length}/{screenAustraliaGrant.steps.length}
-              </p>
-              <p className="text-sm text-gray-600">Steps Completed</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">
-                {screenAustraliaGrant.steps.filter(s => s.status === 'in_progress').length}
-              </p>
-              <p className="text-sm text-gray-600">In Progress</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>Application Progress</span>
-              <span>{screenAustraliaGrant.progress}%</span>
-            </div>
-            <Progress value={screenAustraliaGrant.progress} className="w-full" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Application Steps */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-blue-600"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8"/><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>
-            <span>Application Steps</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {screenAustraliaGrant.steps.map((step) => (
-              <div key={step.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    step.status === 'completed' ? 'bg-green-100 text-green-600' :
-                    step.status === 'in_progress' ? 'bg-blue-100 text-blue-600' :
-                    'bg-gray-100 text-gray-400'
-                  }`}>
-                    {step.status === 'completed' ? (
-                      <CheckCircleIcon className="h-5 w-5" />
-                    ) : step.status === 'in_progress' ? (
-                      <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse" />
-                    ) : (
-                      <div className="w-3 h-3 bg-gray-400 rounded-full" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{step.name}</p>
-                    {step.completed_at && (
-                      <p className="text-sm text-gray-500">Completed: {step.completed_at}</p>
-                    )}
-                    {step.started_at && (
-                      <p className="text-sm text-blue-600">Started: {step.started_at}</p>
-                    )}
+            {impactStories
+              .filter(story => story.related_goal === goal.id)
+              .map((story) => (
+                <div key={story.id} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold mb-2">{story.title}</h4>
+                      <p className="text-gray-600 text-sm mb-2">{story.description}</p>
+                      <p className="text-sm text-gray-500">{story.evidence}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600">{story.impact_score}</div>
+                      <div className="text-sm text-gray-500">Impact Score</div>
+                    </div>
                   </div>
                 </div>
-                <Badge variant={
-                  step.status === 'completed' ? 'success' :
-                  step.status === 'in_progress' ? 'default' :
-                  'outline'
-                }>
-                  {step.status.replace('_', ' ')}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Impact Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <ChartBarIcon className="h-5 w-5" />
-            <span>Expected Impact Metrics</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(screenAustraliaGrant.impact_metrics).map(([metric, value]) => (
-              <div key={metric} className="p-4 border rounded-lg">
-                <p className="text-sm font-medium text-gray-600 capitalize">
-                  {metric.replace('_', ' ')}
-                </p>
-                <p className="text-lg font-semibold text-gray-900">{value}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Key Requirements */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CheckCircleIcon className="h-5 w-5" />
-            <span>Key Requirements</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {screenAustraliaGrant.key_requirements.map((requirement, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                <span className="text-gray-700">{requirement}</span>
-              </div>
-            ))}
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -367,36 +497,258 @@ export default function ImpactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 p-6">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Impact Dashboard</h1>
-        <p className="text-gray-600">Track OKRs and grant application progress</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Impact Dashboard</h1>
+            <p className="text-gray-600">Track mission alignment and measure real impact</p>
+          </div>
+          {selectedGoal && (
+            <Button
+              variant="outline"
+              onClick={() => setSelectedGoal(null)}
+              className="flex items-center space-x-2"
+            >
+              <XMarkIcon className="h-4 w-4" />
+              <span>Back to Overview</span>
+            </Button>
+          )}
+        </div>
       </header>
 
-      <div className="mb-6 flex space-x-4 border-b border-gray-200">
-        <button
-          className={`py-2 px-4 text-sm font-medium ${
-            activeTab === 'okr-tracking'
-              ? 'border-b-2 border-blue-600 text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-          onClick={() => setActiveTab('okr-tracking')}
-        >
-          OKR 4.1 Tracking
-        </button>
-        <button
-          className={`py-2 px-4 text-sm font-medium ${
-            activeTab === 'grant-test'
-              ? 'border-b-2 border-blue-600 text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-          onClick={() => setActiveTab('grant-test')}
-        >
-          Screen Australia Grant Test
-        </button>
-      </div>
+      {!selectedGoal && (
+        <div className="mb-6 flex space-x-4 border-b border-gray-200">
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === 'overview'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('overview')}
+          >
+            Overview
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === 'analytics'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('analytics')}
+          >
+            Analytics
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === 'stories'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('stories')}
+          >
+            Impact Stories
+          </button>
+        </div>
+      )}
 
       <main className="flex-1">
-        {activeTab === 'okr-tracking' ? renderOKRTracking() : renderGrantTest()}
+        {selectedGoal ? (
+          renderGoalDetail(selectedGoal)
+        ) : (
+          renderOverview()
+        )}
       </main>
     </div>
+  );
+}
+
+// Form components for adding goals and stories
+function AddGoalForm({ onClose, onAdd }: { onClose: () => void; onAdd: (goal: MissionGoal) => void }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: 'social_impact' as MissionGoal['category'],
+    target_date: '',
+    target_value: 0,
+    unit: '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newGoal: MissionGoal = {
+      id: Date.now().toString(),
+      ...formData,
+      current_progress: 0,
+      current_value: 0,
+      status: 'on_track',
+      kpis: [],
+      last_updated: new Date().toISOString(),
+    };
+    onAdd(newGoal);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="title">Goal Title</Label>
+        <Input
+          id="title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="category">Category</Label>
+        <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value as MissionGoal['category'] })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="social_impact">Social Impact</SelectItem>
+            <SelectItem value="environmental">Environmental</SelectItem>
+            <SelectItem value="economic">Economic</SelectItem>
+            <SelectItem value="cultural">Cultural</SelectItem>
+            <SelectItem value="innovation">Innovation</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="target_date">Target Date</Label>
+          <Input
+            id="target_date"
+            type="date"
+            value={formData.target_date}
+            onChange={(e) => setFormData({ ...formData, target_date: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="target_value">Target Value</Label>
+          <Input
+            id="target_value"
+            type="number"
+            value={formData.target_value}
+            onChange={(e) => setFormData({ ...formData, target_value: Number(e.target.value) })}
+            required
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="unit">Unit</Label>
+        <Input
+          id="unit"
+          value={formData.unit}
+          onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+          placeholder="e.g., followers, viewers, tons CO2"
+          required
+        />
+      </div>
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit">
+          Add Goal
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function AddImpactStoryForm({ onClose, onAdd, goals }: { onClose: () => void; onAdd: (story: ImpactStory) => void; goals: MissionGoal[] }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    related_goal: '',
+    impact_score: 0,
+    evidence: '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newStory: ImpactStory = {
+      id: Date.now().toString(),
+      ...formData,
+      date: new Date().toISOString(),
+    };
+    onAdd(newStory);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="story_title">Story Title</Label>
+        <Input
+          id="story_title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="story_description">Description</Label>
+        <Textarea
+          id="story_description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="related_goal">Related Goal</Label>
+        <Select value={formData.related_goal} onValueChange={(value) => setFormData({ ...formData, related_goal: value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a goal" />
+          </SelectTrigger>
+          <SelectContent>
+            {goals.map((goal) => (
+              <SelectItem key={goal.id} value={goal.id}>
+                {goal.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="impact_score">Impact Score (0-100)</Label>
+        <Input
+          id="impact_score"
+          type="number"
+          min="0"
+          max="100"
+          value={formData.impact_score}
+          onChange={(e) => setFormData({ ...formData, impact_score: Number(e.target.value) })}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="evidence">Evidence</Label>
+        <Textarea
+          id="evidence"
+          value={formData.evidence}
+          onChange={(e) => setFormData({ ...formData, evidence: e.target.value })}
+          placeholder="Describe the evidence that supports this impact story"
+          required
+        />
+      </div>
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit">
+          Add Story
+        </Button>
+      </div>
+    </form>
   );
 } 
