@@ -257,12 +257,12 @@ def create_app() -> FastAPI:
     async def read_root():
         """Root endpoint with basic information."""
         return {
-            "message": "NavImpact Production API - High-Grade Grant System",
+            "message": "SGE REAL DATA API - Production Ready",
             "version": "2.0.0",
             "environment": settings.ENV,
             "status": "production_ready",
-            "features": ["grants", "ai_matching", "production_management", "team_collaboration"],
-            "deployment": "2025-01-27-full-production"
+            "features": ["real_data", "google_analytics", "instagram", "grants", "ai_matching"],
+            "deployment": "2025-08-04-sge-real-data"
         }
     
     @app.get("/health")
@@ -276,7 +276,7 @@ def create_app() -> FastAPI:
             
             return {
                 "status": "healthy",
-                "message": "NavImpact Production API is running on Render",
+                "message": "SGE REAL DATA API is running on Render - DEPLOYMENT SUCCESSFUL",
                 "database": "connected" if db_healthy else "disconnected",
                 "timestamp": datetime.utcnow().isoformat(),
                 "environment": settings.ENV,
@@ -292,6 +292,18 @@ def create_app() -> FastAPI:
                     "timestamp": datetime.utcnow().isoformat()
                 }
             )
+    
+    @app.get("/test-real-data")
+    async def test_real_data():
+        """Test endpoint to verify real data deployment."""
+        return {
+            "message": "SGE REAL DATA API - DEPLOYMENT SUCCESSFUL",
+            "timestamp": datetime.utcnow().isoformat(),
+            "version": "2.0.0",
+            "real_data": "ENABLED",
+            "google_analytics": bool(settings.GOOGLE_ANALYTICS_PROPERTY_ID),
+            "instagram": bool(settings.INSTAGRAM_ACCESS_TOKEN)
+        }
     
     # Include API router
     app.include_router(api_router, prefix=settings.API_V1_STR)
