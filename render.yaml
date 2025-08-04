@@ -2,6 +2,7 @@ services:
   # Backend API Service for SGE
   - type: web
     name: shadow-goose-api
+    branch: sge
     env: python
     pythonVersion: "3.11.9"
     buildCommand: |
@@ -46,6 +47,7 @@ services:
   # Frontend Service for SGE
   - type: web
     name: shadow-goose-dashboard
+    branch: sge
     env: node
     nodeVersion: "20.x"
     buildCommand: |
