@@ -1,7 +1,7 @@
 services:
   # Backend API Service for SGE - REAL DATA DEPLOYMENT
   - type: web
-    name: shadow-goose-api-real-data
+    name: shadow-goose-api
     branch: sge
     env: python
     pythonVersion: "3.11.9"
