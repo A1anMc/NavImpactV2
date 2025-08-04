@@ -1,18 +1,20 @@
 services:
-  # Backend API Service for SGE
+  # Backend API Service for SGE - REAL DATA DEPLOYMENT
   - type: web
     name: shadow-goose-api
     branch: sge
     env: python
     pythonVersion: "3.11.9"
     buildCommand: |
+      echo "Building SGE Real Data API..."
       pip install --upgrade pip
       pip install --no-cache-dir --only-binary::all: --prefer-binary -r requirements.txt
     startCommand: |
-      echo "Starting SGE backend deployment..."
+      echo "🚀 STARTING SGE REAL DATA API DEPLOYMENT..."
       echo "Database URL: $DATABASE_URL"
       echo "Running fresh database migrations..."
       alembic upgrade head
+      echo "Starting gunicorn with app.main:app..."
       gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
     envVars:
       - key: PYTHON_VERSION
