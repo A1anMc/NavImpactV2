@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -20,68 +20,35 @@ export default function TasksPage() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all');
   const [showNewTaskForm, setShowNewTaskForm] = useState(false);
 
-  // Mock tasks data
-  const mockTasks: Task[] = [
-    {
-      id: '1',
-      title: 'Community Engagement Survey',
-      description: 'Design and distribute survey to measure community engagement levels for the Greenfields Housing project',
-      status: 'in_progress',
-      priority: 'high',
-      assignee: 'Sarah Wilson',
-      dueDate: '2024-12-20',
-      project: 'Greenfields Housing Renewal',
-      tags: ['Research', 'Community']
-    },
-    {
-      id: '2',
-      title: 'Framework Alignment Review',
-      description: 'Review and update Victorian framework alignment documentation for all active projects',
-      status: 'todo',
-      priority: 'medium',
-      assignee: 'Alex Chen',
-      dueDate: '2024-12-25',
-      project: 'Portfolio Management',
-      tags: ['Documentation', 'Compliance']
-    },
-    {
-      id: '3',
-      title: 'Impact Metrics Dashboard',
-      description: 'Complete the development of real-time impact metrics dashboard for stakeholder reporting',
-      status: 'completed',
-      priority: 'high',
-      assignee: 'Jordan Martinez',
-      dueDate: '2024-12-15',
-      project: 'Frontend Integration Test',
-      tags: ['Development', 'Analytics']
-    },
-    {
-      id: '4',
-      title: 'Grant Application - Digital Inclusion',
-      description: 'Prepare and submit grant application for the Digital Inclusion Program funding opportunity',
-      status: 'todo',
-      priority: 'high',
-      assignee: 'Maria Rodriguez',
-      dueDate: '2024-12-28',
-      project: 'New Initiative',
-      tags: ['Funding', 'Application']
-    },
-    {
-      id: '5',
-      title: 'Stakeholder Meeting Preparation',
-      description: 'Prepare presentation materials and impact reports for quarterly stakeholder review meeting',
-      status: 'in_progress',
-      priority: 'medium',
-      assignee: 'David Kim',
-      dueDate: '2024-12-22',
-      project: 'Portfolio Management',
-      tags: ['Presentation', 'Reporting']
-    }
-  ];
+  // Real data from API
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('/api/v1/tasks');
+        if (response.ok) {
+          const data = await response.json();
+          setTasks(data.items || []);
+        } else {
+          console.error('Failed to fetch tasks');
+          setTasks([]);
+        }
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const filteredTasks = selectedFilter === 'all' 
-    ? mockTasks 
-    : mockTasks.filter(task => task.status === selectedFilter);
+    ? tasks 
+    : tasks.filter(task => task.status === selectedFilter);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -120,10 +87,10 @@ export default function TasksPage() {
   };
 
   const taskCounts = {
-    all: mockTasks.length,
-    todo: mockTasks.filter(t => t.status === 'todo').length,
-    in_progress: mockTasks.filter(t => t.status === 'in_progress').length,
-    completed: mockTasks.filter(t => t.status === 'completed').length,
+    all: tasks.length,
+    todo: tasks.filter(t => t.status === 'todo').length,
+    in_progress: tasks.filter(t => t.status === 'in_progress').length,
+    completed: tasks.filter(t => t.status === 'completed').length,
   };
 
   return (

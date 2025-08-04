@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,49 +12,31 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
-// Mock data
-const projects = [
-  {
-    id: 1,
-    title: 'Digital Inclusion Initiative',
-    description: 'Bridging the digital divide in rural communities',
-    status: 'active',
-    impact_score: 87,
-    framework_alignment: ['E4', 'S1'],
-    start_date: '2024-01-15',
-    team_size: 8,
-  },
-  {
-    id: 2,
-    title: 'Community Tech Hub',
-    description: 'Creating accessible technology spaces for underserved populations',
-    status: 'planning',
-    impact_score: 92,
-    framework_alignment: ['S1', 'S3'],
-    start_date: '2024-02-01',
-    team_size: 12,
-  },
-  {
-    id: 3,
-    title: 'Youth Mentoring Program',
-    description: 'Empowering young people through technology education',
-    status: 'active',
-    impact_score: 78,
-    framework_alignment: ['S1', 'S4'],
-    start_date: '2023-11-01',
-    team_size: 15,
-  },
-  {
-    id: 4,
-    title: 'Sustainability Report',
-    description: 'Comprehensive environmental impact assessment',
-    status: 'completed',
-    impact_score: 95,
-    framework_alignment: ['E1', 'E2', 'G2'],
-    start_date: '2023-09-01',
-    team_size: 6,
-  },
-];
+// Real data from API
+const [projects, setProjects] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch('/api/v1/projects');
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data.items || []);
+      } else {
+        console.error('Failed to fetch projects');
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProjects();
+}, []);
 
 const statusColors = {
   active: 'bg-green-100 text-green-800',
