@@ -43,6 +43,40 @@ services:
         value: "30"
       - key: DATABASE_POOL_RECYCLE
         value: "1800"
+      # Google Analytics Real Data Configuration
+      - key: GOOGLE_ANALYTICS_PROPERTY_ID
+        value: "G-W5J0946RGP"
+      - key: GOOGLE_ANALYTICS_STREAM_ID
+        value: "11847705981"
+      - key: GOOGLE_ANALYTICS_STREAM_NAME
+        value: "Shadow Goose Ent"
+      - key: GOOGLE_ANALYTICS_STREAM_URL
+        value: "https://www.shadow-goose.com"
+      - key: GOOGLE_ANALYTICS_PRIVATE_KEY_ID
+        value: "9eb429a5851e89388f0893afad9cf157753497a4"
+      - key: GOOGLE_ANALYTICS_PRIVATE_KEY
+        value: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCO0OrL6VOTrFR6\n5a0Z0AlKAs7FlvdFqsqXEgeO49HkduTyTTJbppPEDQplS/SPnOyJzBu7xIiapsnU\n1dU5AAw4dmI8gmGDw40fbxnJPrk9YUdGgh6WDAW7NYJ51twReBzG0uIndDMd/5EM\nh+2PDlTs8iVsfiDU5gculV/nbkZrmOS3H3nA50P6wdU6+DSS5lp/DA+YKW8ht7H3\ndCoFUBzePEkN9orbz8DC2vcIqzWaXzwtvecsBvk3tGEydbuKK2plEYIVCkwLoAz1\n6V1UR3HFfOvs58bDvWOmhCXT5ZE+dvkw9cOMo66i0GKqL3PzgLvVehLjqBRqvmVw\n/gZX5Rl3AgMBAAECggEAAUy8jzIU3flpwL8/QWMbTvrnj7vn/t7DfpOW/D3tqGza\nzeRkMAwDKnvT5iup5+g/e0w7zUU59XyUcMU2w5C0i8RWRd+YHkSmrCU7JfVHvBSb\nAlhgXuKNICKZ3kdVbPNGc1Nyq3WyYWYtl1JFXzVDEmFsc/2nNCxgNFtwjcf7JPox\n+6Zd4W/HjB9lPVfYWFHa9lQ1f3wzGU4Yxzu+/iCpNhNDDq6by6H5hHe4J8oDMmrQ\nFHGXFTyh02eShnJxFcLxuTuXTROKRLaJvcXAx3bvlNoZ9OJllgtN6eTl1DOHE9ky\nhdB9DNnqqSgC02kYnEuik89gJ2dmRy4uMwHxgXFqgQKBgQDFrTh/9bIcx/D+4EK5\n8L3GxS2CLkOAkcqEHXriA0wzUcsFryH+n7ZG+niCpIoiDMwgYO9Pzz0Y117Qz302\nOdfLAYQ/DBvIhL8QmOezSlgB2VUxVe8jSvkD4+Yq3JkGo8tGFYVuim7FtvBQHK6t\nX6nQcc7cRvYUTE4gzPDauFjqaQKBgQC49AFoIzLSu9qNvT9v4U86XwqxN5JqGee0\n6TNFS8wc1UzqBfvs8SJUTJ9r079FKC51xr+5cI8kpxQRbW3ZKTVSb8S8EmUQ9lFv\nQiK3D2YeLW+VotZizjoXVEuw3GRQf9intEfOVEuhBW9XSKwRtkL98MGMNwVnW3nJ\nSAs7uDyo3wKBgG8I2Y+mpqFb/ZZsyY5AF5kq8GELM4doXOTQ2lFRoN/CtdM/iEzJ\n0U0VK9PWMHDn11DoogOmWJ83el637ZEj9H5nH616U7DSP7BG8v7WZ5DCTwQjTOv6\nFN2GiabRunLsViXLuONahtYv59RYCBYCghQ/mP5KLbdBFTF/bFqu6eLhAoGBAJ29\nTW3Zh0D/gjicjPwIdx/bay0VrkPbcCh1M4sISD7XFFALZn8AcTzgVJ8L6vc6e9Vq\n+p1XiF3EOXNblvI9GQMD3BBix9udmHqBN0ZVVcyrB53hUWLXa+f1ttBSRyP4xXjS\nYuNwNUhRcFJK4qYAgkY+DXRegLdT5xxp21rFmMaVAoGAdL3/8n/X8R5j4BddN8Xm\n1faJQ92VV7oDznZWMDYxo3oky2oOKyOpLNdCa0jr6mJpgr3QiGh9Y/us/jR6hbK/\n/PknZ+h3+6Q8PPvuoSttjp17zS106UyIaCkHhGQQllKXTHF8cGs2q35L1DFCp/oA\nFEEELtIe5juPbVngj3HVBUY=\n-----END PRIVATE KEY-----\n"
+      - key: GOOGLE_ANALYTICS_CLIENT_EMAIL
+        value: "navimpact-analytics-access@navimpact-analytics-access.iam.gserviceaccount.com"
+      - key: GOOGLE_ANALYTICS_CLIENT_ID
+        value: "105729216126104949624"
+      - key: GOOGLE_ANALYTICS_API_BASE_URL
+        value: "https://analyticsdata.googleapis.com/v1beta"
+      - key: GOOGLE_ANALYTICS_API_TIMEOUT
+        value: "30"
+      # Instagram Real Data Configuration
+      - key: INSTAGRAM_APP_ID
+        value: "750807407546453"
+      - key: INSTAGRAM_APP_SECRET
+        value: "b1bb9291aa6dff3eefeb1d32ac7874ae"
+      - key: INSTAGRAM_ACCESS_TOKEN
+        value: "EAAKq2vjSUFUBPMLCmwnZAY0BZAHcKH3mjeWPU13AV0uR8ZAOnZCBqZAwFhZC5braxJ2HxlSgCbcpdJa4qokdO7roADoZCcpAbt9CZAUDh21fyrGaJATkxEhfGVtlvgEaAS4WGBBVMJ64mz9tZAGAESXUddutmDy0W8tRF57sSMU0sSZBzLAHUYeAu4TVxhK6vu2353v58bXLNlzULODEbVIMKaagCBtFFD9jz7G2rZArOzLsy0ZD"
+      - key: INSTAGRAM_BUSINESS_ACCOUNT_ID
+        value: "17841470067685584"
+      - key: INSTAGRAM_API_BASE_URL
+        value: "https://graph.facebook.com/v18.0"
+      - key: INSTAGRAM_API_TIMEOUT
+        value: "30"
 
   # Frontend Service for SGE
   - type: web
