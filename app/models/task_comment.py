@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 
-from app.db.base import Base
+from app.db.base_class import Base
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
