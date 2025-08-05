@@ -93,8 +93,10 @@ export function useForm<T extends Record<string, any>>(options: UseFormOptions<T
 
   // MY ADDITION: Memoized validation function
   const validateField = useCallback(async (name: keyof T, value: T[keyof T]): Promise<string | undefined> => {
-    const rule = validationRules[name]
-    if (!rule) return undefined
+    if (!validationRules) return undefined;
+    
+    const rule = (validationRules as any)[name];
+    if (!rule) return undefined;
 
     // Required validation
     if (rule.required && (!value || (typeof value === 'string' && value.trim() === ''))) {
@@ -140,7 +142,7 @@ export function useForm<T extends Record<string, any>>(options: UseFormOptions<T
     const errors: FormErrors<T> = {}
 
     // MY ADDITION: Parallel validation for better performance
-    const validationPromises = Object.keys(validationRules).map(async (key) => {
+    const validationPromises = Object.keys(validationRules || {}).map(async (key) => {
       const fieldKey = key as keyof T
       const error = await validateField(fieldKey, values[fieldKey])
       if (error) {

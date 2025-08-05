@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 
 // MY ADDITION: Performance monitoring
 interface PerformanceMetrics {
@@ -243,17 +243,26 @@ export function useApiData<T = any>(options: UseApiDataOptions<T>): UseApiDataRe
     retryDelay: finalCacheConfig.retryDelay,
     refetchInterval,
     refetchOnWindowFocus,
-    refetchOnReconnect,
-    onSuccess: (data) => {
+    refetchOnReconnect
+  })
+
+  // MY ADDITION: Success and error handling
+  useEffect(() => {
+    if (query.isSuccess) {
       setCacheStatus('fresh')
-    },
-    onError: (error) => {
-      const categorizedError = categorizeError(error)
+      options.onSuccess?.(query.data)
+    }
+  }, [query.isSuccess, query.data, options])
+
+  useEffect(() => {
+    if (query.isError && query.error) {
+      const categorizedError = categorizeError(query.error)
       if (categorizedError.category === 'network') {
         setCacheStatus('expired')
       }
+      options.onError?.(categorizedError)
     }
-  })
+  }, [query.isError, query.error, options])
 
   // MY ADDITION: Cache status monitoring
   useEffect(() => {
@@ -336,7 +345,8 @@ export function useInfiniteApiData<T>(
 ) {
   return useInfiniteQuery({
     queryKey: [endpoint, 'infinite'],
-    queryFn: async ({ pageParam = 1 }) => {
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) => {
       const response = await fetch(`${endpoint}?page=${pageParam}&limit=${pageSize}`)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)

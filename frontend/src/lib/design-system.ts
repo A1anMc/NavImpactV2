@@ -399,6 +399,92 @@ export const designSystemUtils = {
   }
 } as const
 
+// MY ADDITION: ADHD utilities for accessibility
+export const adhdUtils = {
+  preferences: {
+    getFocusMode: () => {
+      if (typeof window === 'undefined') return false;
+      return localStorage.getItem('focusMode') === 'true';
+    },
+    setFocusMode: (value: boolean) => {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem('focusMode', value.toString());
+    },
+    getLowStimMode: () => {
+      if (typeof window === 'undefined') return false;
+      return localStorage.getItem('lowStimMode') === 'true';
+    },
+    setLowStimMode: (value: boolean) => {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem('lowStimMode', value.toString());
+    },
+    getDensity: () => {
+      if (typeof window === 'undefined') return 'comfortable';
+      return localStorage.getItem('density') as 'compact' | 'comfortable' | 'spacious' || 'comfortable';
+    },
+    setDensity: (value: 'compact' | 'comfortable' | 'spacious') => {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem('density', value);
+    },
+    getCollapsedSections: () => {
+      if (typeof window === 'undefined') return ['completed'];
+      const stored = localStorage.getItem('collapsedSections');
+      return stored ? JSON.parse(stored) : ['completed'];
+    },
+    setCollapsedSections: (value: string[]) => {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem('collapsedSections', JSON.stringify(value));
+    },
+    get: (key: string, defaultValue: any) => {
+      if (typeof window === 'undefined') return defaultValue;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    },
+    set: (key: string, value: any) => {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  },
+  getMotionDuration: (duration: 'fast' | 'normal' | 'slow') => {
+    const prefersReducedMotion = typeof window !== 'undefined' && 
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReducedMotion) return '0ms';
+    
+    switch (duration) {
+      case 'fast': return '150ms';
+      case 'normal': return '300ms';
+      case 'slow': return '500ms';
+      default: return '300ms';
+    }
+  }
+} as const;
+
+// MY ADDITION: Generate CSS custom properties for low-stim mode
+export const generateCSSCustomProperties = (lowStimMode: boolean) => {
+  if (lowStimMode) {
+    return {
+      '--color-primary': colors.neutral[600],
+      '--color-secondary': colors.neutral[400],
+      '--color-accent': colors.neutral[500],
+      '--shadow-intensity': '0.3',
+      '--animation-duration': '0ms',
+      '--border-radius': '0px',
+      '--font-weight': '400'
+    };
+  }
+  
+  return {
+    '--color-primary': colors.primary[600],
+    '--color-secondary': colors.secondary[600],
+    '--color-accent': colors.warning[500],
+    '--shadow-intensity': '1',
+    '--animation-duration': '300ms',
+    '--border-radius': '0.375rem',
+    '--font-weight': '500'
+  };
+};
+
 // MY ADDITION: Export all design system tokens
 export const designSystem = {
   colors,
@@ -411,7 +497,9 @@ export const designSystem = {
   zIndex,
   focusStyles,
   performance,
-  utils: designSystemUtils
+  utils: designSystemUtils,
+  adhdUtils,
+  generateCSSCustomProperties
 } as const
 
 export default designSystem 
