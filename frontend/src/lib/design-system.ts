@@ -3,7 +3,7 @@
 // Color Palette with accessibility considerations
 export const colors = {
   // Primary colors
-  primary: {
+    primary: {
     50: '#eff6ff',
     100: '#dbeafe',
     200: '#bfdbfe',
@@ -78,19 +78,40 @@ export const colors = {
   },
   
   // Neutral colors
-  neutral: {
-    50: '#fafafa',
-    100: '#f5f5f5',
-    200: '#e5e5e5',
-    300: '#d4d4d4',
-    400: '#a3a3a3',
-    500: '#737373',
-    600: '#525252',
-    700: '#404040',
-    800: '#262626',
-    900: '#171717',
+    neutral: {
+      50: '#fafafa',
+      100: '#f5f5f5',
+      200: '#e5e5e5',
+      300: '#d4d4d4',
+      400: '#a3a3a3',
+      500: '#737373',
+      600: '#525252',
+      700: '#404040',
+      800: '#262626',
+      900: '#171717',
     950: '#0a0a0a'
   }
+} as const
+
+// SDG Colors for sustainability indicators
+export const sdgColors = {
+  sdg1: '#E5243B',   // No Poverty
+  sdg2: '#DDA63A',   // Zero Hunger
+  sdg3: '#4C9F38',   // Good Health
+  sdg4: '#C5192D',   // Quality Education
+  sdg5: '#FF3A21',   // Gender Equality
+  sdg6: '#26BDE2',   // Clean Water
+  sdg7: '#FCC30B',   // Affordable Energy
+  sdg8: '#A21942',   // Decent Work
+  sdg9: '#FD6925',   // Industry Innovation
+  sdg10: '#DD1367',  // Reduced Inequalities
+  sdg11: '#FD9D24',  // Sustainable Cities
+  sdg12: '#BF8B2E',  // Responsible Consumption
+  sdg13: '#3F7E44',  // Climate Action
+  sdg14: '#0A97D9',  // Life Below Water
+  sdg15: '#56C02B',  // Life on Land
+  sdg16: '#00689D',  // Peace Justice
+  sdg17: '#19486A'   // Partnerships
 } as const
 
 // Typography with accessibility considerations
@@ -215,7 +236,7 @@ export const animations = {
     bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
     elastic: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
   },
-  
+
   // MY ADDITION: Predefined animations for common use cases
   keyframes: {
     fadeIn: {
@@ -261,8 +282,8 @@ export const animations = {
     bounce: {
       '0%, 100%': { transform: 'translateY(0)' },
       '50%': { transform: 'translateY(-25%)' }
-    }
-  },
+      }
+    },
   
   // MY ADDITION: Animation classes for easy use
   classes: {
@@ -309,19 +330,19 @@ export const zIndex = {
 
 // MY ADDITION: Focus styles for accessibility
 export const focusStyles = {
-  ring: {
-    offset: '2px',
+    ring: {
+      offset: '2px',
     offsetColor: colors.primary[500],
     color: colors.primary[500],
     width: '2px'
-  },
+    },
   
   // High contrast focus styles for accessibility
-  highContrast: {
+    highContrast: {
     outline: '2px solid',
     outlineOffset: '2px',
     outlineColor: colors.primary[600]
-  }
+    }
 } as const
 
 // MY ADDITION: Performance optimizations
@@ -338,7 +359,7 @@ export const performance = {
     backfaceVisibility: 'hidden',
     perspective: '1000px'
   },
-  
+
   // Will-change hints for better performance
   willChange: {
     auto: 'auto',
@@ -355,7 +376,7 @@ export const designSystemUtils = {
   getColorWithOpacity: (color: string, opacity: number) => {
     return `${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`
   },
-  
+
   // Get responsive value
   getResponsiveValue: (values: Record<string, any>, breakpoint: keyof typeof breakpoints) => {
     return values[breakpoint] || values.base
