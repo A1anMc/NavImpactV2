@@ -41,7 +41,7 @@ services:
       - key: ENABLE_PERFORMANCE_MONITORING
         value: "true"
 
-  # Staging Frontend Service
+  # Staging Frontend Service - FIXED: Using npx serve for static export
   - type: web
     name: navimpact-web-staging
     env: node
