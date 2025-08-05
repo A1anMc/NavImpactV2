@@ -4,6 +4,7 @@ services:
     name: navimpact-api-staging
     env: python
     pythonVersion: "3.11.9"
+    branch: feature/solid-refactoring-complete
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: echo "Starting STAGING backend deployment..." && echo "Database URL: $DATABASE_URL" && echo "Starting application without migrations..." && gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
     envVars:
@@ -45,6 +46,7 @@ services:
     name: navimpact-web-staging
     env: node
     nodeVersion: "20.x"
+    branch: feature/solid-refactoring-complete
     buildCommand: cd frontend && npm ci && npm run build
     startCommand: cd frontend && npm start
     envVars:
