@@ -4,7 +4,7 @@
 
 **Date:** August 5, 2025  
 **Branch:** `feature/solid-refactoring-complete`  
-**Status:** 🚀 **DEPLOYING**
+**Status:** 🔄 **DEPLOYING (FIXED)**
 
 ### Services Being Deployed
 
@@ -17,10 +17,11 @@
 
 #### Frontend Web (navimpact-web-staging)
 - **URL:** https://navimpact-web-staging.onrender.com
-- **Status:** 🔄 Building
+- **Status:** 🔄 **FIXED - Redeploying**
 - **Branch:** `feature/solid-refactoring-complete`
 - **Environment:** Node.js 20.x
-- **Framework:** Next.js 14.2.31
+- **Framework:** Next.js 14.2.31 (Static Export)
+- **Fix Applied:** Changed start command from `npm start` to `npx serve@latest out -p $PORT`
 
 ### Recent Fixes Applied
 
@@ -30,6 +31,11 @@
 - Added `initialPageParam` to `useInfiniteQuery`
 - Fixed TypeScript type inference issues in `useForm` hook
 - All frontend builds now pass successfully
+
+✅ **Frontend Deployment Fix:**
+- **Issue:** Next.js static export (`output: 'export'`) doesn't work with `next start`
+- **Solution:** Changed start command to `npx serve@latest out -p $PORT`
+- **Status:** ✅ Fixed and redeploying
 
 ✅ **Backend Issues Resolved:**
 - Fixed circular import issues in SQLAlchemy models
@@ -51,11 +57,11 @@
   buildCommand: pip install --upgrade pip && pip install -r requirements.txt
   startCommand: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2
 
-# Frontend Web
+# Frontend Web (FIXED)
 - name: navimpact-web-staging
   branch: feature/solid-refactoring-complete
   buildCommand: cd frontend && npm ci && npm run build
-  startCommand: cd frontend && npm start
+  startCommand: cd frontend && npx serve@latest out -p $PORT  # ✅ FIXED
 ```
 
 ### Environment Variables
@@ -72,9 +78,20 @@
 - `NODE_ENV`: staging
 - `NEXT_TELEMETRY_DISABLED`: 1
 
+### Deployment Timeline
+
+**Current Status:**
+- ✅ Backend: Building successfully
+- ✅ Frontend: Build successful, deployment fixed
+- 🔄 Frontend: Redeploying with corrected start command
+
+**Expected Completion:**
+- Frontend deployment: 5-8 minutes from now
+- Full system availability: 10-15 minutes
+
 ### Next Steps
 
-1. **Monitor Deployment** - Watch for build completion
+1. **Monitor Redeployment** - Watch for frontend service to come online
 2. **Health Checks** - Verify both services are responding
 3. **Functionality Testing** - Test key features
 4. **Performance Validation** - Check response times
@@ -90,6 +107,7 @@ If issues arise:
 
 ---
 
-**Last Updated:** August 5, 2025 08:07 UTC  
+**Last Updated:** August 5, 2025 08:12 UTC  
 **Deployment Triggered:** ✅  
-**Status:** 🔄 **IN PROGRESS** 
+**Frontend Fix Applied:** ✅  
+**Status:** 🔄 **REDEPLOYING WITH FIX** 
