@@ -9,7 +9,7 @@
 pip install --upgrade pip && pip install -r requirements.txt
 
 # Start Command:
-echo "Starting STAGING backend deployment..." && echo "Database URL: $DATABASE_URL" && echo "Checking database state..." && alembic stamp head || echo "Database already stamped" && echo "Running database migrations..." && alembic upgrade head || echo "Migration completed or failed gracefully" && echo "Starting application..." && gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
+echo "Starting STAGING backend deployment..." && echo "Database URL: $DATABASE_URL" && echo "Starting application without migrations..." && gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
 
 # ==========================================
 # NAVIMPACT-WEB-STAGING
