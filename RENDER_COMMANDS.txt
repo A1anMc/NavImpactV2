@@ -1,0 +1,49 @@
+# RENDER BUILD AND START COMMANDS
+# Copy-paste these into Render dashboard
+
+# ==========================================
+# NAVIMPACT-API-STAGING
+# ==========================================
+
+# Build Command:
+pip install --upgrade pip && pip install --no-cache-dir --only-binary::all: --prefer-binary -r requirements.txt
+
+# Start Command:
+echo "Starting STAGING backend deployment..." && echo "Database URL: $DATABASE_URL" && echo "Running fresh database migrations..." && alembic upgrade head && echo "Running comprehensive tests..." && python -m pytest tests/test_refactored_services.py tests/test_refactored_scrapers.py tests/test_integration.py -v && echo "Starting application..." && gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --worker-class uvicorn.workers.UvicornWorker --timeout 300 --preload
+
+# ==========================================
+# NAVIMPACT-WEB-STAGING
+# ==========================================
+
+# Build Command:
+cd frontend && npm ci && npm run build
+
+# Start Command:
+cd frontend && npm start
+
+# ==========================================
+# ENVIRONMENT VARIABLES (from STAGING_ENV_VARS.txt)
+# ==========================================
+
+# Backend Environment Variables:
+DATABASE_URL=postgresql://navimpact_dbv3_user:EY0Vd5QcTEoY7ZM0CrKCWfsFVHcYIZ8V@dpg-d21hvsvfte5s73fkk140-a/navimpact_dbv3
+ENVIRONMENT=staging
+CORS_ORIGINS=https://navimpact-web-staging.onrender.com
+ALLOWED_HOSTS=navimpact-api-staging.onrender.com,localhost,127.0.0.1
+LOG_LEVEL=DEBUG
+EMAIL_ENABLED=false
+RATE_LIMIT_ENABLED=true
+MAX_REQUESTS_PER_MINUTE=120
+DATABASE_POOL_SIZE=3
+DATABASE_MAX_OVERFLOW=5
+DATABASE_POOL_TIMEOUT=30
+DATABASE_POOL_RECYCLE=1800
+ENABLE_TESTING=true
+ENABLE_PERFORMANCE_MONITORING=true
+
+# Frontend Environment Variables:
+NEXT_PUBLIC_API_URL=https://navimpact-api-staging.onrender.com
+NODE_ENV=staging
+NEXT_TELEMETRY_DISABLED=1
+PORT=3000
+NEXT_PUBLIC_ENVIRONMENT=staging 

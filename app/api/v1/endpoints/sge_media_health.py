@@ -1,38 +1,44 @@
 """SGE Media Module Health Check Endpoint"""
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-
 from app.core.deps import get_db
+from fastapi import APIRouter, Depends
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 router = APIRouter()
+
 
 @router.get("/sge-media-health")
 async def sge_media_health_check(db: Session = Depends(get_db)):
     """Check if SGE Media tables exist and are accessible."""
     try:
         # Test if SGE Media tables exist
-        result = db.execute(text("""
+        result = db.execute(
+            text(
+                """
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public' 
             AND table_name LIKE 'sge_%'
             ORDER BY table_name
-        """))
-        
+        """
+            )
+        )
+
         tables = [row[0] for row in result.fetchall()]
-        
+
         if tables:
             return {
                 "status": "healthy",
                 "message": "SGE Media tables exist",
                 "tables": tables,
-                "table_count": len(tables)
+                "table_count": len(tables),
             }
         else:
             # Create the tables directly
-            db.execute(text("""
+            db.execute(
+                text(
+                    """
                 CREATE TABLE IF NOT EXISTS sge_media_projects (
                     id SERIAL PRIMARY KEY,
                     project_id INTEGER,
@@ -46,9 +52,13 @@ async def sge_media_health_check(db: Session = Depends(get_db)):
                     created_at TIMESTAMP,
                     updated_at TIMESTAMP
                 )
-            """))
-            
-            db.execute(text("""
+            """
+                )
+            )
+
+            db.execute(
+                text(
+                    """
                 CREATE TABLE IF NOT EXISTS sge_distribution_logs (
                     id SERIAL PRIMARY KEY,
                     media_project_id INTEGER NOT NULL,
@@ -61,9 +71,13 @@ async def sge_media_health_check(db: Session = Depends(get_db)):
                     notes TEXT,
                     created_at TIMESTAMP
                 )
-            """))
-            
-            db.execute(text("""
+            """
+                )
+            )
+
+            db.execute(
+                text(
+                    """
                 CREATE TABLE IF NOT EXISTS sge_performance_metrics (
                     id SERIAL PRIMARY KEY,
                     media_project_id INTEGER NOT NULL,
@@ -76,9 +90,13 @@ async def sge_media_health_check(db: Session = Depends(get_db)):
                     comments INTEGER,
                     created_at TIMESTAMP
                 )
-            """))
-            
-            db.execute(text("""
+            """
+                )
+            )
+
+            db.execute(
+                text(
+                    """
                 CREATE TABLE IF NOT EXISTS sge_impact_stories (
                     id SERIAL PRIMARY KEY,
                     media_project_id INTEGER NOT NULL,
@@ -91,9 +109,13 @@ async def sge_media_health_check(db: Session = Depends(get_db)):
                     quantifiable_outcome TEXT,
                     created_at TIMESTAMP
                 )
-            """))
-            
-            db.execute(text("""
+            """
+                )
+            )
+
+            db.execute(
+                text(
+                    """
                 CREATE TABLE IF NOT EXISTS sge_client_access (
                     id SERIAL PRIMARY KEY,
                     client_name VARCHAR(200) NOT NULL,
@@ -103,27 +125,35 @@ async def sge_media_health_check(db: Session = Depends(get_db)):
                     is_active BOOLEAN,
                     created_at TIMESTAMP
                 )
-            """))
-            
+            """
+                )
+            )
+
             db.commit()
-            
+
             return {
                 "status": "created",
                 "message": "SGE Media tables created successfully",
-                "tables": ["sge_media_projects", "sge_distribution_logs", "sge_performance_metrics", "sge_impact_stories", "sge_client_access"],
-                "table_count": 5
+                "tables": [
+                    "sge_media_projects",
+                    "sge_distribution_logs",
+                    "sge_performance_metrics",
+                    "sge_impact_stories",
+                    "sge_client_access",
+                ],
+                "table_count": 5,
             }
             return {
                 "status": "pending",
                 "message": "SGE Media tables not found - migration needed",
                 "tables": [],
-                "table_count": 0
+                "table_count": 0,
             }
-            
+
     except Exception as e:
         return {
             "status": "error",
             "message": f"Database error: {str(e)}",
             "tables": [],
-            "table_count": 0
+            "table_count": 0,
         }

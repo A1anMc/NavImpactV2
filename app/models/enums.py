@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class TaskStatus(str, Enum):
     TODO = "todo"
     PENDING = "pending"
@@ -7,8 +8,9 @@ class TaskStatus(str, Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
+
 class TaskPriority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
-    URGENT = "urgent" 
+    URGENT = "urgent"

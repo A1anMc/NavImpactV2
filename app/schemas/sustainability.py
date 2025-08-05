@@ -1,13 +1,18 @@
-from typing import Optional, List
 from datetime import date, datetime
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
 # Base schemas
 class SustainabilityMetricBase(BaseModel):
-    metric_type: str = Field(..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3")
+    metric_type: str = Field(
+        ..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3"
+    )
     metric_name: str = Field(..., description="Name of the metric")
-    metric_value: Optional[float] = Field(None, description="Numeric value of the metric")
+    metric_value: Optional[float] = Field(
+        None, description="Numeric value of the metric"
+    )
     unit: Optional[str] = Field(None, description="Unit of measurement")
     reporting_period: str = Field(..., description="Reporting period (e.g., 2024)")
     scope: Optional[str] = Field(None, description="Scope for emissions (1, 2, 3)")
@@ -16,50 +21,78 @@ class SustainabilityMetricBase(BaseModel):
 
 
 class SustainabilityPolicyBase(BaseModel):
-    policy_type: str = Field(..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3")
+    policy_type: str = Field(
+        ..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3"
+    )
     policy_name: str = Field(..., description="Name of the policy")
-    policy_description: Optional[str] = Field(None, description="Description of the policy")
+    policy_description: Optional[str] = Field(
+        None, description="Description of the policy"
+    )
     policy_content: Optional[str] = Field(None, description="Content of the policy")
     document_url: Optional[str] = Field(None, description="URL to policy document")
-    effective_date: Optional[date] = Field(None, description="Effective date of the policy")
+    effective_date: Optional[date] = Field(
+        None, description="Effective date of the policy"
+    )
     review_date: Optional[date] = Field(None, description="Next review date")
-    approval_status: Optional[str] = Field(None, description="draft, approved, under_review")
+    approval_status: Optional[str] = Field(
+        None, description="draft, approved, under_review"
+    )
     version: Optional[str] = Field(None, description="Policy version")
 
 
 class ActionPlanBase(BaseModel):
-    plan_type: str = Field(..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3")
+    plan_type: str = Field(
+        ..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3"
+    )
     plan_name: str = Field(..., description="Name of the action plan")
     plan_description: Optional[str] = Field(None, description="Description of the plan")
     target_value: Optional[float] = Field(None, description="Target value")
     target_year: Optional[int] = Field(None, description="Target year")
     baseline_value: Optional[float] = Field(None, description="Baseline value")
     baseline_year: Optional[int] = Field(None, description="Baseline year")
-    progress_percentage: Optional[float] = Field(None, description="Progress percentage")
-    status: Optional[str] = Field(None, description="not_started, in_progress, completed, delayed")
+    progress_percentage: Optional[float] = Field(
+        None, description="Progress percentage"
+    )
+    status: Optional[str] = Field(
+        None, description="not_started, in_progress, completed, delayed"
+    )
     responsible_party: Optional[str] = Field(None, description="Responsible party")
     budget: Optional[float] = Field(None, description="Budget allocated")
 
 
 class PerformanceTargetBase(BaseModel):
-    target_type: str = Field(..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3")
+    target_type: str = Field(
+        ..., description="ESRS topic: E1, E2, E3, E4, E5, S1, S2, S3, S4, G1, G2, G3"
+    )
     target_name: str = Field(..., description="Name of the target")
-    target_description: Optional[str] = Field(None, description="Description of the target")
+    target_description: Optional[str] = Field(
+        None, description="Description of the target"
+    )
     target_value: Optional[float] = Field(None, description="Target value")
     target_year: Optional[int] = Field(None, description="Target year")
     current_value: Optional[float] = Field(None, description="Current value")
     unit: Optional[str] = Field(None, description="Unit of measurement")
-    status: Optional[str] = Field(None, description="on_track, at_risk, off_track, achieved")
+    status: Optional[str] = Field(
+        None, description="on_track, at_risk, off_track, achieved"
+    )
 
 
 class AssuranceLogBase(BaseModel):
-    assurance_type: str = Field(..., description="internal_audit, external_audit, verification")
+    assurance_type: str = Field(
+        ..., description="internal_audit, external_audit, verification"
+    )
     assurance_scope: Optional[str] = Field(None, description="ESRS topic scope")
     assurance_date: Optional[date] = Field(None, description="Date of assurance")
     assurance_provider: Optional[str] = Field(None, description="Assurance provider")
-    assurance_standard: Optional[str] = Field(None, description="Assurance standard used")
-    assurance_opinion: Optional[str] = Field(None, description="reasonable_assurance, limited_assurance, qualified")
-    assurance_report_url: Optional[str] = Field(None, description="URL to assurance report")
+    assurance_standard: Optional[str] = Field(
+        None, description="Assurance standard used"
+    )
+    assurance_opinion: Optional[str] = Field(
+        None, description="reasonable_assurance, limited_assurance, qualified"
+    )
+    assurance_report_url: Optional[str] = Field(
+        None, description="URL to assurance report"
+    )
 
 
 # Create schemas
@@ -211,4 +244,4 @@ class SustainabilityExport(BaseModel):
     performance_targets: List[PerformanceTarget]
     assurance_logs: List[AssuranceLog]
     export_date: datetime
-    export_format: str = Field(..., description="xhtml, json, csv") 
+    export_format: str = Field(..., description="xhtml, json, csv")

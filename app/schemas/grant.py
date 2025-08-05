@@ -1,10 +1,13 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class GrantBase(BaseModel):
     """Base schema for grant data."""
+
     title: str
     description: Optional[str] = None
     source: str
@@ -26,12 +29,16 @@ class GrantBase(BaseModel):
     class Config:
         from_attributes = True
 
+
 class GrantCreate(GrantBase):
     """Schema for creating a new grant."""
+
     pass
+
 
 class GrantUpdate(BaseModel):
     """Schema for updating an existing grant."""
+
     title: Optional[str] = None
     description: Optional[str] = None
     source: Optional[str] = None
@@ -50,8 +57,10 @@ class GrantUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
 
+
 class GrantResponse(BaseModel):
     """Grant response schema"""
+
     id: int
     title: str
     description: str
@@ -63,25 +72,31 @@ class GrantResponse(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True
 
+
 class GrantListResponse(BaseModel):
     """Response schema for list of grants"""
+
     grants: List[GrantResponse]
     total_count: int
     skip: int
     limit: int
 
+
 class GrantRecommendationResponse(BaseModel):
     """Response schema for grant recommendations"""
+
     grant: GrantResponse
     match_score: float
     match_reasons: List[str]
 
+
 class GrantList(BaseModel):
     """Schema for paginated grant list."""
+
     items: List[GrantResponse]
     total: int
     page: int
@@ -89,8 +104,10 @@ class GrantList(BaseModel):
     has_next: bool
     has_prev: bool
 
+
 class GrantFilters(BaseModel):
     """Schema for grant filtering parameters."""
+
     search: Optional[str] = None
     status: Optional[str] = None
     industry_focus: Optional[str] = None
@@ -107,8 +124,10 @@ class GrantFilters(BaseModel):
     page: int = 1
     size: int = 20
 
+
 class GrantMatchResult(BaseModel):
     """Schema for grant matching results."""
+
     grant_id: int
     title: str
     score: int
@@ -116,8 +135,10 @@ class GrantMatchResult(BaseModel):
     deadline: Optional[str]
     amount_range: str
 
+
 class GrantData(BaseModel):
     """Schema for grant data in groups."""
+
     id: int
     title: str
     amount: Optional[float] = None
@@ -125,8 +146,10 @@ class GrantData(BaseModel):
     status: str
     source: str
 
+
 class DeadlineGroup(BaseModel):
     """Schema for grouped grants by deadline."""
+
     grants: List[Dict[str, Any]]
     total_amount: float
     count: int
@@ -134,30 +157,38 @@ class DeadlineGroup(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class GrantTimeline(BaseModel):
     """Schema for grant timeline view."""
+
     this_week: DeadlineGroup
     next_week: DeadlineGroup
     this_month: DeadlineGroup
     next_month: DeadlineGroup
     later: DeadlineGroup
 
+
 class GrantsByCategory(BaseModel):
     """Schema for grants grouped by category."""
+
     by_industry: Dict[str, int]
     by_location: Dict[str, int]
     by_org_type: Dict[str, int]
     by_funding_range: Dict[str, int]
 
+
 class GrantMetrics(BaseModel):
     """Schema for grant dashboard metrics."""
+
     total_active: int
     total_amount_available: float
     upcoming_deadlines: int
     avg_match_score: float
 
+
 class MatchingInsights(BaseModel):
     """Schema for grant matching insights."""
+
     best_matches: List[Dict[str, Any]]
     common_mismatches: List[str]
     suggested_improvements: List[str]
@@ -165,16 +196,20 @@ class MatchingInsights(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class GrantDashboard(BaseModel):
     """Schema for comprehensive grant dashboard."""
+
     metrics: GrantMetrics
     categories: GrantsByCategory
     timeline: GrantTimeline
     matching_insights: MatchingInsights
     last_updated: datetime
 
+
 class ScraperStatus(BaseModel):
     """Schema for scraper status."""
+
     status: str
     last_run: Optional[datetime] = None
     next_scheduled: Optional[datetime] = None
@@ -183,16 +218,21 @@ class ScraperStatus(BaseModel):
     class Config:
         from_attributes = True
 
+
 class ScraperRunRequest(BaseModel):
     """Schema for scraper run requests."""
+
     source: str
     keywords: Optional[List[str]] = []
     tags: Optional[List[str]] = []
 
+
 class ScraperRunResponse(BaseModel):
     """Schema for scraper run responses."""
+
     message: str
     status: str = "accepted"
+
 
 # New AI and Analytics Schemas
 class GrantRecommendation(BaseModel):
@@ -203,6 +243,7 @@ class GrantRecommendation(BaseModel):
     success_probability: Optional[int] = Field(None, ge=0, le=100)
     estimated_effort: Optional[str] = None
     key_requirements: Optional[List[str]] = None
+
 
 class GrantAnalytics(BaseModel):
     total_grants: int
@@ -217,6 +258,7 @@ class GrantAnalytics(BaseModel):
     sector_breakdown: Dict[str, int]
     location_breakdown: Dict[str, int]
 
+
 class SavedSearch(BaseModel):
     id: int
     name: str
@@ -226,21 +268,26 @@ class SavedSearch(BaseModel):
     result_count: int
     is_alert_enabled: bool = False
 
+
 class SavedSearchCreate(BaseModel):
     name: str
     filters: Dict[str, Any]
     is_alert_enabled: bool = False
+
 
 class SavedSearchUpdate(BaseModel):
     name: Optional[str] = None
     filters: Optional[Dict[str, Any]] = None
     is_alert_enabled: Optional[bool] = None
 
+
 class GrantApplication(BaseModel):
     id: int
     grant_id: int
     user_id: int
-    status: str = Field(..., pattern="^(not_started|in_progress|submitted|awarded|rejected)$")
+    status: str = Field(
+        ..., pattern="^(not_started|in_progress|submitted|awarded|rejected)$"
+    )
     progress_percentage: int = Field(..., ge=0, le=100)
     notes: Optional[str] = None
     team_members: Optional[List[str]] = None
@@ -248,11 +295,13 @@ class GrantApplication(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class GrantApplicationCreate(BaseModel):
     grant_id: int
     status: str = "not_started"
     notes: Optional[str] = None
     team_members: Optional[List[str]] = None
+
 
 class GrantApplicationUpdate(BaseModel):
     status: Optional[str] = None
@@ -260,6 +309,7 @@ class GrantApplicationUpdate(BaseModel):
     notes: Optional[str] = None
     team_members: Optional[List[str]] = None
     documents: Optional[List[str]] = None
+
 
 class GrantNote(BaseModel):
     id: int
@@ -269,12 +319,15 @@ class GrantNote(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class GrantNoteCreate(BaseModel):
     grant_id: int
     content: str
 
+
 class GrantNoteUpdate(BaseModel):
     content: str
+
 
 class GrantDocument(BaseModel):
     id: int
@@ -286,12 +339,14 @@ class GrantDocument(BaseModel):
     file_size: int
     created_at: datetime
 
+
 class GrantDocumentCreate(BaseModel):
     grant_id: int
     filename: str
     file_url: str
     file_type: str
     file_size: int
+
 
 class AIRecommendationRequest(BaseModel):
     user_id: int
@@ -303,11 +358,13 @@ class AIRecommendationRequest(BaseModel):
     timeline: Optional[str] = None
     max_results: int = 10
 
+
 class AIRecommendationResponse(BaseModel):
     recommendations: List[GrantRecommendation]
     total_matches: int
     confidence_score: float
     reasoning: str
+
 
 class GrantExportRequest(BaseModel):
     filters: Optional[GrantFilters] = None
@@ -315,11 +372,13 @@ class GrantExportRequest(BaseModel):
     include_analytics: bool = False
     include_recommendations: bool = False
 
+
 class GrantExportResponse(BaseModel):
     download_url: str
     filename: str
     file_size: int
     expires_at: datetime
+
 
 class GrantAlert(BaseModel):
     id: int
@@ -331,15 +390,18 @@ class GrantAlert(BaseModel):
     last_triggered: Optional[datetime] = None
     created_at: datetime
 
+
 class GrantAlertCreate(BaseModel):
     search_id: int
     name: str
     conditions: Dict[str, Any]
 
+
 class GrantAlertUpdate(BaseModel):
     name: Optional[str] = None
     conditions: Optional[Dict[str, Any]] = None
     is_active: Optional[bool] = None
+
 
 # Enhanced Grant Response with AI features
 class EnhancedGrantResponse(GrantResponse):
@@ -351,6 +413,7 @@ class EnhancedGrantResponse(GrantResponse):
     documents: Optional[List[GrantDocument]] = []
     similar_grants: Optional[List[int]] = []
 
+
 # Analytics and Reporting
 class GrantMetrics(BaseModel):
     total_applications: int
@@ -360,6 +423,7 @@ class GrantMetrics(BaseModel):
     sector_performance: Dict[str, float]
     monthly_trends: List[Dict[str, Any]]
 
+
 class GrantDashboard(BaseModel):
     overview: GrantAnalytics
     recommendations: List[GrantRecommendation]
@@ -368,12 +432,14 @@ class GrantDashboard(BaseModel):
     saved_searches: List[SavedSearch]
     alerts: List[GrantAlert]
 
+
 # Search and Discovery
 class SmartSearchRequest(BaseModel):
     query: str
     filters: Optional[GrantFilters] = None
     include_ai_insights: bool = True
     max_results: int = 20
+
 
 class SmartSearchResponse(BaseModel):
     grants: List[EnhancedGrantResponse]
@@ -382,6 +448,7 @@ class SmartSearchResponse(BaseModel):
     ai_insights: Optional[Dict[str, Any]] = None
     related_searches: List[str]
 
+
 # Collaboration Features
 class GrantCollaboration(BaseModel):
     grant_id: int
@@ -389,6 +456,7 @@ class GrantCollaboration(BaseModel):
     shared_documents: List[GrantDocument]
     discussion_threads: List[Dict[str, Any]]
     task_assignments: List[Dict[str, Any]]
+
 
 class GrantCollaborationUpdate(BaseModel):
     team_members: Optional[List[Dict[str, Any]]] = None

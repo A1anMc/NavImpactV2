@@ -1,17 +1,19 @@
-from sqlalchemy.orm import Session
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from app.schemas.notion import (
-    NotionConnection, 
-    NotionUpdate, 
-    NotionSync, 
-    NotionHealthStatus,
+    NotionConnection,
     NotionConnectionCreate,
-    NotionConnectionUpdate
+    NotionConnectionUpdate,
+    NotionHealthStatus,
+    NotionSync,
+    NotionUpdate,
 )
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
+
 
 class NotionService:
     def __init__(self, db: Session):
@@ -76,10 +78,12 @@ class NotionService:
                 "updated_at": datetime.now() - timedelta(days=5),
             },
         ]
-        
+
         return [NotionConnection(**conn) for conn in connections]
 
-    def connect_database(self, database_id: str, database_name: str) -> NotionConnection:
+    def connect_database(
+        self, database_id: str, database_name: str
+    ) -> NotionConnection:
         """
         Connect a new Notion database to SGE
         """
@@ -97,7 +101,7 @@ class NotionService:
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
         }
-        
+
         logger.info(f"Connected Notion database: {database_name} (ID: {database_id})")
         return NotionConnection(**connection)
 
@@ -113,8 +117,10 @@ class NotionService:
             "status": "success",
             "errors": [],
         }
-        
-        logger.info(f"Synced Notion connection {connection_id}: {sync_result['items_synced']} items")
+
+        logger.info(
+            f"Synced Notion connection {connection_id}: {sync_result['items_synced']} items"
+        )
         return NotionSync(**sync_result)
 
     def get_recent_updates(self) -> List[NotionUpdate]:
@@ -160,7 +166,7 @@ class NotionService:
                 "description": "Added client feedback notes for The Last Line project",
             },
         ]
-        
+
         return [NotionUpdate(**update) for update in updates]
 
     def disconnect_database(self, connection_id: int) -> bool:
@@ -178,7 +184,7 @@ class NotionService:
         connections = self.get_connections()
         connected_count = len([c for c in connections if c.status == "connected"])
         total_items = sum(c.items_count for c in connections)
-        
+
         health_status = {
             "status": "healthy" if connected_count > 0 else "unhealthy",
             "connected_databases": connected_count,
@@ -186,10 +192,12 @@ class NotionService:
             "last_sync": datetime.now() if connected_count > 0 else None,
             "errors": [],
         }
-        
+
         return NotionHealthStatus(**health_status)
 
-    def create_connection(self, connection_data: NotionConnectionCreate) -> NotionConnection:
+    def create_connection(
+        self, connection_data: NotionConnectionCreate
+    ) -> NotionConnection:
         """
         Create a new Notion connection
         """
@@ -207,21 +215,23 @@ class NotionService:
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
         }
-        
+
         logger.info(f"Created new Notion connection: {connection_data.name}")
         return NotionConnection(**connection)
 
-    def update_connection(self, connection_id: int, update_data: NotionConnectionUpdate) -> NotionConnection:
+    def update_connection(
+        self, connection_id: int, update_data: NotionConnectionUpdate
+    ) -> NotionConnection:
         """
         Update an existing Notion connection
         """
         # Mock implementation - replace with actual database operations
         connections = self.get_connections()
         connection = next((c for c in connections if c.id == connection_id), None)
-        
+
         if not connection:
             raise ValueError(f"Connection {connection_id} not found")
-        
+
         # Update fields
         if update_data.name:
             connection.name = update_data.name
@@ -229,8 +239,8 @@ class NotionService:
             connection.description = update_data.description
         if update_data.status:
             connection.status = update_data.status
-        
+
         connection.updated_at = datetime.now()
-        
+
         logger.info(f"Updated Notion connection: {connection_id}")
-        return connection 
+        return connection

@@ -1,24 +1,25 @@
-import pytest
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
-from app.models.task import Task, TaskStatus, TaskPriority
+
+import pytest
+from app.models.project import Project
+from app.models.tag import Tag
+from app.models.task import Task, TaskPriority, TaskStatus
 from app.models.task_comment import TaskComment
 from app.models.time_entry import TimeEntry
 from app.models.user import User
-from app.models.project import Project
-from app.models.tag import Tag
+from sqlalchemy.orm import Session
+
 
 @pytest.fixture
 def test_user(db: Session) -> User:
     user = User(
-        email="test@example.com",
-        hashed_password="dummyhash",
-        full_name="Test User"
+        email="test@example.com", hashed_password="dummyhash", full_name="Test User"
     )
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
 
 @pytest.fixture
 def test_project(db: Session, test_user: User) -> Project:
@@ -28,12 +29,13 @@ def test_project(db: Session, test_user: User) -> Project:
         status="active",
         owner_id=test_user.id,
         created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        updated_at=datetime.utcnow(),
     )
     db.add(project)
     db.commit()
     db.refresh(project)
     return project
+
 
 def test_create_task(db: Session, test_user: User, test_project: Project):
     # Create tags first
@@ -42,7 +44,7 @@ def test_create_task(db: Session, test_user: User, test_project: Project):
     db.add(test_tag)
     db.add(important_tag)
     db.commit()
-    
+
     # Create a basic task
     task = Task(
         title="Test Task",
@@ -55,7 +57,7 @@ def test_create_task(db: Session, test_user: User, test_project: Project):
         due_date=datetime.utcnow() + timedelta(days=7),
         estimated_hours=4,
         tags=[test_tag, important_tag],
-        attachments=[]
+        attachments=[],
     )
     db.add(task)
     db.commit()
@@ -73,6 +75,7 @@ def test_create_task(db: Session, test_user: User, test_project: Project):
     assert task.estimated_hours == 4
     assert task.actual_hours == 0
 
+
 def test_task_status_update(db: Session, test_user: User, test_project: Project):
     # Create a task
     task = Task(
@@ -80,7 +83,7 @@ def test_task_status_update(db: Session, test_user: User, test_project: Project)
         status=TaskStatus.TODO.value,
         priority=TaskPriority.LOW.value,
         project_id=test_project.id,
-        creator_id=test_user.id
+        creator_id=test_user.id,
     )
     db.add(task)
     db.commit()
@@ -95,6 +98,7 @@ def test_task_status_update(db: Session, test_user: User, test_project: Project)
     assert task.status == TaskStatus.IN_PROGRESS.value
     assert task.updated_at > original_updated_at
 
+
 def test_task_comments(db: Session, test_user: User, test_project: Project):
     # Create a task
     task = Task(
@@ -102,17 +106,13 @@ def test_task_comments(db: Session, test_user: User, test_project: Project):
         status=TaskStatus.TODO.value,
         priority=TaskPriority.LOW.value,
         project_id=test_project.id,
-        creator_id=test_user.id
+        creator_id=test_user.id,
     )
     db.add(task)
     db.commit()
 
     # Add a comment
-    comment = TaskComment(
-        task_id=task.id,
-        user_id=test_user.id,
-        content="Test comment"
-    )
+    comment = TaskComment(task_id=task.id, user_id=test_user.id, content="Test comment")
     db.add(comment)
     db.commit()
     db.refresh(task)
@@ -122,6 +122,7 @@ def test_task_comments(db: Session, test_user: User, test_project: Project):
     assert task.comments[0].content == "Test comment"
     assert task.comments[0].user_id == test_user.id
 
+
 def test_time_tracking(db: Session, test_user: User, test_project: Project):
     # Create a task
     task = Task(
@@ -130,7 +131,7 @@ def test_time_tracking(db: Session, test_user: User, test_project: Project):
         priority=TaskPriority.LOW.value,
         project_id=test_project.id,
         creator_id=test_user.id,
-        estimated_hours=4
+        estimated_hours=4,
     )
     db.add(task)
     db.commit()
@@ -143,7 +144,7 @@ def test_time_tracking(db: Session, test_user: User, test_project: Project):
         duration_minutes=120,  # 2 hours
         description="Initial work",
         started_at=now - timedelta(hours=2),
-        ended_at=now
+        ended_at=now,
     )
     db.add(time_entry)
     db.commit()
@@ -158,6 +159,7 @@ def test_time_tracking(db: Session, test_user: User, test_project: Project):
     assert task.time_entries[0].duration_minutes == 120
     assert task.actual_hours == 2  # Should be updated based on time entries
 
+
 def test_task_constraints(db: Session, test_user: User, test_project: Project):
     # Test invalid status
     with pytest.raises(ValueError):  # Should raise a ValueError for invalid enum value
@@ -166,7 +168,7 @@ def test_task_constraints(db: Session, test_user: User, test_project: Project):
             status=TaskStatus("invalid_status"),  # Invalid status
             priority=TaskPriority.LOW,
             project_id=test_project.id,
-            creator_id=test_user.id
+            creator_id=test_user.id,
         )
         db.add(task)
         db.commit()
@@ -178,7 +180,7 @@ def test_task_constraints(db: Session, test_user: User, test_project: Project):
             status=TaskStatus.TODO,
             priority=TaskPriority("invalid_priority"),  # Invalid priority
             project_id=test_project.id,
-            creator_id=test_user.id
+            creator_id=test_user.id,
         )
         db.add(task)
         db.commit()
@@ -189,11 +191,12 @@ def test_task_constraints(db: Session, test_user: User, test_project: Project):
         status=TaskStatus.TODO,
         priority=TaskPriority.LOW,
         project_id=test_project.id,
-        creator_id=test_user.id
+        creator_id=test_user.id,
     )
     db.add(task)
     db.commit()
     assert task.id is not None
+
 
 def test_cascade_delete(db: Session, test_user: User, test_project: Project):
     # Create a task with comments and time entries
@@ -202,7 +205,7 @@ def test_cascade_delete(db: Session, test_user: User, test_project: Project):
         status=TaskStatus.TODO.value,
         priority=TaskPriority.LOW.value,
         project_id=test_project.id,
-        creator_id=test_user.id
+        creator_id=test_user.id,
     )
     db.add(task)
     db.commit()
@@ -214,7 +217,7 @@ def test_cascade_delete(db: Session, test_user: User, test_project: Project):
         user_id=test_user.id,
         duration_minutes=60,
         started_at=datetime.utcnow(),
-        ended_at=datetime.utcnow() + timedelta(hours=1)
+        ended_at=datetime.utcnow() + timedelta(hours=1),
     )
     db.add(comment)
     db.add(time_entry)
@@ -226,4 +229,4 @@ def test_cascade_delete(db: Session, test_user: User, test_project: Project):
 
     # Verify comment and time entry were deleted
     assert db.query(TaskComment).filter_by(task_id=task.id).first() is None
-    assert db.query(TimeEntry).filter_by(task_id=task.id).first() is None 
+    assert db.query(TimeEntry).filter_by(task_id=task.id).first() is None

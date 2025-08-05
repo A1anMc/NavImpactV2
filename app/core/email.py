@@ -1,16 +1,18 @@
-from typing import List
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from pydantic import EmailStr, BaseModel
-from pathlib import Path
-from jinja2 import Environment, FileSystemLoader
 import os
-from dotenv import load_dotenv
+from pathlib import Path
+from typing import List
+
 from app.core.config import settings
+from dotenv import load_dotenv
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
+from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel, EmailStr
 
 load_dotenv()
 
 # Get the base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Email configuration
 def get_email_config():
@@ -27,7 +29,7 @@ def get_email_config():
             MAIL_SSL_TLS=False,
             SUPPRESS_SEND=True,  # Don't actually send emails in tests
             USE_CREDENTIALS=False,
-            TEMPLATE_FOLDER=str(BASE_DIR / "templates" / "email")
+            TEMPLATE_FOLDER=str(BASE_DIR / "templates" / "email"),
         )
     else:
         # Production email configuration
@@ -40,8 +42,9 @@ def get_email_config():
             MAIL_STARTTLS=True,
             MAIL_SSL_TLS=False,
             USE_CREDENTIALS=True,
-            TEMPLATE_FOLDER=str(BASE_DIR / "templates" / "email")
+            TEMPLATE_FOLDER=str(BASE_DIR / "templates" / "email"),
         )
+
 
 # Create FastMail instance
 fastmail = FastMail(get_email_config())
@@ -51,17 +54,21 @@ template_env = Environment(
     loader=FileSystemLoader(str(BASE_DIR / "templates" / "email"))
 )
 
+
 async def send_test_email(email: str) -> None:
     """Send a test email."""
     message = MessageSchema(
         subject="Test Email",
         recipients=[email],
         body="This is a test email from the SGE Dashboard.",
-        subtype="html"
+        subtype="html",
     )
     await fastmail.send_message(message)
 
-async def send_task_assignment_email(task_id: int, assignee_email: str, task_title: str) -> None:
+
+async def send_task_assignment_email(
+    task_id: int, assignee_email: str, task_title: str
+) -> None:
     """Send an email when a task is assigned to a user."""
     message = MessageSchema(
         subject=f"Task Assignment: {task_title}",
@@ -71,6 +78,6 @@ async def send_task_assignment_email(task_id: int, assignee_email: str, task_tit
         <p>You have been assigned to task #{task_id}: {task_title}</p>
         <p>Please log in to the dashboard to view the task details.</p>
         """,
-        subtype="html"
+        subtype="html",
     )
-    await fastmail.send_message(message) 
+    await fastmail.send_message(message)

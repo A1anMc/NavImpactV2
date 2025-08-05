@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict, Optional
+
 from pydantic import BaseModel
+
 
 class ScraperLogBase(BaseModel):
     source_name: str
@@ -11,11 +13,14 @@ class ScraperLogBase(BaseModel):
     error_message: Optional[str] = None
     scraper_metadata: Optional[Dict] = None
 
+
 class ScraperLogCreate(ScraperLogBase):
     pass
 
+
 class ScraperLogUpdate(ScraperLogBase):
     pass
+
 
 class ScraperLog(ScraperLogBase):
     id: int
@@ -24,4 +29,4 @@ class ScraperLog(ScraperLogBase):
     duration_seconds: Optional[int] = None
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
