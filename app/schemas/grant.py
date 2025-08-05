@@ -50,15 +50,35 @@ class GrantUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
 
-class GrantResponse(GrantBase):
-    """Schema for grant responses."""
+class GrantResponse(BaseModel):
+    """Grant response schema"""
     id: int
+    title: str
+    description: str
+    amount: Optional[int]
+    deadline: Optional[datetime]
+    source: str
+    industry_focus: Optional[str]
+    location_eligibility: Optional[str]
+    status: str
     created_at: datetime
     updated_at: datetime
-    created_by_id: Optional[int] = None
     
     class Config:
         from_attributes = True
+
+class GrantListResponse(BaseModel):
+    """Response schema for list of grants"""
+    grants: List[GrantResponse]
+    total_count: int
+    skip: int
+    limit: int
+
+class GrantRecommendationResponse(BaseModel):
+    """Response schema for grant recommendations"""
+    grant: GrantResponse
+    match_score: float
+    match_reasons: List[str]
 
 class GrantList(BaseModel):
     """Schema for paginated grant list."""
