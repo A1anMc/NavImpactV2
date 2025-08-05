@@ -72,10 +72,10 @@ class GrantRepository(BaseRepository[Grant]):
             query = query.filter(Grant.location_eligibility.contains(criteria['location']))
         
         if criteria.get('min_amount'):
-            query = query.filter(Grant.amount >= criteria['min_amount'])
+            query = query.filter(Grant.min_amount >= criteria['min_amount'])
         
         if criteria.get('max_amount'):
-            query = query.filter(Grant.amount <= criteria['max_amount'])
+            query = query.filter(Grant.max_amount <= criteria['max_amount'])
         
         if criteria.get('status'):
             query = query.filter(Grant.status == criteria['status'])
