@@ -43,7 +43,7 @@ services:
       - key: DATABASE_POOL_RECYCLE
         value: "1800"
 
-  # Frontend Service
+  # Frontend Service - FIXED: Using npx serve for static export
   - type: web
     name: navimpact-web
     env: node
@@ -54,7 +54,7 @@ services:
       npm run build
     startCommand: |
       cd frontend
-      npm start
+      npx serve@latest out -p $PORT
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://navimpact-api.onrender.com
