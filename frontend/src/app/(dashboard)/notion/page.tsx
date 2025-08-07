@@ -20,7 +20,7 @@ import {
 const notionConnections = [
   {
     id: 1,
-    name: 'SGE Production Hub',
+    name: 'NavImpact Production Hub',
     type: 'Database',
     status: 'connected',
     lastSync: '2 minutes ago',
@@ -61,7 +61,7 @@ const recentNotionUpdates = [
     id: 1,
     title: 'Wild Hearts - Scene 12 Revision',
     type: 'update',
-    database: 'SGE Production Hub',
+    database: 'NavImpact Production Hub',
     time: '2 minutes ago',
     user: 'Shamita Siva',
   },
@@ -77,7 +77,7 @@ const recentNotionUpdates = [
     id: 3,
     title: 'Production Schedule - Q2 2025',
     type: 'update',
-    database: 'SGE Production Hub',
+    database: 'NavImpact Production Hub',
     time: '1 hour ago',
     user: 'Mish Rep',
   },
@@ -85,7 +85,7 @@ const recentNotionUpdates = [
     id: 4,
     title: 'Client Feedback - The Last Line',
     type: 'comment',
-    database: 'SGE Production Hub',
+    database: 'NavImpact Production Hub',
     time: '3 hours ago',
     user: 'Ursula Searle',
   },
@@ -100,6 +100,14 @@ export default function NotionPage() {
     setTimeout(() => {
       setIsConnecting(false);
     }, 2000);
+  };
+
+  const notionConfig = {
+    name: 'NavImpact Production Hub',
+    description: 'Centralized project management and collaboration platform',
+    url: 'https://navimpact.notion.site',
+    apiKey: process.env.NEXT_PUBLIC_NOTION_API_KEY || '',
+    databaseId: process.env.NEXT_PUBLIC_NOTION_DATABASE_ID || '',
   };
 
   return (

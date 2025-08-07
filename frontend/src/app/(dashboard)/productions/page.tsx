@@ -53,11 +53,11 @@ const productions = [
       { id: 3, name: 'Night Scene - Street', location: 'Collins Street', duration: '1 day', cast: ['Lead Actor'], crew: ['DP', 'Camera Op', 'Sound', 'Gaffer'], status: 'pending' },
     ],
     crew: [
-      { name: 'Alan McCarthy', role: 'Director', email: 'alan@sge.com', phone: '+61 400 123 456', status: 'confirmed' },
-      { name: 'Harry Dog', role: 'Producer', email: 'harry@sge.com', phone: '+61 400 123 457', status: 'confirmed' },
-      { name: 'Clooney Cat', role: 'DP', email: 'clooney@sge.com', phone: '+61 400 123 458', status: 'confirmed' },
-      { name: 'John Camera', role: 'Camera Operator', email: 'john@sge.com', phone: '+61 400 123 459', status: 'pending' },
-      { name: 'Sarah Sound', role: 'Sound Recordist', email: 'sarah@sge.com', phone: '+61 400 123 460', status: 'confirmed' },
+      { name: 'Alan McCarthy', role: 'Director', email: 'alan@navimpact.com', phone: '+61 400 123 456', status: 'confirmed' },
+      { name: 'Harry Dog', role: 'Producer', email: 'harry@navimpact.com', phone: '+61 400 123 457', status: 'confirmed' },
+      { name: 'Clooney Cat', role: 'DP', email: 'clooney@navimpact.com', phone: '+61 400 123 458', status: 'confirmed' },
+      { name: 'John Camera', role: 'Camera Operator', email: 'john@navimpact.com', phone: '+61 400 123 459', status: 'pending' },
+      { name: 'Sarah Sound', role: 'Sound Recordist', email: 'sarah@navimpact.com', phone: '+61 400 123 460', status: 'confirmed' },
     ],
     cast: [
       { name: 'Emma Lead', role: 'Lead Actress', email: 'emma@talent.com', phone: '+61 400 123 461', status: 'confirmed' },
@@ -81,8 +81,8 @@ const productions = [
       { id: 2, name: 'Episode 2 - Interior', location: 'Studio Set', duration: '2 days', cast: ['Series Lead', 'Supporting Cast'], crew: ['DP', 'Camera Op', 'Sound', 'Gaffer'], status: 'in-progress' },
     ],
     crew: [
-      { name: 'Alan McCarthy', role: 'Director', email: 'alan@sge.com', phone: '+61 400 123 456', status: 'confirmed' },
-      { name: 'Harry Dog', role: 'Producer', email: 'harry@sge.com', phone: '+61 400 123 457', status: 'confirmed' },
+      { name: 'Alan McCarthy', role: 'Director', email: 'alan@navimpact.com', phone: '+61 400 123 456', status: 'confirmed' },
+      { name: 'Harry Dog', role: 'Producer', email: 'harry@navimpact.com', phone: '+61 400 123 457', status: 'confirmed' },
     ],
     cast: [
       { name: 'Lisa Series', role: 'Series Lead', email: 'lisa@talent.com', phone: '+61 400 123 463', status: 'confirmed' },
@@ -153,6 +153,14 @@ export default function ProductionsPage() {
       default: return 'bg-gray-400';
     }
   };
+
+  const teamMembers = [
+    { name: 'Alan McCarthy', role: 'Director', email: 'alan@navimpact.com', phone: '+61 400 123 456', status: 'confirmed' },
+    { name: 'Harry Dog', role: 'Producer', email: 'harry@navimpact.com', phone: '+61 400 123 457', status: 'confirmed' },
+    { name: 'Clooney Cat', role: 'DP', email: 'clooney@navimpact.com', phone: '+61 400 123 458', status: 'confirmed' },
+    { name: 'John Camera', role: 'Camera Operator', email: 'john@navimpact.com', phone: '+61 400 123 459', status: 'pending' },
+    { name: 'Sarah Sound', role: 'Sound Recordist', email: 'sarah@navimpact.com', phone: '+61 400 123 460', status: 'confirmed' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
