@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -7,30 +6,12 @@ from typing import List, Optional
 from app.core.deps import get_current_user, get_db
 from app.models.grant import Grant
 from app.models.user import User
-from app.schemas.grant import (
-    AIRecommendationRequest,
-    AIRecommendationResponse,
-    EnhancedGrantResponse,
-    GrantAnalytics,
-    GrantApplication,
-    GrantApplicationCreate,
-    GrantCreate,
-    GrantDashboard,
-    GrantExportRequest,
-    GrantExportResponse,
-    GrantFilters,
-    GrantList,
-    GrantMetrics,
-    GrantNote,
-    GrantNoteCreate,
-    GrantRecommendation,
-    GrantResponse,
-    GrantUpdate,
-    SavedSearch,
-    SavedSearchCreate,
-    SmartSearchRequest,
-    SmartSearchResponse,
-)
+from app.schemas.grant import (AIRecommendationRequest,
+                               AIRecommendationResponse, EnhancedGrantResponse,
+                               GrantAnalytics, GrantCreate, GrantDashboard,
+                               GrantExportRequest, GrantExportResponse,
+                               GrantList, GrantRecommendation, GrantResponse,
+                               SmartSearchRequest, SmartSearchResponse)
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy import and_, desc, func, or_
 from sqlalchemy.orm import Session
@@ -97,7 +78,6 @@ def get_grants(
     try:
         from app.db.session import get_engine
         from app.models.grant import Grant
-        from sqlalchemy import and_, or_
         from sqlalchemy.orm import sessionmaker
 
         engine = get_engine()
@@ -926,19 +906,18 @@ async def scrape_all_sources(
             try:
                 # Import and initialize scraper
                 if source == "australian_grants":
-                    from app.services.scrapers.australian_grants_scraper import (
-                        AustralianGrantsScraper,
-                    )
+                    from app.services.scrapers.australian_grants_scraper import \
+                        AustralianGrantsScraper
 
                     scraper = AustralianGrantsScraper(db)
                 elif source == "business_gov":
-                    from app.services.scrapers.business_gov import BusinessGovScraper
+                    from app.services.scrapers.business_gov import \
+                        BusinessGovScraper
 
                     scraper = BusinessGovScraper(db)
                 elif source == "media_investment":
-                    from app.services.scrapers.media_investment_scraper import (
-                        MediaInvestmentScraper,
-                    )
+                    from app.services.scrapers.media_investment_scraper import \
+                        MediaInvestmentScraper
 
                     scraper = MediaInvestmentScraper(db)
                 else:
@@ -1010,19 +989,18 @@ async def scrape_specific_source(
         # Import and initialize scraper
         try:
             if source == "australian_grants":
-                from app.services.scrapers.australian_grants_scraper import (
-                    AustralianGrantsScraper,
-                )
+                from app.services.scrapers.australian_grants_scraper import \
+                    AustralianGrantsScraper
 
                 scraper = AustralianGrantsScraper(db)
             elif source == "business_gov":
-                from app.services.scrapers.business_gov import BusinessGovScraper
+                from app.services.scrapers.business_gov import \
+                    BusinessGovScraper
 
                 scraper = BusinessGovScraper(db)
             elif source == "media_investment":
-                from app.services.scrapers.media_investment_scraper import (
-                    MediaInvestmentScraper,
-                )
+                from app.services.scrapers.media_investment_scraper import \
+                    MediaInvestmentScraper
 
                 scraper = MediaInvestmentScraper(db)
             else:

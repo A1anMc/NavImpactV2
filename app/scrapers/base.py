@@ -1,17 +1,12 @@
 import re
 from abc import abstractmethod
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
-from app.interfaces.grant_scraper import (
-    GrantScraperInterface,
-    HttpClientInterface,
-    HttpError,
-    LoggerInterface,
-    ScrapingError,
-)
+from app.interfaces.grant_scraper import (GrantScraperInterface,
+                                          HttpClientInterface, HttpError,
+                                          LoggerInterface, ScrapingError)
 from app.models.grant import Grant
-from bs4 import BeautifulSoup
 
 
 class BaseGrantScraper(GrantScraperInterface):
@@ -70,7 +65,6 @@ class BaseGrantScraper(GrantScraperInterface):
         Subclasses implement specific parsing logic.
         This is where the specific HTML parsing happens.
         """
-        pass
 
     def _get_headers(self) -> Dict[str, str]:
         """Common headers for all scrapers"""

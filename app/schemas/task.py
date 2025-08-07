@@ -23,8 +23,6 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     """Schema for creating tasks."""
 
-    pass
-
 
 class TaskUpdate(BaseModel):
     """Schema for updating tasks."""
@@ -119,8 +117,6 @@ class TimeEntryBase(BaseModel):
 
 class TimeEntryCreate(TimeEntryBase):
     """Schema for creating a new time entry."""
-
-    pass
 
 
 class TimeEntryResponse(TimeEntryBase):

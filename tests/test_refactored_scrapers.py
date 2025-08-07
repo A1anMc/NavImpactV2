@@ -2,20 +2,15 @@ from datetime import datetime
 from unittest.mock import MagicMock, Mock
 
 import pytest
-from app.interfaces.grant_scraper import (
-    GrantScraperInterface,
-    HttpClientInterface,
-    HttpResponse,
-    LoggerInterface,
-)
+from app.interfaces.grant_scraper import (GrantScraperInterface,
+                                          HttpClientInterface, HttpResponse,
+                                          LoggerInterface)
 from app.models.grant import Grant
 from app.scrapers.base import BaseGrantScraper
 from app.scrapers.screen_australia import ScreenAustraliaGrantScraper
-from app.services.grant_scraping_service import (
-    GrantScrapingService,
-    ScrapingResult,
-    ScrapingSummary,
-)
+from app.services.grant_scraping_service import (GrantScrapingService,
+                                                 ScrapingResult,
+                                                 ScrapingSummary)
 
 
 class TestRefactoredScrapers:
@@ -290,7 +285,8 @@ class TestRefactoredScrapers:
 
     def test_create_grant_scraping_service_factory(self, mock_http_client, mock_logger):
         """Test the factory function for creating scraping service"""
-        from app.services.grant_scraping_service import create_grant_scraping_service
+        from app.services.grant_scraping_service import \
+            create_grant_scraping_service
 
         service = create_grant_scraping_service(mock_http_client, mock_logger)
 

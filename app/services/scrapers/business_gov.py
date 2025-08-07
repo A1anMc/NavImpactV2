@@ -4,7 +4,7 @@ import random
 import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 from app.models.grant import Grant
 from bs4 import BeautifulSoup

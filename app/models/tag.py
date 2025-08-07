@@ -1,7 +1,5 @@
-from datetime import datetime
-
 from app.db.base_class import Base
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
 # Association tables

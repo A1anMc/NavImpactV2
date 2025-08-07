@@ -1,13 +1,11 @@
 """Database initialization module with enhanced error handling."""
 
 import logging
-import time
 
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import get_engine, get_session_local
 from sqlalchemy import inspect, text
-from sqlalchemy.exc import SQLAlchemyError
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,10 @@
 import os
 from pathlib import Path
-from typing import List
 
 from app.core.config import settings
 from dotenv import load_dotenv
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel, EmailStr
 
 load_dotenv()
 

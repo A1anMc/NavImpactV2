@@ -1,5 +1,3 @@
-from typing import Any, Dict, List
-
 from app.core.deps import get_db
 from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session

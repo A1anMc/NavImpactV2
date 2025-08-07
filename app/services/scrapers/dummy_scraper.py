@@ -1,7 +1,7 @@
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import List
 
 from app.models.grant import Grant
 from app.services.scrapers.base_scraper import BaseScraper

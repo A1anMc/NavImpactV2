@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 
@@ -182,10 +182,10 @@ class Settings:
 
     # Trusted Hosts (for production and staging)
     TRUSTED_HOSTS: List[str] = [
-        "navimpact-api.onrender.com", 
+        "navimpact-api.onrender.com",
         "navimpact-api-staging.onrender.com",
-        "localhost", 
-        "127.0.0.1"
+        "localhost",
+        "127.0.0.1",
     ]
 
     # External domains allowed for scraping

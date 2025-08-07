@@ -1,9 +1,8 @@
 import logging
-from datetime import datetime
 from typing import Generator, Optional
 
 from app.core.config import settings
-from app.db.session import get_last_connection_error, get_session_local
+from app.db.session import get_session_local
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt

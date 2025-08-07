@@ -6,17 +6,7 @@ from datetime import datetime, timedelta
 
 from app.core.security import get_password_hash
 from app.db.session import get_db
-from app.models.base import (
-    Grant,
-    Project,
-    Reaction,
-    Tag,
-    Task,
-    TaskComment,
-    TeamMember,
-    TimeEntry,
-    User,
-)
+from app.models.base import Grant, Project, Tag, Task, TeamMember, User
 from sqlalchemy.orm import Session
 
 

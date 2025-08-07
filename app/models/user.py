@@ -1,16 +1,6 @@
-from datetime import datetime
-
 from app.db.base_class import Base
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-    func,
-)
+from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
+                        Text, func)
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import relationship
 

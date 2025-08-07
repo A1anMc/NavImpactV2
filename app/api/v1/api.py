@@ -1,23 +1,8 @@
-from app.api.v1.endpoints import (
-    auth,
-    comments,
-    debug,
-    grants,
-    health,
-    impact,
-    media,
-    notion,
-    projects,
-    scraper_status,
-    settings,
-    sge_media,
-    sge_media_health,
-    social_media,
-    tags,
-    tasks,
-    time_logs,
-    users,
-)
+from app.api.v1.endpoints import (auth, comments, debug, grants, health,
+                                  impact, media, ml_analytics, notion,
+                                  performance, projects, scraper_status,
+                                  settings, sge_media, sge_media_health,
+                                  social_media, tags, tasks, time_logs, users)
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -34,6 +19,16 @@ api_router.include_router(impact.router, prefix="/impact", tags=["impact"])
 api_router.include_router(media.router, prefix="/media", tags=["media"])
 api_router.include_router(time_logs.router, prefix="/time-logs", tags=["time-logs"])
 api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
+
+# Performance Monitoring
+api_router.include_router(
+    performance.router, prefix="/performance", tags=["performance"]
+)
+
+# ML Analytics
+api_router.include_router(
+    ml_analytics.router, prefix="/ml-analytics", tags=["ml-analytics"]
+)
 
 # SGE Media Module
 api_router.include_router(sge_media.router, prefix="/sge-media", tags=["sge-media"])

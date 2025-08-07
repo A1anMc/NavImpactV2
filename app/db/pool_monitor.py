@@ -8,7 +8,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from threading import Lock
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from app.core.config import settings
 from sqlalchemy.pool import QueuePool

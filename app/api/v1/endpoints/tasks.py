@@ -9,11 +9,6 @@ from app.models.task import Task, TaskPriority, TaskStatus
 from app.models.task_comment import TaskComment
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskResponse
-from app.schemas.task_comment import (
-    TaskCommentCreate,
-    TaskCommentResponse,
-    TaskCommentUpdate,
-)
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -67,17 +62,50 @@ async def create_task(
 
 
 @router.get("/")
-async def list_tasks(db: Session = Depends(get_db)):
-    """List tasks endpoint."""
-    # Placeholder for list tasks logic
-    return {"message": "List tasks endpoint"}
+async def list_tasks(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    status: TaskStatus = None,
+    priority: TaskPriority = None,
+    project_id: int = None,
+):
+    """List tasks with filtering and pagination."""
+    query = db.query(Task)
+
+    # Apply filters
+    if status:
+        query = query.filter(Task.status == status)
+    if priority:
+        query = query.filter(Task.priority == priority)
+    if project_id:
+        query = query.filter(Task.project_id == project_id)
+
+    # Get total count
+    total = query.count()
+
+    # Apply pagination
+    tasks = query.offset(skip).limit(limit).all()
+
+    return {
+        "items": tasks,
+        "total": total,
+        "page": (skip // limit) + 1,
+        "size": limit,
+        "has_next": skip + limit < total,
+        "has_prev": skip > 0,
+    }
 
 
 @router.get("/{task_id}")
 async def get_task(task_id: int, db: Session = Depends(get_db)):
-    """Get task by ID endpoint."""
-    # Placeholder for get task logic
-    return {"message": "Get task endpoint"}
+    """Get task by ID."""
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
+        )
+    return task
 
 
 # Comment endpoints moved to app/api/v1/endpoints/comments.py

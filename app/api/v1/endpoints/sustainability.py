@@ -3,34 +3,24 @@ from typing import List, Optional
 
 from app.core.auth import get_current_user
 from app.db.session import get_db
-from app.models.sustainability import (
-    ActionPlan,
-    AssuranceLog,
-    PerformanceTarget,
-    SustainabilityMetric,
-    SustainabilityPolicy,
-)
+from app.models.sustainability import (ActionPlan, AssuranceLog,
+                                       PerformanceTarget, SustainabilityMetric,
+                                       SustainabilityPolicy)
 from app.models.user import User
-from app.schemas.sustainability import (
-    ActionPlan,
-    ActionPlanCreate,
-    ActionPlanUpdate,
-    AssuranceLog,
-    AssuranceLogCreate,
-    AssuranceLogUpdate,
-    ESRSDashboard,
-    PerformanceTarget,
-    PerformanceTargetCreate,
-    PerformanceTargetUpdate,
-    SustainabilityExport,
-    SustainabilityMetric,
-    SustainabilityMetricCreate,
-    SustainabilityMetricUpdate,
-    SustainabilityOverview,
-    SustainabilityPolicy,
-    SustainabilityPolicyCreate,
-    SustainabilityPolicyUpdate,
-)
+from app.schemas.sustainability import (ActionPlan, ActionPlanCreate,
+                                        ActionPlanUpdate, AssuranceLog,
+                                        AssuranceLogCreate, ESRSDashboard,
+                                        PerformanceTarget,
+                                        PerformanceTargetCreate,
+                                        PerformanceTargetUpdate,
+                                        SustainabilityExport,
+                                        SustainabilityMetric,
+                                        SustainabilityMetricCreate,
+                                        SustainabilityMetricUpdate,
+                                        SustainabilityOverview,
+                                        SustainabilityPolicy,
+                                        SustainabilityPolicyCreate,
+                                        SustainabilityPolicyUpdate)
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 

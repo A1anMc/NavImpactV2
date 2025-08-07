@@ -8,29 +8,23 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from app.core.deps import get_current_user, get_db
-from app.models.sge_media import (
-    SgeClientAccess,
-    SgeDistributionLog,
-    SgeImpactStory,
-    SgeMediaProject,
-    SgePerformanceMetrics,
-)
+from app.models.sge_media import (SgeClientAccess, SgeDistributionLog,
+                                  SgeImpactStory, SgeMediaProject,
+                                  SgePerformanceMetrics)
 from app.models.user import User
-from app.schemas.sge_media import (
-    MediaDashboardResponse,
-    MediaImpactReportResponse,
-    SgeClientAccessCreate,
-    SgeClientAccessResponse,
-    SgeDistributionLogCreate,
-    SgeDistributionLogResponse,
-    SgeImpactStoryCreate,
-    SgeImpactStoryResponse,
-    SgeMediaProjectCreate,
-    SgeMediaProjectResponse,
-    SgeMediaProjectUpdate,
-    SgePerformanceMetricsCreate,
-    SgePerformanceMetricsResponse,
-)
+from app.schemas.sge_media import (MediaDashboardResponse,
+                                   MediaImpactReportResponse,
+                                   SgeClientAccessCreate,
+                                   SgeClientAccessResponse,
+                                   SgeDistributionLogCreate,
+                                   SgeDistributionLogResponse,
+                                   SgeImpactStoryCreate,
+                                   SgeImpactStoryResponse,
+                                   SgeMediaProjectCreate,
+                                   SgeMediaProjectResponse,
+                                   SgeMediaProjectUpdate,
+                                   SgePerformanceMetricsCreate,
+                                   SgePerformanceMetricsResponse)
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 

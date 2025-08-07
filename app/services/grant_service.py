@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, List
 
 from app.interfaces.notification_service import NotificationServiceInterface
 from app.models.grant import Grant
 from app.models.user import User
 from app.repositories.grant_repository import GrantRepository
-from sqlalchemy.orm import Session
 
 
 class GrantService:
@@ -238,10 +237,6 @@ class GrantService:
 class GrantNotFoundError(Exception):
     """Raised when a grant is not found"""
 
-    pass
-
 
 class GrantAccessDeniedError(Exception):
     """Raised when user cannot access a grant"""
-
-    pass

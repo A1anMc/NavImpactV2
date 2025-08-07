@@ -5,34 +5,23 @@ Updated: 2025-01-27 - Full production deployment for grants system
 """
 
 import logging
-import os
-import sys
 import time
-import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.core.error_handlers import setup_error_handlers
-
 # Import Base and models
 from app.db.base import Base  # noqa: F401
-from app.db.init_db import get_db_info, init_db, validate_database_config
+from app.db.init_db import init_db, validate_database_config
 from app.db.session import close_database, get_engine
 from app.models.grant import Grant  # noqa: F401
 from app.models.metric import Metric  # noqa: F401
 from app.models.program_logic import ProgramLogic  # noqa: F401
 from app.models.project import Project  # noqa: F401
-
 # SGE Media Module Models
-from app.models.sge_media import (  # noqa: F401
-    SgeClientAccess,
-    SgeDistributionLog,
-    SgeImpactStory,
-    SgeMediaProject,
-    SgePerformanceMetrics,
-)
+from app.models.sge_media import SgeClientAccess  # noqa: F401
 from app.models.task import Task  # noqa: F401
 from app.models.task_comment import TaskComment  # noqa: F401
 from app.models.team_member import TeamMember  # noqa: F401
@@ -42,7 +31,6 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from starlette.middleware.sessions import SessionMiddleware
 
 # Configure logging with production-safe format
 logging.basicConfig(

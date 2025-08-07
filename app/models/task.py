@@ -5,19 +5,9 @@ from typing import Dict, List
 from app.db.base_class import Base
 from app.models.enums import TaskPriority, TaskStatus
 from app.models.task_tags import task_tags
-from sqlalchemy import (
-    JSON,
-    Column,
-    DateTime,
-)
+from sqlalchemy import JSON, Column, DateTime
 from sqlalchemy import Enum as SQLAlchemyEnum
-from sqlalchemy import (
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-    func,
-)
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 

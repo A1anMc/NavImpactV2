@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from app.models.grant import Grant
 from sqlalchemy import and_, asc, desc, or_

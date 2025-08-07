@@ -5,11 +5,8 @@ import pytest
 from app.models.grant import Grant
 from app.models.user import User
 from app.repositories.grant_repository import GrantRepository
-from app.services.grant_service import (
-    GrantAccessDeniedError,
-    GrantNotFoundError,
-    GrantService,
-)
+from app.services.grant_service import (GrantAccessDeniedError,
+                                        GrantNotFoundError, GrantService)
 from sqlalchemy.orm import Session
 
 

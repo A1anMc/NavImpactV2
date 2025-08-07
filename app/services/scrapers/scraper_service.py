@@ -3,14 +3,16 @@ import logging
 from typing import Dict, List, Type
 
 from app.models.scraper_log import ScraperLog
-from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+from app.services.scrapers.australian_grants_scraper import \
+    AustralianGrantsScraper
 from app.services.scrapers.base_scraper import BaseScraper
 from app.services.scrapers.business_gov import BusinessGovScraper
 from app.services.scrapers.council_scraper import CouncilScraper
 from app.services.scrapers.current_grants_scraper import CurrentGrantsScraper
 from app.services.scrapers.dummy_scraper import DummyScraper
 from app.services.scrapers.grantconnect import GrantConnectScraper
-from app.services.scrapers.media_investment_scraper import MediaInvestmentScraper
+from app.services.scrapers.media_investment_scraper import \
+    MediaInvestmentScraper
 from app.services.scrapers.philanthropic_scraper import PhilanthropicScraper
 from sqlalchemy.orm import Session
 

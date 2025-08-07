@@ -1,7 +1,8 @@
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from app.services.scrapers.australian_grants_scraper import AustralianGrantsScraper
+from app.services.scrapers.australian_grants_scraper import \
+    AustralianGrantsScraper
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 

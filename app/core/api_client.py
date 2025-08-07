@@ -4,14 +4,12 @@ Handles all external API calls with reliability and monitoring
 """
 
 import asyncio
-import json
 import logging
 import time
-from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin, urlparse
 
 import aiohttp

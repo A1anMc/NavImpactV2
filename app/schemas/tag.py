@@ -18,8 +18,6 @@ class TagBase(BaseModel):
 class TagCreate(TagBase):
     """Schema for creating a new tag."""
 
-    pass
-
 
 class TagUpdate(BaseModel):
     """Schema for updating an existing tag."""

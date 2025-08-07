@@ -1,18 +1,12 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 from app.core.deps import get_current_user, get_db
 from app.core.security import get_password_hash
 from app.models.user import User
-from app.schemas.user import (
-    InternProfile,
-    SGETeamMember,
-    UserMentorUpdate,
-    UserProfile,
-    UserPublic,
-    UserStatusUpdate,
-    UserUpdate,
-)
+from app.schemas.user import (InternProfile, SGETeamMember, UserMentorUpdate,
+                              UserProfile, UserPublic, UserStatusUpdate,
+                              UserUpdate)
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
@@ -20,6 +14,39 @@ from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+@router.get("/")
+async def list_users(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    search: str = None,
+    current_user: User = Depends(get_current_user),
+):
+    """List users with filtering and pagination."""
+    query = db.query(User)
+
+    # Apply search filter
+    if search:
+        query = query.filter(
+            User.full_name.ilike(f"%{search}%") | User.email.ilike(f"%{search}%")
+        )
+
+    # Get total count
+    total = query.count()
+
+    # Apply pagination
+    users = query.offset(skip).limit(limit).all()
+
+    return {
+        "items": users,
+        "total": total,
+        "page": (skip // limit) + 1,
+        "size": limit,
+        "has_next": skip + limit < total,
+        "has_prev": skip > 0,
+    }
 
 
 # Temporary endpoint for creating SGE team members (placed first to avoid route conflicts)

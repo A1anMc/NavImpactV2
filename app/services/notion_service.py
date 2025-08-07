@@ -1,15 +1,10 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import List
 
-from app.schemas.notion import (
-    NotionConnection,
-    NotionConnectionCreate,
-    NotionConnectionUpdate,
-    NotionHealthStatus,
-    NotionSync,
-    NotionUpdate,
-)
+from app.schemas.notion import (NotionConnection, NotionConnectionCreate,
+                                NotionConnectionUpdate, NotionHealthStatus,
+                                NotionSync, NotionUpdate)
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)

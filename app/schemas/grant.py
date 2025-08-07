@@ -33,8 +33,6 @@ class GrantBase(BaseModel):
 class GrantCreate(GrantBase):
     """Schema for creating a new grant."""
 
-    pass
-
 
 class GrantUpdate(BaseModel):
     """Schema for updating an existing grant."""

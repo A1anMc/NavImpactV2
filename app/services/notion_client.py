@@ -3,16 +3,10 @@ Notion API Client Service
 Robust client for interacting with Notion API with retry logic and error handling
 """
 
-import asyncio
 import logging
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
-from urllib.parse import urlencode
+from typing import Any, Dict, List, Optional
 
-import httpx
 from app.core.api_client import APIClient, APIResponse, RetryConfig
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

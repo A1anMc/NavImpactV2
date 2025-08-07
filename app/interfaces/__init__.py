@@ -1,10 +1,5 @@
-from .grant_scraper import (
-    GrantScraperInterface,
-    HttpClientInterface,
-    HttpError,
-    LoggerInterface,
-    ScrapingError,
-)
+from .grant_scraper import (GrantScraperInterface, HttpClientInterface,
+                            HttpError, LoggerInterface, ScrapingError)
 from .notification_service import NotificationServiceInterface
 
 __all__ = [

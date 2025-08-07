@@ -3,20 +3,11 @@ from typing import List, Optional
 
 from app.core.deps import get_current_user, get_db
 from app.core.email import send_task_assignment_email
-from app.models.reaction import Reaction
-from app.models.task import Task, TaskComment
+from app.models.task import Task
 from app.models.user import User
-from app.schemas.task import (
-    CommentCreate,
-    CommentResponse,
-    CommentUpdate,
-    TaskCreate,
-    TaskResponse,
-    TaskUpdate,
-)
+from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.attributes import flag_modified
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

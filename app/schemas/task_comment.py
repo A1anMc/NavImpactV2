@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class TaskCommentBase(BaseModel):
@@ -15,8 +15,6 @@ class TaskCommentBase(BaseModel):
 
 class TaskCommentCreate(TaskCommentBase):
     """Schema for creating task comments."""
-
-    pass
 
 
 class TaskCommentUpdate(BaseModel):

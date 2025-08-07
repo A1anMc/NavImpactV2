@@ -5,49 +5,30 @@ FastAPI endpoints for Notion integration functionality
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
-from app.core.config import settings
 from app.db.session import get_db
-from app.models.notion_integration import (
-    NotionSyncLog,
-    NotionSyncMapping,
-    NotionWorkspace,
-)
+from app.models.notion_integration import (NotionSyncLog, NotionSyncMapping,
+                                           NotionWorkspace)
 from app.models.sge_media import SgeMediaProject
-from app.schemas.notion_integration import (
-    EntityType,
-    LogStatus,
-    NotionConnectionRequest,
-    NotionSyncDashboard,
-    NotionSyncLogFilters,
-    NotionSyncLogResponse,
-    NotionSyncMappingCreate,
-    NotionSyncMappingFilters,
-    NotionSyncMappingResponse,
-    NotionSyncMappingUpdate,
-    NotionSyncRequest,
-    NotionSyncStatus,
-    NotionTemplateRequest,
-    NotionWorkspaceCreate,
-    NotionWorkspaceFilters,
-    NotionWorkspaceResponse,
-    NotionWorkspaceUpdate,
-    OperationType,
-    PaginatedNotionSyncLogs,
-    PaginatedNotionSyncMappings,
-    PaginatedNotionWorkspaces,
-    SyncDirection,
-    SyncStatus,
-)
-from app.services.notion_client import (
-    NotionAPIClient,
-    NotionAPIError,
-    NotionSyncManager,
-    NotionTemplateManager,
-)
+from app.schemas.notion_integration import (EntityType, LogStatus,
+                                            NotionConnectionRequest,
+                                            NotionSyncDashboard,
+                                            NotionSyncRequest,
+                                            NotionSyncStatus,
+                                            NotionTemplateRequest,
+                                            NotionWorkspaceResponse,
+                                            NotionWorkspaceUpdate,
+                                            OperationType,
+                                            PaginatedNotionSyncLogs,
+                                            PaginatedNotionSyncMappings,
+                                            PaginatedNotionWorkspaces,
+                                            SyncDirection, SyncStatus)
+from app.services.notion_client import (NotionAPIClient, NotionAPIError,
+                                        NotionSyncManager,
+                                        NotionTemplateManager)
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)

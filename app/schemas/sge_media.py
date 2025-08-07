@@ -125,8 +125,6 @@ class SgeImpactStoryCreate(SgeImpactStoryBase):
 class SgeClientAccessCreate(SgeClientAccessBase):
     """Schema for creating new client access."""
 
-    pass
-
 
 # Update Schemas
 class SgeMediaProjectUpdate(BaseModel):

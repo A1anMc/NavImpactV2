@@ -30,7 +30,6 @@ class BaseScraper(ABC):
     @abstractmethod
     async def scrape(self) -> List[Dict[str, Any]]:
         """Scrape grants from the source. Must be implemented by subclasses."""
-        pass
 
     def normalize_grant_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize grant data to a standard format."""

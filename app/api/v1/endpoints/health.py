@@ -68,7 +68,6 @@ async def session_test():
     """Test session-based database access."""
     try:
         from app.core.deps import get_db
-        from sqlalchemy.orm import Session
 
         # Try to get a database session
         db_gen = get_db()

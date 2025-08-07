@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.models.grant import Grant
@@ -22,25 +21,21 @@ class GrantScraperInterface(ABC):
         Raises:
             ScrapingError: If scraping fails
         """
-        pass
 
     @property
     @abstractmethod
     def source_name(self) -> str:
         """Unique identifier for this grant source"""
-        pass
 
     @property
     @abstractmethod
     def source_url(self) -> str:
         """Base URL for this grant source"""
-        pass
 
     @property
     @abstractmethod
     def source_display_name(self) -> str:
         """Human-readable name for this grant source"""
-        pass
 
 
 class HttpClientInterface(ABC):
@@ -67,7 +62,6 @@ class HttpClientInterface(ABC):
         Raises:
             HttpError: If request fails
         """
-        pass
 
     @abstractmethod
     def post(
@@ -92,7 +86,6 @@ class HttpClientInterface(ABC):
         Raises:
             HttpError: If request fails
         """
-        pass
 
 
 class HttpResponse:
@@ -113,31 +106,23 @@ class LoggerInterface(ABC):
     @abstractmethod
     def info(self, message: str) -> None:
         """Log info message"""
-        pass
 
     @abstractmethod
     def warning(self, message: str) -> None:
         """Log warning message"""
-        pass
 
     @abstractmethod
     def error(self, message: str) -> None:
         """Log error message"""
-        pass
 
     @abstractmethod
     def debug(self, message: str) -> None:
         """Log debug message"""
-        pass
 
 
 class ScrapingError(Exception):
     """Raised when scraping fails"""
 
-    pass
-
 
 class HttpError(Exception):
     """Raised when HTTP request fails"""
-
-    pass

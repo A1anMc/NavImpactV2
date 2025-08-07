@@ -4,21 +4,9 @@ This module contains all the database models for the SGE Media Management module
 These models extend the existing NavImpact system without modifying core functionality.
 """
 
-from datetime import datetime
-
 from app.db.base_class import Base
-from sqlalchemy import (
-    Boolean,
-    Column,
-    Date,
-    DateTime,
-    ForeignKey,
-    Index,
-    Integer,
-    Numeric,
-    String,
-    Text,
-)
+from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, Index,
+                        Integer, Numeric, String, Text)
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func

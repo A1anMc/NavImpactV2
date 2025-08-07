@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 from app.db.session import get_db
 from app.schemas.notion import NotionConnection, NotionSync, NotionUpdate

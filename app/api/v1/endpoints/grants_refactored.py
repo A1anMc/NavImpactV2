@@ -4,16 +4,10 @@ from app.core.auth import get_current_user
 from app.db.base import get_db
 from app.models.user import User
 from app.repositories.grant_repository import GrantRepository
-from app.schemas.grant import (
-    GrantListResponse,
-    GrantRecommendationResponse,
-    GrantResponse,
-)
-from app.services.grant_service import (
-    GrantAccessDeniedError,
-    GrantNotFoundError,
-    GrantService,
-)
+from app.schemas.grant import (GrantListResponse, GrantRecommendationResponse,
+                               GrantResponse)
+from app.services.grant_service import (GrantAccessDeniedError,
+                                        GrantNotFoundError, GrantService)
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -33,7 +27,8 @@ def get_grant_service(
     """Dependency to get grant service with all dependencies"""
     # For now, we'll use a mock notification service
     # In production, this would be injected
-    from app.interfaces.notification_service import NotificationServiceInterface
+    from app.interfaces.notification_service import \
+        NotificationServiceInterface
 
     class MockNotificationService(NotificationServiceInterface):
         def send_notification(

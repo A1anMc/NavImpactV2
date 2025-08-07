@@ -1,5 +1,3 @@
-import os
-
 from app.core.deps import get_db
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session

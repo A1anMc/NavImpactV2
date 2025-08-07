@@ -1,13 +1,12 @@
-import json
 from datetime import datetime
 from typing import List, Optional
 
 from app.core.deps import get_db  # Use consistent database dependency
 from app.db.session import get_last_connection_error
 from app.models.project import Project
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 router = APIRouter()

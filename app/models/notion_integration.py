@@ -4,16 +4,8 @@ Handles workspace connections, sync mappings, and sync logs for Notion integrati
 """
 
 from app.db.base_class import Base
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-    Text,
-)
+from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Index, Integer,
+                        String, Text)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 

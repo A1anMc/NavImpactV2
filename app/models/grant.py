@@ -1,18 +1,6 @@
-from datetime import datetime
-
 from app.db.base_class import Base
-from sqlalchemy import (
-    JSON,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    Numeric,
-    String,
-    Text,
-    func,
-)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (JSON, Column, DateTime, Integer, Numeric, String, Text,
+                        func)
 
 
 class Grant(Base):

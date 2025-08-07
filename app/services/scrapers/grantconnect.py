@@ -15,7 +15,7 @@ class GrantConnectScraper(BaseScraper):
     def __init__(
         self, db_session: Session, http_session: Optional[aiohttp.ClientSession] = None
     ):
-        super().__init__(db_session, "grants.gov.au")
+        super().__init__(db_session, "grantconnect")
         self.http_session = http_session
         self.base_url = "https://www.grants.gov.au"
         self.search_url = f"{self.base_url}/api/v1/grants/search"

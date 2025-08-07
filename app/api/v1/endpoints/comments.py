@@ -7,11 +7,8 @@ from app.models.reaction import Reaction
 from app.models.task import Task
 from app.models.task_comment import TaskComment
 from app.models.user import User
-from app.schemas.task_comment import (
-    TaskCommentCreate,
-    TaskCommentResponse,
-    TaskCommentUpdate,
-)
+from app.schemas.task_comment import (TaskCommentCreate, TaskCommentResponse,
+                                      TaskCommentUpdate)
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 

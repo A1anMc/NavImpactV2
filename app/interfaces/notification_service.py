@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class NotificationServiceInterface(ABC):
@@ -23,7 +23,6 @@ class NotificationServiceInterface(ABC):
         Returns:
             bool: True if notification sent successfully
         """
-        pass
 
     @abstractmethod
     def send_grant_notification(
@@ -40,7 +39,6 @@ class NotificationServiceInterface(ABC):
         Returns:
             bool: True if notification sent successfully
         """
-        pass
 
     @abstractmethod
     def send_bulk_notification(
@@ -57,7 +55,6 @@ class NotificationServiceInterface(ABC):
         Returns:
             Dict[int, bool]: Mapping of user_id to success status
         """
-        pass
 
     @abstractmethod
     def get_user_notifications(
@@ -73,7 +70,6 @@ class NotificationServiceInterface(ABC):
         Returns:
             List of notification dictionaries
         """
-        pass
 
     @abstractmethod
     def mark_notification_read(self, notification_id: int, user_id: int) -> bool:
@@ -87,4 +83,3 @@ class NotificationServiceInterface(ABC):
         Returns:
             bool: True if marked successfully
         """
-        pass

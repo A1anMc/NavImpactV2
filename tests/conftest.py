@@ -15,7 +15,6 @@ setup_test_env()
 
 from app.core.auth import create_access_token, get_current_user
 from app.core.config import settings
-
 # Import all models to ensure proper initialization
 from app.db.base import Base
 from app.db.session import get_db
@@ -123,8 +122,8 @@ def client(db):
             pass  # Session cleanup is handled by db fixture
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as test_client:
-        yield test_client
+    test_client = TestClient(app=app)
+    yield test_client
     app.dependency_overrides.clear()
 
 
