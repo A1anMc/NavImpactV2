@@ -64,7 +64,8 @@ class GrantResponse(BaseModel):
     id: int
     title: str
     description: str
-    amount: Optional[int]
+    min_amount: Optional[int] = None
+    max_amount: Optional[int] = None
     deadline: Optional[datetime]
     source: str
     industry_focus: Optional[str]
@@ -141,7 +142,8 @@ class GrantData(BaseModel):
 
     id: int
     title: str
-    amount: Optional[float] = None
+    min_amount: Optional[float] = None
+    max_amount: Optional[float] = None
     deadline: Optional[datetime] = None
     status: str
     source: str
