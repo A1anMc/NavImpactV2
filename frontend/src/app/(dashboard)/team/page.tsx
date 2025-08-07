@@ -29,7 +29,8 @@ const navimpactTeamMembers = [
     department: 'Leadership',
     start_date: '2023-01-15',
     skills: ['Strategic Planning', 'Creative Direction', 'Team Leadership'],
-    projects: ['Wild Hearts', 'Around the Table', 'The Last Line']
+    projects: ['Wild Hearts', 'Around the Table', 'The Last Line'],
+    location: 'Melbourne, Australia'
   },
   {
     id: 2,
@@ -44,68 +45,69 @@ const navimpactTeamMembers = [
     department: 'Operations',
     start_date: '2023-02-01',
     skills: ['Production Management', 'Operations', 'Team Development'],
-    projects: ['Wild Hearts', 'Around the Table']
+    projects: ['Wild Hearts', 'Around the Table'],
+    location: 'Melbourne, Australia'
   },
   {
     id: 3,
     name: 'Shamita Siva',
     job_title: 'Creative Director',
-    organisation: 'Shadow Goose Entertainment',
+    organisation: 'NavImpact',
     bio: 'Crafting compelling narratives and visual storytelling. Expert in bringing stories to life through innovative cinematography.',
-    avatar_url: '/api/placeholder/40/40',
+    avatar: '/api/placeholder/40/40',
     current_status: 'active',
     skills: ['Creative Direction', 'Cinematography', 'Storytelling'],
     is_active: true,
     is_superuser: false,
-    email: 'shamita@shadowgoose.com',
+    email: 'shamita@navimpact.com',
     phone: '+61 400 123 458',
     location: 'Melbourne, Australia',
     projects: ['Wild Hearts', 'The Last Line'],
   },
   {
     id: 4,
-    full_name: 'Alan McCarthy',
+    name: 'Alan McCarthy',
     job_title: 'Impact Director',
-    organisation: 'Shadow Goose Entertainment',
+    organisation: 'NavImpact',
     bio: 'Measuring and maximizing social impact through cinematic storytelling. Ensuring every production drives meaningful change.',
-    avatar_url: '/api/placeholder/40/40',
+    avatar: '/api/placeholder/40/40',
     current_status: 'active',
     skills: ['Impact Measurement', 'Social Change', 'Data Analysis'],
     is_active: true,
     is_superuser: false,
-    email: 'alan@shadowgoose.com',
+    email: 'alan@navimpact.com',
     phone: '+61 400 123 459',
     location: 'Brisbane, Australia',
     projects: ['The Last Line', 'Impact Stories'],
   },
   {
     id: 5,
-    full_name: 'Mish Rep',
+    name: 'Mish Rep',
     job_title: 'Operations Officer',
-    organisation: 'Shadow Goose Entertainment',
+    organisation: 'NavImpact',
     bio: 'Ensuring smooth production operations and team coordination. Expert in logistics and project management.',
-    avatar_url: '/api/placeholder/40/40',
+    avatar: '/api/placeholder/40/40',
     current_status: 'active',
     skills: ['Operations', 'Project Management', 'Logistics'],
     is_active: true,
     is_superuser: false,
-    email: 'mish@shadowgoose.com',
+    email: 'mish@navimpact.com',
     phone: '+61 400 123 460',
     location: 'Perth, Australia',
     projects: ['Around the Table', 'Production Support'],
   },
   {
     id: 6,
-    full_name: 'Kiara Holt',
+    name: 'Kiara Holt',
     job_title: 'Production Intern',
-    organisation: 'Shadow Goose Entertainment',
-    bio: 'Learning the ropes of production while contributing fresh perspectives and energy to SGE projects.',
-    avatar_url: '/api/placeholder/40/40',
+    organisation: 'NavImpact',
+    bio: 'Learning the ropes of production while contributing fresh perspectives and energy to NavImpact projects.',
+    avatar: '/api/placeholder/40/40',
     current_status: 'active',
     skills: ['Production Support', 'Research', 'Creative Input'],
     is_active: true,
     is_superuser: false,
-    email: 'kiara@shadowgoose.com',
+    email: 'kiara@navimpact.com',
     phone: '+61 400 123 461',
     location: 'Melbourne, Australia',
     projects: ['The Last Line', 'General Support'],
@@ -197,7 +199,7 @@ export default function TeamPage() {
                         <Avatar className="h-12 w-12">
                           <AvatarImage src={member.avatar} alt={member.name} />
                           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {member.name.split(' ').map(n => n[0]).join('')}
+                            {member.name && member.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
@@ -239,7 +241,7 @@ export default function TeamPage() {
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-gray-900">Skills:</div>
                       <div className="flex flex-wrap gap-1">
-                        {member.skills.map((skill, index) => (
+                        {member.skills && member.skills.map((skill, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {skill}
                           </Badge>
@@ -250,7 +252,7 @@ export default function TeamPage() {
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-gray-900">Current Projects:</div>
                       <div className="flex flex-wrap gap-1">
-                        {member.projects.map((project, index) => (
+                        {member.projects && member.projects.map((project, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {project}
                           </Badge>
