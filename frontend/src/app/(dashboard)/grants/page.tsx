@@ -491,10 +491,23 @@ export default function GrantsPage() {
                         </Button>
                         <Button 
                           size="sm"
-                          onClick={() => router.push(`/grants/apply/${grant.id}`)}
+                          onClick={() => {
+                            console.log('Apply Now clicked for grant:', grant.id);
+                            window.location.href = `/grants/apply/${grant.id}/`;
+                          }}
                         >
                           <ArrowRightIcon className="h-4 w-4 mr-1" />
                           Apply Now
+                        </Button>
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            console.log('Test navigation clicked');
+                            window.location.href = '/grants/apply/1/';
+                          }}
+                        >
+                          Test Apply
                         </Button>
                       </div>
                     </CardContent>
