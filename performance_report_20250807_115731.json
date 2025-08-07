@@ -1,0 +1,121 @@
+{
+  "timestamp": "2025-08-07T11:57:31.120696",
+  "system_health": {
+    "status": "healthy",
+    "database": "connected",
+    "environment": "production",
+    "version": "1.0.0",
+    "timestamp": "2025-08-07T11:57:31.154897"
+  },
+  "performance_analysis": {
+    "total_endpoints": 11,
+    "successful_endpoints": 5,
+    "failed_endpoints": 6,
+    "success_rate": 45.45454545454545,
+    "average_response_time": 238.946,
+    "min_response_time": 213.3,
+    "max_response_time": 315.62,
+    "failed_endpoints_list": [
+      "/api/v1/users/",
+      "/api/v1/ml-analytics/insights",
+      "/api/v1/ml-analytics/data-quality",
+      "/api/v1/performance/metrics",
+      "/api/v1/grants/opportunities",
+      "/api/v1/grants/analytics"
+    ]
+  },
+  "endpoint_results": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "status_code": 200,
+      "response_time_ms": 315.62,
+      "success": true,
+      "timestamp": "2025-08-07T11:57:28.707740"
+    },
+    {
+      "endpoint": "/api/v1/projects/",
+      "method": "GET",
+      "status_code": 200,
+      "response_time_ms": 213.3,
+      "success": true,
+      "timestamp": "2025-08-07T11:57:28.921093"
+    },
+    {
+      "endpoint": "/api/v1/grants/",
+      "method": "GET",
+      "status_code": 200,
+      "response_time_ms": 233.99,
+      "success": true,
+      "timestamp": "2025-08-07T11:57:29.155134"
+    },
+    {
+      "endpoint": "/api/v1/tasks/",
+      "method": "GET",
+      "status_code": 200,
+      "response_time_ms": 214.5,
+      "success": true,
+      "timestamp": "2025-08-07T11:57:29.369685"
+    },
+    {
+      "endpoint": "/api/v1/tags/",
+      "method": "GET",
+      "status_code": 200,
+      "response_time_ms": 217.32,
+      "success": true,
+      "timestamp": "2025-08-07T11:57:29.587057"
+    },
+    {
+      "endpoint": "/api/v1/users/",
+      "method": "GET",
+      "status_code": 404,
+      "response_time_ms": 246.94,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:29.834048"
+    },
+    {
+      "endpoint": "/api/v1/ml-analytics/insights",
+      "method": "GET",
+      "status_code": 404,
+      "response_time_ms": 217.45,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:30.051559"
+    },
+    {
+      "endpoint": "/api/v1/ml-analytics/data-quality",
+      "method": "GET",
+      "status_code": 404,
+      "response_time_ms": 217.74,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:30.269360"
+    },
+    {
+      "endpoint": "/api/v1/performance/metrics",
+      "method": "GET",
+      "status_code": 404,
+      "response_time_ms": 221.5,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:30.490915"
+    },
+    {
+      "endpoint": "/api/v1/grants/opportunities",
+      "method": "GET",
+      "status_code": 422,
+      "response_time_ms": 211.74,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:30.702709"
+    },
+    {
+      "endpoint": "/api/v1/grants/analytics",
+      "method": "GET",
+      "status_code": 422,
+      "response_time_ms": 213.31,
+      "success": false,
+      "timestamp": "2025-08-07T11:57:30.916065"
+    }
+  ],
+  "recommendations": [
+    "\ud83d\udd27 Fix failed endpoints to improve reliability",
+    "\ud83d\udd0d Review 6 failed endpoints"
+  ]
+}

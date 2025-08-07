@@ -1,5 +1,5 @@
 from app.api.v1.endpoints import (auth, comments, debug, grants, health,
-                                  impact, media, ml_analytics, notion,
+                                  impact, media, ml_analytics, notion, okr_alignment,
                                   performance, projects, scraper_status,
                                   settings, sge_media, sge_media_health,
                                   social_media, tags, tasks, time_logs, users)
@@ -28,6 +28,11 @@ api_router.include_router(
 # ML Analytics
 api_router.include_router(
     ml_analytics.router, prefix="/ml-analytics", tags=["ml-analytics"]
+)
+
+# OKR Alignment
+api_router.include_router(
+    okr_alignment.router, prefix="/okr-alignment", tags=["okr-alignment"]
 )
 
 # SGE Media Module
