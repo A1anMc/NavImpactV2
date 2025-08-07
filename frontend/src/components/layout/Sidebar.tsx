@@ -58,9 +58,9 @@ export default function Sidebar() {
             {!collapsed && (
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <img src="/SGE_Main_Logo_White.svg" alt="SGE" className="w-6 h-6" />
+                  <img src="/favicon.svg" alt="NavImpact" className="w-6 h-6" />
                 </div>
-                <span className="text-lg font-bold text-gray-900">SGE</span>
+                <span className="text-lg font-bold text-gray-900">NavImpact</span>
               </div>
             )}
             <button
@@ -139,8 +139,8 @@ export default function Sidebar() {
         <div className="p-4 border-t border-gray-200">
           {!collapsed && (
             <div className="text-xs text-gray-500">
-              <p>Shadow Goose Entertainment</p>
-              <p>Production Management</p>
+              <p>NavImpact</p>
+              <p>Impact & Intelligence Platform</p>
             </div>
           )}
         </div>

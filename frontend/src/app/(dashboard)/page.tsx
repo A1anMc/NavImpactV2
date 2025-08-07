@@ -145,16 +145,16 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Image
-                    src="/SGE_Main_Logo_White.svg"
-                    alt="SGE Logo"
+                    src="/favicon.svg"
+                    alt="NavImpact Logo"
                     width={24}
                     height={24}
                     className="w-6 h-6"
                   />
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Shadow Goose Entertainment</h1>
-                  <p className="text-sm text-gray-500">Production Dashboard</p>
+                  <h1 className="text-xl font-semibold text-gray-900">NavImpact</h1>
+                  <p className="text-sm text-gray-500">Impact & Intelligence Platform</p>
                 </div>
               </div>
             </div>
