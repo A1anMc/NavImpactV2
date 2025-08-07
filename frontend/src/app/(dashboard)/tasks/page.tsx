@@ -234,7 +234,7 @@ export default function TasksPage() {
                       <div className="font-medium text-gray-900 mt-1 flex items-center">
                         <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">
                           <span className="text-xs font-medium text-green-700">
-                            {task.assignee.split(' ').map(n => n[0]).join('')}
+                            {task.assignee && task.assignee.split(' ').map(n => n[0]).join('')}
                           </span>
                         </div>
                         {task.assignee}

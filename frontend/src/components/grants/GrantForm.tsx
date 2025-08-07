@@ -51,21 +51,21 @@ export function GrantForm({ grant, onClose }: GrantFormProps) {
       deadline: formData.get('deadline') as string,
       industry_focus: formData.get('industry_focus') as string,
       location_eligibility: formData.get('location_eligibility') as string,
-      org_type_eligible: (formData.get('org_type_eligible') as string)
+      org_type_eligible: (formData.get('org_type_eligible') as string || '')
         .split(',')
         .map(type => type.trim())
         .filter(Boolean),
-      funding_purpose: (formData.get('funding_purpose') as string)
+      funding_purpose: (formData.get('funding_purpose') as string || '')
         .split(',')
         .map(purpose => purpose.trim())
         .filter(Boolean),
-      audience_tags: (formData.get('audience_tags') as string)
+      audience_tags: (formData.get('audience_tags') as string || '')
         .split(',')
         .map(tag => tag.trim())
         .filter(Boolean),
       status: formData.get('status') as 'draft' | 'open' | 'closed' | 'archived',
       notes: formData.get('notes') as string,
-      tags: (formData.get('tags') as string)
+      tags: (formData.get('tags') as string || '')
         .split(',')
         .map(tag => tag.trim())
         .filter(Boolean),

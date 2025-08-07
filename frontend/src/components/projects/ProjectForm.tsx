@@ -156,7 +156,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                     onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as ProjectStatus }))}
                     className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    {Object.entries(PROJECT_STATUSES).map(([key, config]) => (
+                    {Object.entries(PROJECT_STATUSES || {}).map(([key, config]) => (
                       <option key={key} value={key}>
                         {config.label}
                       </option>
@@ -231,7 +231,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                   Impact Types *
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {Object.entries(IMPACT_TYPES).map(([key, config]) => (
+                  {Object.entries(IMPACT_TYPES || {}).map(([key, config]) => (
                     <button
                       key={key}
                       type="button"
@@ -262,7 +262,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                   Victorian Framework Alignment
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {Object.entries(VICTORIAN_FRAMEWORKS).map(([key, config]) => (
+                  {Object.entries(VICTORIAN_FRAMEWORKS || {}).map(([key, config]) => (
                     <button
                       key={key}
                       type="button"
@@ -285,7 +285,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                   UN Sustainable Development Goals
                 </label>
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                  {sdgOptions.map((sdg) => (
+                  {sdgOptions?.map((sdg) => (
                     <button
                       key={sdg}
                       type="button"

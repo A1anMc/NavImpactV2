@@ -48,7 +48,7 @@ export default function ProfilePage() {
               <Avatar className="h-24 w-24 border-4 border-white/20">
                 <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name} />
                 <AvatarFallback className="bg-white/20 text-white text-2xl">
-                  {userProfile.full_name.split(' ').map(n => n[0]).join('')}
+                  {userProfile.full_name && userProfile.full_name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">

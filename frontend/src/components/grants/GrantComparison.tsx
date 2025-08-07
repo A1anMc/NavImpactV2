@@ -232,7 +232,7 @@ export default function GrantComparison({ grants, onClose }: GrantComparisonProp
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select a grant...</option>
-                  {grants.map((grant) => (
+                  {grants?.map((grant) => (
                     <option key={grant.id} value={grant.id}>
                       {grant.title}
                     </option>
@@ -257,7 +257,7 @@ export default function GrantComparison({ grants, onClose }: GrantComparisonProp
         {showComparison && comparisonMetrics.length > 0 && (
           <div className="flex-1 overflow-y-auto p-6 max-h-[60vh]">
             <div className="space-y-6">
-              {comparisonMetrics.map((metric, index) => (
+              {comparisonMetrics?.map((metric, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                     <h4 className="font-medium text-gray-900">{metric.label}</h4>

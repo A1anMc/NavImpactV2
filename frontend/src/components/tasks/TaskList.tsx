@@ -161,7 +161,7 @@ export default function TaskList({ tasks, users, onEdit, onDelete, onStatusChang
           className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="">All Assignees</option>
-          {users.map(user => (
+          {users?.map(user => (
             <option key={user.id} value={user.id}>{user.full_name}</option>
           ))}
         </select>
@@ -201,7 +201,7 @@ export default function TaskList({ tasks, users, onEdit, onDelete, onStatusChang
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredAndSortedTasks.map(task => (
+            {filteredAndSortedTasks?.map(task => (
               <tr key={task.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{task.title}</div>

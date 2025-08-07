@@ -382,7 +382,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                     <div>
                       <h4 className="font-medium text-gray-900 mb-4">Victorian Government Priorities</h4>
                       <div className="space-y-3">
-                        {Object.entries(frameworkAlignment.victorian_alignment).map(([framework, score]) => {
+                        {Object.entries(frameworkAlignment?.victorian_alignment || {}).map(([framework, score]) => {
                           if (framework === 'total_score') return null;
                           return (
                             <div key={framework} className="flex items-center justify-between">
@@ -408,7 +408,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                     <div>
                       <h4 className="font-medium text-gray-900 mb-4">UN Sustainable Development Goals</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(frameworkAlignment.sdg_alignment).map(([sdg, score]) => {
+                        {Object.entries(frameworkAlignment?.sdg_alignment || {}).map(([sdg, score]) => {
                           if (sdg === 'total_score') return null;
                           return (
                             <div key={sdg} className="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
@@ -434,7 +434,7 @@ export const ImpactDashboard: React.FC<ImpactDashboardProps> = ({ project, isPor
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {Object.entries(impactScore.breakdown).map(([metric, score]) => (
+                    {Object.entries(impactScore?.breakdown || {}).map(([metric, score]) => (
                       <div key={metric} className="text-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="text-2xl font-bold text-gray-900 mb-1">{Math.round(score)}</div>
                         <div className="text-sm text-gray-600 capitalize mb-2">

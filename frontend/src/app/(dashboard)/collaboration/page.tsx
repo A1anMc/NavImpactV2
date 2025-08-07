@@ -176,7 +176,7 @@ export default function CollaborationPage() {
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={member.avatar} alt={member.name} />
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                              {member.name.split(' ').map(n => n[0]).join('')}
+                              {member.name && member.name.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
                           <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
