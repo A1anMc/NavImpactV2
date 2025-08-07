@@ -106,7 +106,7 @@ export default function Sidebar() {
                       )}
                     </div>
                   )}
-                </Link>
+                </a>
 
                 {/* Grant Sub-navigation */}
                 {item.href === '/grants' && showGrantSubNav && !collapsed && (

@@ -25,9 +25,7 @@ const nextConfig = {
   assetPrefix: '',
   
   // Disable server-side features for static export
-  experimental: {
-    appDir: true,
-  },
+  // Note: appDir is now default in Next.js 13+
   
   // Simplified headers for debugging
   async headers() {
