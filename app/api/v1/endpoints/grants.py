@@ -128,40 +128,20 @@ def get_grants(
             grant_items = []
             for grant in grants:
                 grant_items.append(
-                    {
-                        "id": grant.id,
-                        "title": grant.title,
-                        "description": grant.description,
-                        "source": grant.source,
-                        "source_url": grant.source_url,
-                        "application_url": grant.application_url,
-                        "contact_email": grant.contact_email,
-                        "min_amount": (
-                            float(grant.min_amount) if grant.min_amount else None
-                        ),
-                        "max_amount": (
-                            float(grant.max_amount) if grant.max_amount else None
-                        ),
-                        "open_date": (
-                            grant.open_date.isoformat() if grant.open_date else None
-                        ),
-                        "deadline": (
-                            grant.deadline.isoformat() if grant.deadline else None
-                        ),
-                        "industry_focus": grant.industry_focus,
-                        "location_eligibility": grant.location_eligibility,
-                        "org_type_eligible": grant.org_type_eligible or [],
-                        "funding_purpose": grant.funding_purpose or [],
-                        "audience_tags": grant.audience_tags or [],
-                        "status": grant.status,
-                        "notes": grant.notes,
-                        "created_at": (
-                            grant.created_at.isoformat() if grant.created_at else None
-                        ),
-                        "updated_at": (
-                            grant.updated_at.isoformat() if grant.updated_at else None
-                        ),
-                    }
+                    GrantResponse(
+                        id=grant.id,
+                        title=grant.title,
+                        description=grant.description or "",
+                        min_amount=int(grant.min_amount) if grant.min_amount else None,
+                        max_amount=int(grant.max_amount) if grant.max_amount else None,
+                        deadline=grant.deadline,
+                        source=grant.source,
+                        industry_focus=grant.industry_focus,
+                        location_eligibility=grant.location_eligibility,
+                        status=grant.status,
+                        created_at=grant.created_at,
+                        updated_at=grant.updated_at,
+                    )
                 )
 
             return GrantList(
