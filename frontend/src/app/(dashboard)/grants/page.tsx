@@ -25,6 +25,7 @@ import {
 import { grantsApi } from '@/services/grants';
 import { Grant } from '@/types/models';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // High-Grade Production Grants Data
 const HIGH_GRADE_GRANTS: Grant[] = [
@@ -154,6 +155,7 @@ export default function GrantsPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [showGrantModal, setShowGrantModal] = useState(false);
+  const router = useRouter();
 
   // Use high-grade grants data for production
   useEffect(() => {
@@ -487,12 +489,13 @@ export default function GrantsPage() {
                           <EyeIcon className="h-4 w-4 mr-1" />
                           View Details
                         </Button>
-                        <Link href={`/grants/apply/${grant.id}`}>
-                          <Button size="sm">
-                            <ArrowRightIcon className="h-4 w-4 mr-1" />
-                            Apply Now
-                          </Button>
-                        </Link>
+                        <Button 
+                          size="sm"
+                          onClick={() => router.push(`/grants/apply/${grant.id}`)}
+                        >
+                          <ArrowRightIcon className="h-4 w-4 mr-1" />
+                          Apply Now
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -609,12 +612,10 @@ export default function GrantsPage() {
                 >
                   Close
                 </Button>
-                <Link href={`/grants/apply/${selectedGrant.id}`}>
-                  <Button>
-                    <ArrowRightIcon className="h-4 w-4 mr-2" />
-                    Start Application
-                  </Button>
-                </Link>
+                <Button onClick={() => router.push(`/grants/apply/${selectedGrant.id}`)}>
+                  <ArrowRightIcon className="h-4 w-4 mr-2" />
+                  Start Application
+                </Button>
               </div>
             </div>
           </div>
