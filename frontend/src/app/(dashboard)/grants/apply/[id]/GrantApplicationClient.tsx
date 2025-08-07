@@ -24,6 +24,7 @@ import {
   PauseIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { grantsApi } from '@/services/grants';
 import { Grant } from '@/types/models';
@@ -60,6 +61,16 @@ interface ApplicationData {
     targetAudience: string;
     marketingPlan: string;
     timeline: string;
+  };
+  aiAnalysis: {
+    uploadedDocuments: Array<{ name: string; type: string; content: string; analysis: string }>;
+    projectUrls: Array<{ url: string; analysis: string }>;
+    aiSuggestions: Array<string>;
+    generatedContent: {
+      projectDescription: string;
+      impactStatement: string;
+      budgetJustification: string;
+    };
   };
 }
 
@@ -98,6 +109,16 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       marketingPlan: '',
       timeline: '',
     },
+    aiAnalysis: {
+      uploadedDocuments: [],
+      projectUrls: [],
+      aiSuggestions: [],
+      generatedContent: {
+        projectDescription: '',
+        impactStatement: '',
+        budgetJustification: '',
+      },
+    },
   });
 
   // Fetch grant data from API
@@ -124,6 +145,14 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
   const applicationSteps = [
     {
       id: 1,
+      title: 'AI Analysis',
+      description: 'Upload documents and URLs for AI-powered grant writing assistance',
+      status: 'pending',
+      estimatedTime: '15 min',
+      aiSupport: true,
+    },
+    {
+      id: 2,
       title: 'Project Overview',
       description: 'Describe your project concept and creative vision',
       status: 'pending',
@@ -131,7 +160,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       aiSupport: true,
     },
     {
-      id: 2,
+      id: 3,
       title: 'Creative Team',
       description: 'List key personnel and their experience',
       status: 'pending',
@@ -139,7 +168,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       aiSupport: true,
     },
     {
-      id: 3,
+      id: 4,
       title: 'Budget Breakdown',
       description: 'Detailed budget with justification',
       status: 'pending',
@@ -147,7 +176,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       aiSupport: true,
     },
     {
-      id: 4,
+      id: 5,
       title: 'Impact Statement',
       description: 'Social and cultural impact of your project',
       status: 'pending',
@@ -155,7 +184,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       aiSupport: true,
     },
     {
-      id: 5,
+      id: 6,
       title: 'Distribution Strategy',
       description: 'How you plan to reach your audience',
       status: 'pending',
@@ -302,6 +331,274 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       case 1:
         return (
           <div className="space-y-6">
+            <div className="bg-blue-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-900 mb-4">AI-Powered Grant Writing Assistant</h3>
+              <p className="text-blue-800 mb-4">
+                Upload your project documents or provide URLs to help AI analyze your project and generate grant content.
+              </p>
+            </div>
+
+            {/* Document Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Upload Project Documents</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx,.txt,.rtf"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    files.forEach(file => {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const content = event.target?.result as string;
+                        const newDoc = {
+                          name: file.name,
+                          type: file.type,
+                          content: content,
+                          analysis: 'Analyzing document...'
+                        };
+                        setApplicationData(prev => ({
+                          ...prev,
+                          aiAnalysis: {
+                            ...prev.aiAnalysis,
+                            uploadedDocuments: [...prev.aiAnalysis.uploadedDocuments, newDoc]
+                          }
+                        }));
+                        
+                        // Simulate AI analysis
+                        setTimeout(() => {
+                          setApplicationData(prev => ({
+                            ...prev,
+                            aiAnalysis: {
+                              ...prev.aiAnalysis,
+                              uploadedDocuments: prev.aiAnalysis.uploadedDocuments.map(doc => 
+                                doc.name === file.name 
+                                  ? { ...doc, analysis: `AI Analysis: This document contains project planning information that can be used for grant writing. Key themes: ${file.name.includes('plan') ? 'Project planning and strategy' : 'Project documentation'}` }
+                                  : doc
+                              )
+                            }
+                          }));
+                        }, 2000);
+                      };
+                      reader.readAsText(file);
+                    });
+                  }}
+                  className="hidden"
+                  id="document-upload"
+                />
+                <label htmlFor="document-upload" className="cursor-pointer">
+                  <div className="space-y-2">
+                    <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto" />
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium text-blue-600 hover:text-blue-500">
+                        Click to upload
+                      </span>{' '}
+                      or drag and drop
+                    </div>
+                    <p className="text-xs text-gray-500">PDF, DOC, DOCX, TXT, RTF up to 10MB</p>
+                  </div>
+                </label>
+              </div>
+              
+              {/* Uploaded Documents */}
+              {applicationData.aiAnalysis.uploadedDocuments.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  <h4 className="font-medium text-gray-900">Uploaded Documents</h4>
+                  {applicationData.aiAnalysis.uploadedDocuments.map((doc, index) => (
+                    <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <DocumentTextIcon className="h-5 w-5 text-blue-500" />
+                          <span className="font-medium">{doc.name}</span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setApplicationData(prev => ({
+                              ...prev,
+                              aiAnalysis: {
+                                ...prev.aiAnalysis,
+                                uploadedDocuments: prev.aiAnalysis.uploadedDocuments.filter((_, i) => i !== index)
+                              }
+                            }));
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      {doc.analysis && (
+                        <p className="text-sm text-gray-600 mt-2">{doc.analysis}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* URL Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Project URLs</label>
+              <div className="space-y-3">
+                <div className="flex space-x-2">
+                  <Input
+                    placeholder="Enter project URL (e.g., website, social media, portfolio)"
+                    value={applicationData.aiAnalysis.projectUrls.find((_, i) => i === applicationData.aiAnalysis.projectUrls.length - 1)?.url || ''}
+                    onChange={(e) => {
+                      const urls = [...applicationData.aiAnalysis.projectUrls];
+                      if (urls.length === 0 || urls[urls.length - 1].url) {
+                        urls.push({ url: e.target.value, analysis: '' });
+                      } else {
+                        urls[urls.length - 1].url = e.target.value;
+                      }
+                      setApplicationData(prev => ({
+                        ...prev,
+                        aiAnalysis: {
+                          ...prev.aiAnalysis,
+                          projectUrls: urls
+                        }
+                      }));
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      const urls = [...applicationData.aiAnalysis.projectUrls];
+                      if (urls.length > 0 && urls[urls.length - 1].url) {
+                        // Simulate AI analysis of URL
+                        setTimeout(() => {
+                          setApplicationData(prev => ({
+                            ...prev,
+                            aiAnalysis: {
+                              ...prev.aiAnalysis,
+                              projectUrls: prev.aiAnalysis.projectUrls.map((url, i) => 
+                                i === prev.aiAnalysis.projectUrls.length - 1 
+                                  ? { ...url, analysis: `AI Analysis: This URL contains project information that can be used for grant writing. Key insights: Project showcase and portfolio details.` }
+                                  : url
+                              )
+                            }
+                          }));
+                        }, 1500);
+                      }
+                    }}
+                  >
+                    Analyze
+                  </Button>
+                </div>
+                
+                {/* Added URLs */}
+                {applicationData.aiAnalysis.projectUrls.filter(url => url.url).map((url, index) => (
+                  <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <GlobeAltIcon className="h-5 w-5 text-green-500" />
+                        <a href={url.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          {url.url}
+                        </a>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setApplicationData(prev => ({
+                            ...prev,
+                            aiAnalysis: {
+                              ...prev.aiAnalysis,
+                              projectUrls: prev.aiAnalysis.projectUrls.filter((_, i) => i !== index)
+                            }
+                          }));
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    {url.analysis && (
+                      <p className="text-sm text-gray-600 mt-2">{url.analysis}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Suggestions */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">AI Suggestions</label>
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="space-y-2">
+                  {applicationData.aiAnalysis.aiSuggestions.length > 0 ? (
+                    applicationData.aiAnalysis.aiSuggestions.map((suggestion, index) => (
+                      <div key={index} className="flex items-start space-x-2">
+                        <LightBulbIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
+                        <span className="text-sm text-yellow-800">{suggestion}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-yellow-800">
+                      Upload documents or add URLs to get AI suggestions for your grant application.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Generate Content Button */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h4 className="font-medium text-green-900 mb-2">Generate Grant Content</h4>
+              <p className="text-sm text-green-800 mb-4">
+                Use AI to generate project descriptions, impact statements, and budget justifications based on your uploaded materials.
+              </p>
+              <Button
+                onClick={() => {
+                  // Simulate AI content generation
+                  setApplicationData(prev => ({
+                    ...prev,
+                    aiAnalysis: {
+                      ...prev.aiAnalysis,
+                      generatedContent: {
+                        projectDescription: 'AI-generated project description based on your uploaded materials...',
+                        impactStatement: 'AI-generated impact statement highlighting social and cultural benefits...',
+                        budgetJustification: 'AI-generated budget justification with detailed cost breakdown...'
+                      }
+                    }
+                  }));
+                }}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <SparklesIcon className="h-4 w-4 mr-2" />
+                Generate Content
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6">
+            {/* AI Generated Content */}
+            {applicationData.aiAnalysis.generatedContent.projectDescription && (
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-medium text-green-900 mb-2">AI-Generated Project Description</h4>
+                <p className="text-sm text-green-800 mb-3">
+                  {applicationData.aiAnalysis.generatedContent.projectDescription}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setApplicationData(prev => ({
+                      ...prev,
+                      projectOverview: {
+                        ...prev.projectOverview,
+                        description: applicationData.aiAnalysis.generatedContent.projectDescription
+                      }
+                    }));
+                  }}
+                >
+                  Use This Description
+                </Button>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Project Title *</label>
               <Input
@@ -342,7 +639,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
           </div>
         );
 
-      case 2:
+      case 3:
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -414,7 +711,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <div>
@@ -487,7 +784,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             <div>
@@ -532,7 +829,7 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
           </div>
         );
 
-      case 5:
+      case 6:
         return (
           <div className="space-y-6">
             <div>
