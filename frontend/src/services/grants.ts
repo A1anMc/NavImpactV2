@@ -103,7 +103,19 @@ export const grantsApi = {
       
       console.log('[grantsApi.getGrants] Response received:', response);
       
-      return response.data;
+      // Parse dates in the response
+      const data = response.data;
+      if (data.items && Array.isArray(data.items)) {
+        data.items = data.items.map((grant: any) => ({
+          ...grant,
+          open_date: grant.open_date ? new Date(grant.open_date) : undefined,
+          deadline: grant.deadline ? new Date(grant.deadline) : undefined,
+          created_at: grant.created_at ? new Date(grant.created_at) : undefined,
+          updated_at: grant.updated_at ? new Date(grant.updated_at) : undefined,
+        }));
+      }
+      
+      return data;
     } catch (error) {
       console.error('[grantsApi.getGrants] Error:', error);
       throw error;
@@ -126,7 +138,20 @@ export const grantsApi = {
       if (filters.size) queryParams.append('size', filters.size.toString());
       
       const response = await apiClient.get(`${ENDPOINTS.BASE}?${queryParams.toString()}`);
-      return response.data;
+      
+      // Parse dates in the response
+      const data = response.data;
+      if (data.items && Array.isArray(data.items)) {
+        data.items = data.items.map((grant: any) => ({
+          ...grant,
+          open_date: grant.open_date ? new Date(grant.open_date) : undefined,
+          deadline: grant.deadline ? new Date(grant.deadline) : undefined,
+          created_at: grant.created_at ? new Date(grant.created_at) : undefined,
+          updated_at: grant.updated_at ? new Date(grant.updated_at) : undefined,
+        }));
+      }
+      
+      return data;
     } catch (error) {
       console.error('[grantsApi.getGrantsWithFilters] Error:', error);
       throw error;
@@ -148,7 +173,16 @@ export const grantsApi = {
   async getGrant(id: string): Promise<Grant> {
     try {
       const response = await apiClient.get(`${ENDPOINTS.BASE}${id}`);
-      return response.data;
+      
+      // Parse dates in the response
+      const grant = response.data;
+      return {
+        ...grant,
+        open_date: grant.open_date ? new Date(grant.open_date) : undefined,
+        deadline: grant.deadline ? new Date(grant.deadline) : undefined,
+        created_at: grant.created_at ? new Date(grant.created_at) : undefined,
+        updated_at: grant.updated_at ? new Date(grant.updated_at) : undefined,
+      };
     } catch (error) {
       console.error('[grantsApi.getGrant] Error:', error);
       throw error;
