@@ -155,27 +155,30 @@ export default function GrantsPage() {
   // Use high-grade grants data for production
   useEffect(() => {
     setLoading(true);
+    console.log('🔄 [GrantsPage] Starting API fetch...');
     try {
       // Try to fetch from API first
       grantsApi.getGrants().then(data => {
+        console.log('✅ [GrantsPage] API response received:', data);
         if (data && data.items && data.items.length > 0) {
+          console.log('✅ [GrantsPage] Using real API data:', data.items.length, 'grants');
           setGrants(data.items);
           setFilteredGrants(data.items);
         } else {
           // Fall back to high-grade production data
-          console.log('Using high-grade production data - API returned no grants');
+          console.log('⚠️ [GrantsPage] Using high-grade production data - API returned no grants');
           setGrants(HIGH_GRADE_GRANTS);
           setFilteredGrants(HIGH_GRADE_GRANTS);
         }
         setLoading(false);
       }).catch(err => {
-        console.log('API error, using high-grade production data:', err);
+        console.log('❌ [GrantsPage] API error, using high-grade production data:', err);
         setGrants(HIGH_GRADE_GRANTS);
         setFilteredGrants(HIGH_GRADE_GRANTS);
         setLoading(false);
       });
     } catch (err) {
-      console.log('Using high-grade production data due to error:', err);
+      console.log('❌ [GrantsPage] Using high-grade production data due to error:', err);
       setGrants(HIGH_GRADE_GRANTS);
       setFilteredGrants(HIGH_GRADE_GRANTS);
       setLoading(false);
