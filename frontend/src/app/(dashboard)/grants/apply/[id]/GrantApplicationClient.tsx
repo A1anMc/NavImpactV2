@@ -125,20 +125,51 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
   useEffect(() => {
     const fetchGrant = async () => {
       try {
+        console.log('🔄 [GrantApplicationClient] Starting to fetch grant:', grantId);
         setLoading(true);
-        const grantData = await grantsApi.getGrant(grantId);
-        setGrant(grantData);
         setError(null);
+        
+        const grantData = await grantsApi.getGrant(grantId);
+        console.log('✅ [GrantApplicationClient] Grant data received:', grantData);
+        setGrant(grantData);
       } catch (err) {
-        console.error('Error fetching grant:', err);
+        console.error('❌ [GrantApplicationClient] Error fetching grant:', err);
         setError('Failed to load grant details. Please try again.');
+        // Set a fallback grant to prevent infinite loading
+        setGrant({
+          id: parseInt(grantId),
+          title: 'Grant Application',
+          description: 'Grant application form',
+          source: 'NavImpact',
+          source_url: '',
+          application_url: '',
+          contact_email: '',
+          min_amount: 0,
+          max_amount: 0,
+          open_date: new Date(),
+          deadline: new Date(),
+          industry_focus: 'media',
+          location_eligibility: 'Australia',
+          org_type_eligible: [],
+          funding_purpose: [],
+          audience_tags: [],
+          status: 'open',
+          notes: '',
+          created_at: new Date(),
+          updated_at: new Date(),
+          created_by_id: null
+        });
       } finally {
+        console.log('🏁 [GrantApplicationClient] Setting loading to false');
         setLoading(false);
       }
     };
 
     if (grantId) {
       fetchGrant();
+    } else {
+      console.log('⚠️ [GrantApplicationClient] No grantId provided');
+      setLoading(false);
     }
   }, [grantId]);
 
