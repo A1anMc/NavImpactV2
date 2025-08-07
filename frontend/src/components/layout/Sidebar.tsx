@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
@@ -84,15 +83,16 @@ export default function Sidebar() {
             
             return (
               <div key={item.name}>
-                <Link
+                <a
                   href={item.href}
                   className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                     isActive || isGrantsActive
                       ? 'bg-blue-50 text-blue-700 border border-blue-200'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   }`}
-                  onClick={() => {
+                  onClick={(e) => {
                     if (item.href === '/grants') {
+                      e.preventDefault();
                       setShowGrantSubNav(!showGrantSubNav);
                     }
                   }}
@@ -114,7 +114,7 @@ export default function Sidebar() {
                     {grantSubNav.map((subItem) => {
                       const isSubActive = pathname === subItem.href;
                       return (
-                        <Link
+                        <a
                           key={subItem.name}
                           href={subItem.href}
                           className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-sm ${
@@ -125,7 +125,7 @@ export default function Sidebar() {
                         >
                           <subItem.icon className="h-4 w-4" />
                           <span className="font-medium">{subItem.name}</span>
-                        </Link>
+                        </a>
                       );
                     })}
                   </div>

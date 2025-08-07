@@ -3,11 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   
-  // Re-enable static export for Render deployment
+  // Static export configuration for Render deployment
   output: 'export',
   trailingSlash: true,
+  
+  // Disable image optimization for static export
   images: {
     unoptimized: true,
+    domains: ['navimpact-api-staging.onrender.com', 'navimpact-web-staging.onrender.com'],
   },
   
   // Environment variables
@@ -15,10 +18,15 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api-staging.onrender.com',
   },
   
-  // Image optimization
-  images: {
-    domains: ['navimpact-api-staging.onrender.com', 'navimpact-web-staging.onrender.com'],
-    unoptimized: true, // For better standalone compatibility
+  // Base path for static export
+  basePath: '',
+  
+  // Asset prefix for static files
+  assetPrefix: '',
+  
+  // Disable server-side features for static export
+  experimental: {
+    appDir: true,
   },
   
   // Simplified headers for debugging
