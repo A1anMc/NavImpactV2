@@ -180,8 +180,13 @@ class Settings:
         },
     }
 
-    # Trusted Hosts (for production)
-    TRUSTED_HOSTS: List[str] = ["navimpact-api.onrender.com", "localhost", "127.0.0.1"]
+    # Trusted Hosts (for production and staging)
+    TRUSTED_HOSTS: List[str] = [
+        "navimpact-api.onrender.com", 
+        "navimpact-api-staging.onrender.com",
+        "localhost", 
+        "127.0.0.1"
+    ]
 
     # External domains allowed for scraping
     ALLOWED_EXTERNAL_DOMAINS: List[str] = [
@@ -257,6 +262,11 @@ class Settings:
                     "https://navimpact.onrender.com",
                     "https://navimpact-frontend.onrender.com",
                     "https://navimpact-api.onrender.com",
+                ]
+            elif self.ENV == "staging":
+                self.CORS_ORIGINS = [
+                    "https://navimpact-web-staging.onrender.com",
+                    "https://navimpact-api-staging.onrender.com",
                 ]
             else:
                 self.CORS_ORIGINS = [

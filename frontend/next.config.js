@@ -12,12 +12,12 @@ const nextConfig = {
   
   // Environment variables
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api.onrender.com',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://navimpact-api-staging.onrender.com',
   },
   
   // Image optimization
   images: {
-    domains: ['navimpact-api.onrender.com', 'navimpact-web.onrender.com'],
+    domains: ['navimpact-api-staging.onrender.com', 'navimpact-web-staging.onrender.com'],
     unoptimized: true, // For better standalone compatibility
   },
   
