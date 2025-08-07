@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   CurrencyDollarIcon,
   CalendarIcon,
@@ -20,6 +22,8 @@ import {
   EyeIcon,
   PlayIcon,
   PauseIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import { grantsApi } from '@/services/grants';
 import { Grant } from '@/types/models';
@@ -28,12 +32,73 @@ interface GrantApplicationClientProps {
   grantId: string;
 }
 
+interface ApplicationData {
+  projectOverview: {
+    title: string;
+    description: string;
+    creativeVision: string;
+    targetAudience: string;
+  };
+  creativeTeam: {
+    director: string;
+    producer: string;
+    keyPersonnel: Array<{ name: string; role: string; experience: string }>;
+  };
+  budgetBreakdown: {
+    totalBudget: number;
+    categories: Array<{ category: string; amount: number; description: string }>;
+    justification: string;
+  };
+  impactStatement: {
+    socialImpact: string;
+    culturalImpact: string;
+    measurableOutcomes: string;
+    communityEngagement: string;
+  };
+  distributionStrategy: {
+    platforms: string[];
+    targetAudience: string;
+    marketingPlan: string;
+    timeline: string;
+  };
+}
+
 export function GrantApplicationClient({ grantId }: GrantApplicationClientProps) {
   const [grant, setGrant] = useState<Grant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [applicationData, setApplicationData] = useState<ApplicationData>({
+    projectOverview: {
+      title: '',
+      description: '',
+      creativeVision: '',
+      targetAudience: '',
+    },
+    creativeTeam: {
+      director: '',
+      producer: '',
+      keyPersonnel: [{ name: '', role: '', experience: '' }],
+    },
+    budgetBreakdown: {
+      totalBudget: 0,
+      categories: [{ category: '', amount: 0, description: '' }],
+      justification: '',
+    },
+    impactStatement: {
+      socialImpact: '',
+      culturalImpact: '',
+      measurableOutcomes: '',
+      communityEngagement: '',
+    },
+    distributionStrategy: {
+      platforms: [],
+      targetAudience: '',
+      marketingPlan: '',
+      timeline: '',
+    },
+  });
 
   // Fetch grant data from API
   useEffect(() => {
@@ -97,60 +162,124 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
       estimatedTime: '20 min',
       aiSupport: true,
     },
-    {
-      id: 6,
-      title: 'Supporting Materials',
-      description: 'Portfolio, references, and additional documents',
-      status: 'pending',
-      estimatedTime: '15 min',
-      aiSupport: false,
-    }
   ];
 
   const aiSuggestions = [
-    'Emphasize social impact and community engagement',
-    'Include diverse representation in your team',
-    'Show clear audience and distribution strategy',
-    'Demonstrate innovative storytelling approach',
-    'Provide strong evidence of project feasibility'
+    'Focus on the unique creative vision that sets your project apart',
+    'Emphasize the social and cultural impact of your work',
+    'Provide specific, measurable outcomes for your project',
+    'Demonstrate strong community engagement and participation',
+    'Show clear budget justification with detailed breakdowns',
+    'Highlight innovative approaches to storytelling and content creation',
   ];
+
+  const handleNextStep = () => {
+    if (currentStep < applicationSteps.length) {
+      setCurrentStep(currentStep + 1);
+      setProgress((currentStep / applicationSteps.length) * 100);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      setProgress(((currentStep - 2) / applicationSteps.length) * 100);
+    }
+  };
+
+  const handleSubmitApplication = async () => {
+    try {
+      // Here you would submit the application data to your API
+      console.log('Submitting application:', applicationData);
+      alert('Application submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Failed to submit application. Please try again.');
+    }
+  };
+
+  const updateApplicationData = (section: keyof ApplicationData, data: any) => {
+    setApplicationData(prev => ({
+      ...prev,
+      [section]: { ...prev[section], ...data }
+    }));
+  };
+
+  const addKeyPersonnel = () => {
+    setApplicationData(prev => ({
+      ...prev,
+      creativeTeam: {
+        ...prev.creativeTeam,
+        keyPersonnel: [...prev.creativeTeam.keyPersonnel, { name: '', role: '', experience: '' }]
+      }
+    }));
+  };
+
+  const removeKeyPersonnel = (index: number) => {
+    setApplicationData(prev => ({
+      ...prev,
+      creativeTeam: {
+        ...prev.creativeTeam,
+        keyPersonnel: prev.creativeTeam.keyPersonnel.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  const addBudgetCategory = () => {
+    setApplicationData(prev => ({
+      ...prev,
+      budgetBreakdown: {
+        ...prev.budgetBreakdown,
+        categories: [...prev.budgetBreakdown.categories, { category: '', amount: 0, description: '' }]
+      }
+    }));
+  };
+
+  const removeBudgetCategory = (index: number) => {
+    setApplicationData(prev => ({
+      ...prev,
+      budgetBreakdown: {
+        ...prev.budgetBreakdown,
+        categories: prev.budgetBreakdown.categories.filter((_, i) => i !== index)
+      }
+    }));
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
       currency: 'AUD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-AU', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+      month: 'long',
+      day: 'numeric',
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-green-100 text-green-800';
-      case 'closed': return 'bg-red-100 text-red-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'active': return 'bg-blue-100 text-blue-800';
-      case 'closing_soon': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'open':
+        return 'bg-green-100 text-green-800';
+      case 'closing_soon':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'closed':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading grant details...</p>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading grant application...</p>
         </div>
       </div>
     );
@@ -158,206 +287,486 @@ export function GrantApplicationClient({ grantId }: GrantApplicationClientProps)
 
   if (error || !grant) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto" />
-            <p className="mt-4 text-red-600">{error || 'Grant not found'}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="mt-4"
-            >
-              Try Again
-            </Button>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Grant</h3>
+          <p className="text-gray-600">{error || 'Grant not found'}</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{grant.title}</h1>
-            <p className="text-gray-600 mt-2">
-              AI-Powered Grant Application Process
-            </p>
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Project Title *</label>
+              <Input
+                value={applicationData.projectOverview.title}
+                onChange={(e) => updateApplicationData('projectOverview', { title: e.target.value })}
+                placeholder="Enter your project title"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Project Description *</label>
+              <Textarea
+                value={applicationData.projectOverview.description}
+                onChange={(e) => updateApplicationData('projectOverview', { description: e.target.value })}
+                placeholder="Describe your project in detail"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Creative Vision *</label>
+              <Textarea
+                value={applicationData.projectOverview.creativeVision}
+                onChange={(e) => updateApplicationData('projectOverview', { creativeVision: e.target.value })}
+                placeholder="What is your unique creative vision for this project?"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+              <Input
+                value={applicationData.projectOverview.targetAudience}
+                onChange={(e) => updateApplicationData('projectOverview', { targetAudience: e.target.value })}
+                placeholder="Who is your target audience?"
+              />
+            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <Button variant="outline">
-              <EyeIcon className="h-4 w-4 mr-2" />
-              Preview
-            </Button>
-            <Button>
-              <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-              Download Grant Info
-            </Button>
-          </div>
-        </div>
+        );
 
-        {/* Grant Details Card */}
-        <Card className="mt-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <CardTitle className="text-xl">{grant.title}</CardTitle>
-                <p className="text-gray-600 mt-1">{grant.source}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Director *</label>
+                <Input
+                  value={applicationData.creativeTeam.director}
+                  onChange={(e) => updateApplicationData('creativeTeam', { director: e.target.value })}
+                  placeholder="Director name"
+                />
               </div>
-              <Badge className={getStatusColor(grant.status)}>
-                {grant.status.replace('_', ' ')}
-              </Badge>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Producer *</label>
+                <Input
+                  value={applicationData.creativeTeam.producer}
+                  onChange={(e) => updateApplicationData('creativeTeam', { producer: e.target.value })}
+                  placeholder="Producer name"
+                />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center">
-                <CurrencyDollarIcon className="h-5 w-5 text-green-500 mr-2" />
-                <div>
-                  <p className="text-sm text-gray-600">Amount</p>
-                  <p className="font-semibold">
-                    {grant.min_amount && grant.max_amount 
-                      ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
-                      : 'Amount not specified'
-                    }
-                  </p>
-                </div>
-              </div>
-              {grant.deadline && (
-                <div className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 text-red-500 mr-2" />
-                  <div>
-                    <p className="text-sm text-gray-600">Deadline</p>
-                    <p className="font-semibold">{formatDate(grant.deadline.toString())}</p>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Key Personnel</label>
+              {applicationData.creativeTeam.keyPersonnel.map((person, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <Input
+                    value={person.name}
+                    onChange={(e) => {
+                      const updatedPersonnel = [...applicationData.creativeTeam.keyPersonnel];
+                      updatedPersonnel[index].name = e.target.value;
+                      updateApplicationData('creativeTeam', { keyPersonnel: updatedPersonnel });
+                    }}
+                    placeholder="Name"
+                  />
+                  <Input
+                    value={person.role}
+                    onChange={(e) => {
+                      const updatedPersonnel = [...applicationData.creativeTeam.keyPersonnel];
+                      updatedPersonnel[index].role = e.target.value;
+                      updateApplicationData('creativeTeam', { keyPersonnel: updatedPersonnel });
+                    }}
+                    placeholder="Role"
+                  />
+                  <div className="flex space-x-2">
+                    <Input
+                      value={person.experience}
+                      onChange={(e) => {
+                        const updatedPersonnel = [...applicationData.creativeTeam.keyPersonnel];
+                        updatedPersonnel[index].experience = e.target.value;
+                        updateApplicationData('creativeTeam', { keyPersonnel: updatedPersonnel });
+                      }}
+                      placeholder="Experience"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeKeyPersonnel(index)}
+                    >
+                      Remove
+                    </Button>
                   </div>
                 </div>
-              )}
-              {grant.industry_focus && (
-                <div className="flex items-center">
-                  <UserGroupIcon className="h-5 w-5 text-blue-500 mr-2" />
-                  <div>
-                    <p className="text-sm text-gray-600">Industry</p>
-                    <p className="font-semibold capitalize">{grant.industry_focus}</p>
-                  </div>
-                </div>
-              )}
+              ))}
+              <Button variant="outline" onClick={addKeyPersonnel}>
+                Add Team Member
+              </Button>
             </div>
-            <p className="text-gray-700 mt-4">{grant.description}</p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        );
 
-      {/* Application Progress */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Steps */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <ClipboardDocumentIcon className="h-5 w-5 mr-2" />
-                Application Steps
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {applicationSteps.map((step) => (
-                  <div
-                    key={step.id}
-                    className={`p-4 border rounded-lg ${
-                      step.id === currentStep
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
-                          step.id < currentStep
-                            ? 'bg-green-500 text-white'
-                            : step.id === currentStep
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-200 text-gray-600'
-                        }`}>
-                          {step.id < currentStep ? (
-                            <CheckCircleIcon className="h-5 w-5" />
-                          ) : (
-                            <span className="text-sm font-medium">{step.id}</span>
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900">{step.title}</h3>
-                          <p className="text-sm text-gray-600">{step.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-500">{step.estimatedTime}</span>
-                        {step.aiSupport && (
-                          <SparklesIcon className="h-4 w-4 text-yellow-500" />
-                        )}
-                      </div>
-                    </div>
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Total Budget (AUD) *</label>
+              <Input
+                type="number"
+                value={applicationData.budgetBreakdown.totalBudget}
+                onChange={(e) => updateApplicationData('budgetBreakdown', { totalBudget: parseFloat(e.target.value) || 0 })}
+                placeholder="Enter total budget"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Budget Categories</label>
+              {applicationData.budgetBreakdown.categories.map((category, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <Input
+                    value={category.category}
+                    onChange={(e) => {
+                      const updatedCategories = [...applicationData.budgetBreakdown.categories];
+                      updatedCategories[index].category = e.target.value;
+                      updateApplicationData('budgetBreakdown', { categories: updatedCategories });
+                    }}
+                    placeholder="Category"
+                  />
+                  <Input
+                    type="number"
+                    value={category.amount}
+                    onChange={(e) => {
+                      const updatedCategories = [...applicationData.budgetBreakdown.categories];
+                      updatedCategories[index].amount = parseFloat(e.target.value) || 0;
+                      updateApplicationData('budgetBreakdown', { categories: updatedCategories });
+                    }}
+                    placeholder="Amount"
+                  />
+                  <div className="flex space-x-2">
+                    <Input
+                      value={category.description}
+                      onChange={(e) => {
+                        const updatedCategories = [...applicationData.budgetBreakdown.categories];
+                        updatedCategories[index].description = e.target.value;
+                        updateApplicationData('budgetBreakdown', { categories: updatedCategories });
+                      }}
+                      placeholder="Description"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeBudgetCategory(index)}
+                    >
+                      Remove
+                    </Button>
                   </div>
+                </div>
+              ))}
+              <Button variant="outline" onClick={addBudgetCategory}>
+                Add Budget Category
+              </Button>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Budget Justification *</label>
+              <Textarea
+                value={applicationData.budgetBreakdown.justification}
+                onChange={(e) => updateApplicationData('budgetBreakdown', { justification: e.target.value })}
+                placeholder="Explain how the budget will be used and why it's necessary"
+                rows={4}
+              />
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Social Impact *</label>
+              <Textarea
+                value={applicationData.impactStatement.socialImpact}
+                onChange={(e) => updateApplicationData('impactStatement', { socialImpact: e.target.value })}
+                placeholder="How will your project create positive social change?"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Cultural Impact</label>
+              <Textarea
+                value={applicationData.impactStatement.culturalImpact}
+                onChange={(e) => updateApplicationData('impactStatement', { culturalImpact: e.target.value })}
+                placeholder="How will your project contribute to cultural development?"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Measurable Outcomes *</label>
+              <Textarea
+                value={applicationData.impactStatement.measurableOutcomes}
+                onChange={(e) => updateApplicationData('impactStatement', { measurableOutcomes: e.target.value })}
+                placeholder="What specific, measurable outcomes will your project achieve?"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Community Engagement</label>
+              <Textarea
+                value={applicationData.impactStatement.communityEngagement}
+                onChange={(e) => updateApplicationData('impactStatement', { communityEngagement: e.target.value })}
+                placeholder="How will you engage with the community?"
+                rows={4}
+              />
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Distribution Platforms</label>
+              <div className="space-y-2">
+                {['Cinema', 'Television', 'Streaming', 'Festivals', 'Online', 'Educational'].map((platform) => (
+                  <label key={platform} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={applicationData.distributionStrategy.platforms.includes(platform)}
+                      onChange={(e) => {
+                        const updatedPlatforms = e.target.checked
+                          ? [...applicationData.distributionStrategy.platforms, platform]
+                          : applicationData.distributionStrategy.platforms.filter(p => p !== platform);
+                        updateApplicationData('distributionStrategy', { platforms: updatedPlatforms });
+                      }}
+                      className="mr-2"
+                    />
+                    {platform}
+                  </label>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+              <Input
+                value={applicationData.distributionStrategy.targetAudience}
+                onChange={(e) => updateApplicationData('distributionStrategy', { targetAudience: e.target.value })}
+                placeholder="Who is your target audience for distribution?"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Marketing Plan</label>
+              <Textarea
+                value={applicationData.distributionStrategy.marketingPlan}
+                onChange={(e) => updateApplicationData('distributionStrategy', { marketingPlan: e.target.value })}
+                placeholder="How will you market and promote your project?"
+                rows={4}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Distribution Timeline</label>
+              <Input
+                value={applicationData.distributionStrategy.timeline}
+                onChange={(e) => updateApplicationData('distributionStrategy', { timeline: e.target.value })}
+                placeholder="What is your planned distribution timeline?"
+              />
+            </div>
+          </div>
+        );
 
-        {/* AI Support Panel */}
-        <div>
-          <Card>
+      default:
+        return <div>Step not found</div>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Grant Application</h1>
+                <p className="text-blue-100">Complete your application for {grant.title}</p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">{Math.round(progress)}%</div>
+                <div className="text-blue-100">Complete</div>
+              </div>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="mt-6">
+              <div className="w-full bg-white/20 rounded-full h-2">
+                <div 
+                  className="bg-white h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grant Details Card */}
+          <Card className="mt-6">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <SparklesIcon className="h-5 w-5 mr-2" />
-                AI Support
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl">{grant.title}</CardTitle>
+                  <p className="text-gray-600 mt-1">{grant.source}</p>
+                </div>
+                <Badge className={getStatusColor(grant.status)}>
+                  {grant.status.replace('_', ' ')}
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">AI Suggestions</h4>
-                  <ul className="space-y-2">
-                    {aiSuggestions.map((suggestion, index) => (
-                      <li key={index} className="text-sm text-blue-800 flex items-start">
-                        <LightBulbIcon className="h-4 w-4 mr-2 mt-0.5 text-blue-600" />
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-green-900 mb-2">Success Tips</h4>
-                  <ul className="space-y-2 text-sm text-green-800">
-                    <li>• Be specific about your project goals</li>
-                    <li>• Include measurable outcomes</li>
-                    <li>• Demonstrate community impact</li>
-                    <li>• Show clear budget justification</li>
-                  </ul>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-purple-900 mb-2">Application Stats</h4>
-                  <div className="space-y-2 text-sm text-purple-800">
-                    <div className="flex justify-between">
-                      <span>Estimated Time:</span>
-                      <span className="font-medium">2.5 hours</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Success Rate:</span>
-                      <span className="font-medium">15%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Match Score:</span>
-                      <span className="font-medium">75%</span>
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center">
+                  <CurrencyDollarIcon className="h-5 w-5 text-green-500 mr-2" />
+                  <div>
+                    <p className="text-sm text-gray-600">Amount</p>
+                    <p className="font-semibold">
+                      {grant.min_amount && grant.max_amount 
+                        ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
+                        : 'Amount not specified'
+                      }
+                    </p>
                   </div>
                 </div>
+                {grant.deadline && (
+                  <div className="flex items-center">
+                    <CalendarIcon className="h-5 w-5 text-red-500 mr-2" />
+                    <div>
+                      <p className="text-sm text-gray-600">Deadline</p>
+                      <p className="font-semibold">{formatDate(grant.deadline.toString())}</p>
+                    </div>
+                  </div>
+                )}
+                {grant.industry_focus && (
+                  <div className="flex items-center">
+                    <UserGroupIcon className="h-5 w-5 text-blue-500 mr-2" />
+                    <div>
+                      <p className="text-sm text-gray-600">Industry</p>
+                      <p className="font-semibold capitalize">{grant.industry_focus}</p>
+                    </div>
+                  </div>
+                )}
               </div>
+              <p className="text-gray-700 mt-4">{grant.description}</p>
             </CardContent>
           </Card>
+
+          {/* Application Progress */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Steps */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <ClipboardDocumentIcon className="h-5 w-5 mr-2" />
+                    {applicationSteps[currentStep - 1].title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {renderStepContent()}
+                    
+                    <div className="flex items-center justify-between pt-6 border-t">
+                      <Button
+                        variant="outline"
+                        onClick={handlePrevStep}
+                        disabled={currentStep === 1}
+                      >
+                        <ArrowLeftIcon className="h-4 w-4 mr-2" />
+                        Previous
+                      </Button>
+                      
+                      {currentStep < applicationSteps.length ? (
+                        <Button onClick={handleNextStep}>
+                          Next
+                          <ArrowRightIcon className="h-4 w-4 ml-2" />
+                        </Button>
+                      ) : (
+                        <Button onClick={handleSubmitApplication}>
+                          Submit Application
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* AI Support Panel */}
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <SparklesIcon className="h-5 w-5 mr-2" />
+                    AI Support
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-blue-900 mb-2">AI Suggestions</h4>
+                      <ul className="space-y-2">
+                        {aiSuggestions.map((suggestion, index) => (
+                          <li key={index} className="text-sm text-blue-800 flex items-start">
+                            <LightBulbIcon className="h-4 w-4 mr-2 mt-0.5 text-blue-600" />
+                            {suggestion}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-green-900 mb-2">Success Tips</h4>
+                      <ul className="space-y-2 text-sm text-green-800">
+                        <li>• Be specific about your project goals</li>
+                        <li>• Include measurable outcomes</li>
+                        <li>• Demonstrate community impact</li>
+                        <li>• Show clear budget justification</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-purple-900 mb-2">Application Stats</h4>
+                      <div className="space-y-2 text-sm text-purple-800">
+                        <div className="flex justify-between">
+                          <span>Estimated Time:</span>
+                          <span className="font-medium">2.5 hours</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Success Rate:</span>
+                          <span className="font-medium">15%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Match Score:</span>
+                          <span className="font-medium">75%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

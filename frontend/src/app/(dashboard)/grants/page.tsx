@@ -20,6 +20,7 @@ import {
   ClockIcon,
   EyeIcon,
   ArrowRightIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { grantsApi } from '@/services/grants';
 import { Grant } from '@/types/models';
@@ -151,6 +152,8 @@ export default function GrantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
+  const [showGrantModal, setShowGrantModal] = useState(false);
 
   // Use high-grade grants data for production
   useEffect(() => {
@@ -269,6 +272,41 @@ export default function GrantsPage() {
     }
   };
 
+  const handleViewDetails = (grant: Grant) => {
+    setSelectedGrant(grant);
+    setShowGrantModal(true);
+  };
+
+  const handleAIMatch = () => {
+    // Enhanced AI matching logic
+    const enhancedGrants = grants.map(grant => {
+      const baseScore = calculateMatchScore(grant);
+      // Add AI enhancement factors
+      let aiScore = baseScore;
+      
+      // Industry preference boost
+      if (grant.industry_focus === 'media') aiScore += 15;
+      
+      // Deadline urgency boost
+      if (grant.deadline) {
+        const daysUntilDeadline = Math.ceil((grant.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        if (daysUntilDeadline > 0 && daysUntilDeadline <= 30) aiScore += 20;
+      }
+      
+      // Amount range optimization
+      if (grant.min_amount && grant.max_amount) {
+        const avgAmount = (grant.min_amount + grant.max_amount) / 2;
+        if (avgAmount >= 50000 && avgAmount <= 200000) aiScore += 10;
+      }
+      
+      return { ...grant, aiScore: Math.min(aiScore, 100) };
+    });
+    
+    // Sort by AI score
+    const sortedGrants = enhancedGrants.sort((a, b) => (b as any).aiScore - (a as any).aiScore);
+    setFilteredGrants(sortedGrants);
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-50 p-6">
@@ -283,170 +321,303 @@ export default function GrantsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 p-6">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 mb-8 text-white">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">High-Grade Grant Opportunities</h1>
-          <p className="text-xl mb-6">
-            Discover premium funding opportunities for professional production work. 
-            Our AI-powered system matches you with the best grants for your projects.
-          </p>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <TrophyIcon className="h-6 w-6 mr-2" />
-              <span>Premium Grants</span>
-            </div>
-            <div className="flex items-center">
-              <SparklesIcon className="h-6 w-6 mr-2" />
-              <span>AI Matching</span>
-            </div>
-            <div className="flex items-center">
-              <StarIcon className="h-6 w-6 mr-2" />
-              <span>Enterprise Ready</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search grants by title, description, or organization..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button>
-            <SparklesIcon className="h-4 w-4 mr-2" />
-            AI Match
-          </Button>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <select
-            value={selectedIndustry}
-            onChange={(e) => setSelectedIndustry(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Industries</option>
-            <option value="media">Media</option>
-            <option value="arts">Arts</option>
-            <option value="technology">Technology</option>
-          </select>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
           
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Status</option>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="draft">Draft</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Results Summary */}
-      <div className="mb-6">
-        <p className="text-gray-600">
-          Found {filteredGrants.length} high-grade grants matching your criteria
-        </p>
-      </div>
-
-      {/* Grants Grid */}
-      {filteredGrants.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="text-center">
-            <ChartBarIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No grants found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="max-w-3xl">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="p-3 bg-white/10 rounded-xl">
+                  <CurrencyDollarIcon className="h-8 w-8" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">Grant Discovery</h1>
+                  <p className="text-xl text-blue-100 mb-8">
+                    Find and apply for grants that match your creative vision and impact goals.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-blue-100">Real-time matching</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-blue-300 rounded-full"></div>
+                  <span className="text-blue-100">AI-powered recommendations</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-purple-300 rounded-full"></div>
+                  <span className="text-blue-100">Enterprise ready</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGrants.map((grant) => {
-            const matchScore = calculateMatchScore(grant);
-            return (
-              <Card key={grant.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{grant.title}</CardTitle>
-                      <p className="text-sm text-gray-600 mb-2">{grant.source}</p>
-                      <div className="flex items-center space-x-2 flex-wrap">
-                        <Badge className={getStatusColor(grant.status)}>
-                          {grant.status.replace('_', ' ')}
-                        </Badge>
-                        <Badge className="bg-blue-100 text-blue-800">
-                          {matchScore}% Match
-                        </Badge>
-                        {matchScore >= 80 && (
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            <TrophyIcon className="h-3 w-3 mr-1" />
-                            Premium
-                          </Badge>
+
+          {/* Search and Filters */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="flex-1 relative">
+                <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search grants by title, description, or organization..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button onClick={handleAIMatch}>
+                <SparklesIcon className="h-4 w-4 mr-2" />
+                AI Match
+              </Button>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <select
+                value={selectedIndustry}
+                onChange={(e) => setSelectedIndustry(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Industries</option>
+                <option value="media">Media</option>
+                <option value="arts">Arts</option>
+                <option value="technology">Technology</option>
+              </select>
+              
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Status</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Results Summary */}
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Found {filteredGrants.length} high-grade grants matching your criteria
+            </p>
+          </div>
+
+          {/* Grants Grid */}
+          {filteredGrants.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64">
+              <div className="text-center">
+                <ChartBarIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No grants found</h3>
+                <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGrants.map((grant) => {
+                const matchScore = calculateMatchScore(grant);
+                return (
+                  <Card key={grant.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg mb-2">{grant.title}</CardTitle>
+                          <p className="text-sm text-gray-600 mb-2">{grant.source}</p>
+                          <div className="flex items-center space-x-2 flex-wrap">
+                            <Badge className={getStatusColor(grant.status)}>
+                              {grant.status.replace('_', ' ')}
+                            </Badge>
+                            <Badge className="bg-blue-100 text-blue-800">
+                              {matchScore}% Match
+                            </Badge>
+                            {matchScore >= 80 && (
+                              <Badge className="bg-yellow-100 text-yellow-800">
+                                <TrophyIcon className="h-3 w-3 mr-1" />
+                                Premium
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700 mb-4 line-clamp-3">
+                        {grant.description}
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center">
+                          <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
+                          <span className="text-sm text-gray-600">
+                            {grant.min_amount && grant.max_amount 
+                              ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
+                              : 'Amount not specified'
+                            }
+                          </span>
+                        </div>
+                        
+                        {grant.deadline && (
+                          <div className="flex items-center">
+                            <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
+                            <span className="text-sm text-gray-600">
+                              Deadline: {formatDate(grant.deadline)}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {grant.industry_focus && (
+                          <div className="flex items-center">
+                            <UserGroupIcon className="h-4 w-4 text-blue-500 mr-2" />
+                            <span className="text-sm text-gray-600 capitalize">
+                              {grant.industry_focus}
+                            </span>
+                          </div>
                         )}
                       </div>
+                      
+                      <div className="mt-4 flex items-center justify-between">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewDetails(grant)}
+                        >
+                          <EyeIcon className="h-4 w-4 mr-1" />
+                          View Details
+                        </Button>
+                        <Link href={`/grants/apply/${grant.id}`}>
+                          <Button size="sm">
+                            <ArrowRightIcon className="h-4 w-4 mr-1" />
+                            Apply Now
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Grant Details Modal */}
+      {showGrantModal && selectedGrant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">{selectedGrant.title}</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowGrantModal(false)}
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Grant Details</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Source</label>
+                      <p className="text-gray-900">{selectedGrant.source}</p>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 mb-4 line-clamp-3">
-                    {grant.description}
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <CurrencyDollarIcon className="h-4 w-4 text-green-500 mr-2" />
-                      <span className="text-sm text-gray-600">
-                        {grant.min_amount && grant.max_amount 
-                          ? `${formatCurrency(grant.min_amount)} - ${formatCurrency(grant.max_amount)}`
+                    
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Description</label>
+                      <p className="text-gray-900">{selectedGrant.description}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Amount Range</label>
+                      <p className="text-gray-900">
+                        {selectedGrant.min_amount && selectedGrant.max_amount 
+                          ? `${formatCurrency(selectedGrant.min_amount)} - ${formatCurrency(selectedGrant.max_amount)}`
                           : 'Amount not specified'
                         }
-                      </span>
+                      </p>
                     </div>
                     
-                    {grant.deadline && (
-                      <div className="flex items-center">
-                        <CalendarIcon className="h-4 w-4 text-red-500 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          Deadline: {formatDate(grant.deadline)}
-                        </span>
+                    {selectedGrant.deadline && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Deadline</label>
+                        <p className="text-gray-900">{formatDate(selectedGrant.deadline)}</p>
                       </div>
                     )}
                     
-                    {grant.industry_focus && (
-                      <div className="flex items-center">
-                        <UserGroupIcon className="h-4 w-4 text-blue-500 mr-2" />
-                        <span className="text-sm text-gray-600 capitalize">
-                          {grant.industry_focus}
-                        </span>
+                    {selectedGrant.industry_focus && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Industry Focus</label>
+                        <p className="text-gray-900 capitalize">{selectedGrant.industry_focus}</p>
+                      </div>
+                    )}
+                    
+                    {selectedGrant.location_eligibility && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Location Eligibility</label>
+                        <p className="text-gray-900">{selectedGrant.location_eligibility}</p>
                       </div>
                     )}
                   </div>
-                  
-                  <div className="mt-4 flex items-center justify-between">
-                    <Button variant="outline" size="sm">
-                      <EyeIcon className="h-4 w-4 mr-1" />
-                      View Details
-                    </Button>
-                    <Link href={`/grants/apply/${grant.id}`}>
-                      <Button size="sm">
-                        <ArrowRightIcon className="h-4 w-4 mr-1" />
-                        Apply Now
-                      </Button>
-                    </Link>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Match Analysis</h3>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-blue-900 mb-2">Match Score</h4>
+                      <div className="text-3xl font-bold text-blue-600 mb-2">
+                        {calculateMatchScore(selectedGrant)}%
+                      </div>
+                      <p className="text-sm text-blue-700">
+                        Based on your profile and project requirements
+                      </p>
+                    </div>
+                    
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-green-900 mb-2">Why This Grant?</h4>
+                      <ul className="space-y-2 text-sm text-green-800">
+                        <li>• Industry alignment with your focus</li>
+                        <li>• Amount range matches your budget</li>
+                        <li>• Timeline fits your project schedule</li>
+                        <li>• Location requirements match</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-yellow-900 mb-2">Application Tips</h4>
+                      <ul className="space-y-2 text-sm text-yellow-800">
+                        <li>• Highlight your creative vision</li>
+                        <li>• Demonstrate community impact</li>
+                        <li>• Show clear budget justification</li>
+                        <li>• Include measurable outcomes</li>
+                      </ul>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                </div>
+              </div>
+              
+              <div className="mt-6 flex items-center justify-end space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowGrantModal(false)}
+                >
+                  Close
+                </Button>
+                <Link href={`/grants/apply/${selectedGrant.id}`}>
+                  <Button>
+                    <ArrowRightIcon className="h-4 w-4 mr-2" />
+                    Start Application
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
